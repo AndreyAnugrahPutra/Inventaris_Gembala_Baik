@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
+import GuestLayout from '@/Layouts/GuestLayout.vue'
 
 // import komponen primevue
 import {
@@ -12,6 +12,7 @@ import {
     Toast,
     useToast
 } from 'primevue'
+
 
 onMounted(()=>
 {

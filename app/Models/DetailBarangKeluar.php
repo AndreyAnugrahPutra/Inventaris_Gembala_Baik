@@ -14,7 +14,8 @@ class DetailBarangKeluar extends Model
     protected
         $table = 'detail_barang_keluar',
         $primaryKey = 'id_dbk',
-        $keyType = 'string';
+        $keyType = 'string',
+        $fillable = [];
 
     // deteksi kolom pada tabel dinamis
     public function construct(array $attributes = [])

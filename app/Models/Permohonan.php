@@ -14,7 +14,8 @@ class Permohonan extends Model
     protected
         $table = 'permohonan',
         $primaryKey = 'id_permo',
-        $keyType = 'string';
+        $keyType = 'string',
+        $fillable = [];
 
     // deteksi kolom pada tabel dinamis
     public function construct(array $attributes = [])

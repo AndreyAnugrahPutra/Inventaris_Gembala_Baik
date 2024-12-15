@@ -14,7 +14,8 @@ class Barang extends Model
     protected
         $table = 'barang',
         $primaryKey = 'id_brg',
-        $keyType = 'string';
+        $keyType = 'string',
+        $fillable = [];
 
     // deteksi kolom pada tabel dinamis
     public function construct(array $attributes = [])

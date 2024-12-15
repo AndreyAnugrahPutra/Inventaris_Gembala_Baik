@@ -31,6 +31,7 @@ onMounted(() =>
 
 const props = defineProps({
     flash : Object,
+    unitUsers : Object,
     dataUsers : Object,
     jkelUsers : Object,
     roleUsers : Object,
@@ -56,11 +57,10 @@ let dataUsersFix = ref([])
 const userForm = useForm({
     id : null,
     username : null,
-    nama : null,
-    jkel : null,
     email : null,
     password : null,
     role : null,
+    unit : null,
 })
 
 const exportCSV = () => dt.value.exportCSV() 
@@ -92,10 +92,10 @@ const refreshPage = () =>
 {
     checkNotif()
     showForm.value = false
-    router.visit(route('users.page'))
+    router.visit(route('admin.users.page'))
 }
 
-const submitUser = () => userForm.post(route('users.tambah'), {
+const submitUser = () => userForm.post(route('admin.users.tambah'), {
     onSuccess : () => refreshPage(),
     onError : () => { 
         showForm.value = true
@@ -125,7 +125,7 @@ const updateUser = () => {
         },
         accept: () => {
             showForm.value = false
-            userForm.post(route('users.update'), {
+            userForm.post(route('admin.users.update'), {
                 onSuccess : () => refreshPage(),
                 onError : () => { 
                     formType.value = 'editData'
@@ -152,13 +152,12 @@ const editUser = idx =>
     userForm.username = dataUsersFix.value[idx-1]['username']
     userForm.nama = dataUsersFix.value[idx-1]['nama']
     userForm.email = dataUsersFix.value[idx-1]['email']
-    userForm.jkel = dataUsersFix.value[idx-1]['jkel']
     userForm.role = dataUsersFix.value[idx-1]['role']
 }
 
 const hapusUser = (idx,username) => 
 {
-    userForm.id = dataUsersFix.value[idx-1]['id']
+    userForm.id = dataUsersFix.value[idx-1]['id_user']
 
     confirm.require({
         message: `Hapus User ${username} ?`,
@@ -175,7 +174,7 @@ const hapusUser = (idx,username) =>
         },
         accept: () => {
             showForm.value = false
-            userForm.post(route('users.hapus'), {
+            userForm.post(route('admin.users.hapus'), {
                 onSuccess : () => refreshPage(),
                 onError : () => { 
                     userForm.reset()
@@ -202,7 +201,7 @@ const hapusUser = (idx,username) =>
             <!-- toast notifikasi -->
             <Toast position="top-right" group="tr" />
             <!-- form tambah & edit user -->
-            <Dialog v-model:visible="showForm" modal :header="formType == 'tambahData' ? 'Tambah User' : 'Edit User'" class="w-[52rem]">
+            <Dialog @hide="userForm.reset(),userForm.clearErrors()" v-model:visible="showForm" modal :header="formType == 'tambahData' ? 'Tambah User' : 'Edit User'" class="w-[52rem]" >
                 <!-- form -->
                 <form @submit.prevent="submitUser || updateUser" class="flex flex-wrap gap-[2rem] items-center my-1" autocomplete="off">
                     <!-- username -->
@@ -213,26 +212,6 @@ const hapusUser = (idx,username) =>
                         </FloatLabel>
                         <span class="text-sm text-red-500" v-if="!!userForm.errors.username">
                             {{ userForm.errors.username }}
-                        </span>
-                    </div>
-                    <!-- nama -->
-                    <div class="flex flex-col h-10">
-                        <FloatLabel variant="on">
-                            <InputText class="w-[14rem]" inputId="nama" v-model="userForm.nama"/>
-                            <label for="nama">Nama</label>
-                        </FloatLabel>
-                        <span class="text-sm text-red-500" v-if="!!userForm.errors.nama">
-                            {{ userForm.errors.nama }}
-                        </span>
-                    </div>
-                    <!-- jkel -->
-                    <div class="flex flex-col h-10">
-                        <FloatLabel variant="on">
-                            <Select class="w-[14rem]" inputId="jkel_user" editable v-model="userForm.jkel" :options="props.jkelUsers"/>
-                            <label for="jkel_user">Jenis Kelamin</label>
-                        </FloatLabel>
-                        <span class="text-sm text-red-500" v-if="!!userForm.errors.jkel">
-                            {{ userForm.errors.jkel }}
                         </span>
                     </div>
                     <!-- email -->
@@ -258,15 +237,25 @@ const hapusUser = (idx,username) =>
                     <!-- role -->
                     <div class="flex flex-col h-10">
                         <FloatLabel variant="on">
-                            <Select class="w-[14rem]" inputId="role_user" editable v-model="userForm.role" :options="props.roleUsers"/>
+                            <Select class="w-[14rem]" inputId="role_user" v-model="userForm.role" :options="props.roleUsers" optionValue="id_role" optionLabel="nama_role"/>
                             <label for="role_user">Role</label>
                         </FloatLabel>
                         <span class="text-sm text-red-500" v-if="!!userForm.errors.role">
                             {{ userForm.errors.role }}
                         </span>
                     </div>
+                    <!-- role -->
+                    <div class="flex flex-col h-10">
+                        <FloatLabel variant="on">
+                            <Select class="w-[14rem]" inputId="unit_user" v-model="userForm.unit" :options="props.unitUsers" optionValue="id_unit" optionLabel="nama_unit"/>
+                            <label for="unit_user">Unit</label>
+                        </FloatLabel>
+                        <span class="text-sm text-red-500" v-if="!!userForm.errors.unit">
+                            {{ userForm.errors.unit }}
+                        </span>
+                    </div>
                     <!-- submit button -->
-                     <div class="flex items-center gap-x-2">
+                     <div class="flex items-center gap-x-2 w-full">
                          <Button label="Batal" @click="hideForm()" severity="danger"/>
                          <Button label="Submit" @click="submitUser()" type="submit" v-if="formType=='tambahData'"/>
                          <Button label="Update" @click="updateUser()" v-if="formType=='editData'"/>
@@ -296,25 +285,16 @@ const hapusUser = (idx,username) =>
                         </template>
                         <Column sortable header="No" field="index"/>
                         <Column sortable header="Username" field="username"/>
-                        <Column sortable header="Nama" field="nama"/>
                         <Column sortable header="Email" field="email"/>
-                        <Column sortable header="Role" field="role">
-                            <template #body="{data}">
-                                <span class="rounded p-2 text-white text-sm capitalize" :class="{'bg-sky-500':data.role=='admin','bg-emerald-500':data.role=='manager','bg-slate-500':data.role=='officer','bg-amber-500':data.role=='accounting'}">{{ data.role }}</span>
-                            </template>
-                        </Column>
-                        <Column header="Status">
-                            <template #body="{data}">
-                                <Badge :severity="data.is_login?'success':'danger'"/>
-                            </template>
-                        </Column>
+                        <Column sortable header="Role" field="role.nama_role"/>
+                        <Column sortable header="Unit" field="unit.nama_unit"/>
                         <Column header="Action">
-                            <template #body="{data}" v-if="$attrs.auth.user.role==='admin'">
-                                <div class="flex items-center gap-x-2"  v-if="$attrs.auth.user.username!==data.username&&$attrs.auth.user.role!==data.role">
+                            <template #body="{data}" v-if="$attrs.auth.user.id_role===1">
+                                <div class="flex items-center gap-x-2"  v-if="$attrs.auth.user.username!==data.username&&$attrs.auth.user.id_role!==data.role.id_role">
                                     <Button icon="pi pi-pen-to-square" @click="editUser(data.index)" size="small" outlined/>
                                     <Button @click="hapusUser(data.index, data.username)" severity="danger" icon="pi pi-trash" size="small" outlined />
                                 </div>
-                                <Button disabled severity="danger" icon="pi pi-ban" size="small" outlined v-else-if="$attrs.auth.user.username!==data.username&&$attrs.auth.user.role===data.role"/>
+                                <Button disabled severity="danger" icon="pi pi-ban" size="small" outlined v-else-if="$attrs.auth.user.username!==data.username&&$attrs.auth.user.id_role===data.role.id_role"/>
                                 <Button icon="pi pi-pen-to-square" @click="editUser(data.index)" severity="success" size="small" v-else/>
                             </template>
                             <template #body="{data}" v-else>

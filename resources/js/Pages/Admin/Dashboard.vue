@@ -63,7 +63,7 @@ const checkNotif = () =>
                 </Card>
 
                 <!-- Card Users -->
-                <Link :href="route('users.page')">
+                <Link :href="route('admin.users.page')">
                     <Card class="w-[14rem] text-white p-6 rounded-md shadow-md bg-sky-500" unstyled>
                         <template #content>
                             <div class="flex justify-between items-center">

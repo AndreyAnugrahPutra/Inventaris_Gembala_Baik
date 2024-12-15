@@ -15,11 +15,10 @@ class UserController extends Controller
     {
         $req->validate([
             'username' => 'required|unique:users,username',
-            'nama' => 'required|unique:users,nama',
-            'jkel' => 'required',
             'email' => 'required|unique:users,email',
             'password' => 'required|min:6',
             'role' => 'required',
+            'unit' => 'required',
         ], [
             '*.required' => 'Kolom wajib diisi',
             'password.min' => 'Password minimal 6 karakter',
@@ -30,13 +29,10 @@ class UserController extends Controller
 
         $insert = User::create([
             'username' => $req->username,
-            'nama' => $req->nama,
-            'jkel' => $req->jkel,
             'email' => $req->email,
             'password' => Hash::make($req->password),
-            'role' => $req->role,
-            'foto_profil' => null,
-            'is_login' => 0,
+            'id_role' => $req->role,
+            'id_unit' => $req->unit,
             'created_at' => Carbon::now('Asia/Jayapura')
         ]);
 
@@ -72,15 +68,12 @@ class UserController extends Controller
 
         $data = $req->validate([
             'username' => 'required|unique:users,username,' . $req->id,
-            'nama' => 'required|unique:users,nama,' . $req->id,
-            'jkel' => 'required',
             'email' => 'required|unique:users,email,' . $req->id,
             'role' => 'required',
         ], [
             '*.required' => 'Kolom wajib diisi',
             'password.min' => 'Password minimal 6 karakter',
             'username.unique' => $req->username . ' telah terdaftar',
-            'nama.unique' => $req->nama . ' telah terdaftar',
             'email.unique' => 'email telah terdaftar',
         ]);  
         

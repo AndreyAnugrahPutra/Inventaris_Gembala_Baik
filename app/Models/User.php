@@ -13,8 +13,11 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
     public $timestamps = false;
     protected 
+    $guarded = [],
     $table = 'users',
-    $primaryKey = 'id_user';
+    $primaryKey = 'id_user',
+    $keyType = 'string',
+    $fillable= [];
     
     // deteksi kolom pada tabel dinamis
     public function construct(array $attributes = [])
@@ -44,16 +47,15 @@ class User extends Authenticatable
 
     public static function generateIdUser()
     {
-        $lastUnit = self::orderBy('id_user', 'desc')->first();
+        $lastId = self::orderBy('id_user', 'desc')->first();
 
-        if (!$lastUnit) {
+        if (!$lastId->id_user) {
             return 'id_001';
         }
-
-        $lastNumber = substr($lastUnit->id_user, strlen('id_'));
+        $lastNumber = substr($lastId->id_user, strlen('id_'));
         $newNumber = sprintf('%03d', intval($lastNumber) + 1);
-
         return 'id_'. $newNumber;
+
     }
 
     /**

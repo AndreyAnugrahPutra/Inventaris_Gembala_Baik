@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 // use controller
 use App\Http\Controllers\Auth\Authentication;
 use App\Models\Role;
+use App\Models\Unit;
 // use App\Http\Controllers\Admin\UserController;
 use App\Models\User;
 use Inertia\Inertia;
@@ -19,15 +20,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/barang', function(){
         return redirect()->route('dashboard');
     })->name('barang');
-
-    Route::post('/users/tambah', [UserController::class, 'tambahUser'])->name('users.tambah');
-
-    Route::post('/users/update', [UserController::class, 'updateUser'])->name('users.update');
-    Route::post('/users/hapus', [UserController::class, 'hapusUser'])->name('users.hapus');
-
+    
     Route::get('logout', [Authentication::class, 'logout']);
     Route::post('logout', [Authentication::class, 'logout'])
-        ->name('logout');
+    ->name('logout');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -39,12 +35,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
     })->name('admin.dashboard');
 
     Route::get('admin/users', function(){
+        $unitUsers = Unit::select('id_unit','nama_unit')->get();
         $roleUsers = Role::select('id_role','nama_role')->get();
-        $dataUsers = User::select('id_user','username','email','id_role','id_unit')->get();
+        $dataUsers = User::with('role','unit')->get();
         return Inertia::render('Admin/Users', [
+            'unitUsers' => $unitUsers,
             'dataUsers' => $dataUsers,
             'roleUsers' => $roleUsers,
         ]);
     })->name('admin.users.page');
+
+
+    Route::post('admin/users/tambah', [UserController::class, 'tambahUser'])->name('admin.users.tambah');
+
+    Route::post('admin/users/update', [UserController::class, 'updateUser'])->name('admin.users.update');
+    Route::post('admin/users/hapus', [UserController::class, 'hapusUser'])->name('admin.users.hapus');
 
 });

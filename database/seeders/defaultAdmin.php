@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class defaultAdmin extends Seeder
 {
@@ -19,7 +20,7 @@ class defaultAdmin extends Seeder
             'id_user' => 'id_001',
             'username' => 'glory',
             'email' => 'glory@gmail.com',
-            'password' => 'admin',
+            'password' => Hash::make('admin'),
             'id_role' => 1,
             'id_unit' => 'unit-2024-001',
             'created_at' => Carbon::now('Asia/Jayapura'),

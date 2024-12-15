@@ -1,4 +1,5 @@
 <script setup>
+// import Logo from 
 </script>
 
 <template>
@@ -13,7 +14,8 @@
         <div
         class="flex flex-col gap-y-8 mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-xl sm:max-w-md sm:rounded-lg"
         >
-        <h1 class="text-2xl self-center">INVENTARIS BARANG</h1>
+        <img src="/logo_sd_1.png" alt="logo SD YPPK Gembala Baik" width="80" class="self-center"/>
+        <h1 class="text-2xl self-center text-center">INVENTARIS BARANG SD YPPK GEMBALA BAIK</h1>
             <slot />
         </div>
     </div>

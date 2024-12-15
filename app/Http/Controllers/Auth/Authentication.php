@@ -12,8 +12,7 @@ class Authentication extends Controller
 {
     //
     public function submitLogin(Request $req)
-    {
-        
+    {   
         $loginForm = $req->validate([
             'username' => 'required|exists:users,username',
             'password' => 'required',
@@ -25,7 +24,6 @@ class Authentication extends Controller
 
         if(Auth::attempt($loginForm))
         {
-            User::where('username',$req->username)->update(['is_login' => 1]);
             $notification = [
                 'notif_status' => 'success',
                 'notif_message' => 'Selamat Datang '.$req->username,
@@ -33,7 +31,12 @@ class Authentication extends Controller
 
             $req->session()->regenerate();
 
-            return redirect()->route('dashboard')->with($notification);
+            switch(auth()->guard()->user()->id_role)
+            {
+                case 1 : return redirect()->route('admin.dashboard')->with($notification);
+                break;
+            }
+
         }
         else
         {
@@ -50,7 +53,6 @@ class Authentication extends Controller
 
     public function logout()
     {
-        User::where('username',auth()->guard()->user()->username)->update(['is_login' => 0]);
         $notification = [
                 'notif_status' => 'success',
                 'notif_message' => 'Berhasil Logout',

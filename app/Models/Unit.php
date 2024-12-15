@@ -14,7 +14,8 @@ class Unit extends Model
     protected
         $table = 'unit',
         $primaryKey = 'id_unit',
-        $keyType = 'string';
+        $keyType = 'string',
+        $fillable = [];
 
     // deteksi kolom pada tabel dinamis
     public function construct(array $attributes = [])

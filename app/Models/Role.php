@@ -13,7 +13,8 @@ class Role extends Model
     public $timestamps = false;
     protected
         $table = 'role',
-        $primaryKey = 'id_role';
+        $primaryKey = 'id_role',
+        $fillable = [];
 
     // deteksi kolom pada tabel dinamis
     public function construct(array $attributes = [])

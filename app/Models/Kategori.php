@@ -14,7 +14,8 @@ class Kategori extends Model
     protected
         $table = 'kategori',
         $primaryKey = 'id_ktg',
-        $keyType = 'string';
+        $keyType = 'string',
+        $fillable = [];
 
     // deteksi kolom pada tabel dinamis
     public function construct(array $attributes = [])
