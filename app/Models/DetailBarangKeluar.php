@@ -23,6 +23,11 @@ class DetailBarangKeluar extends Model
         $this->fillable = Schema::getColumnListing($this->table);
     }
 
+    public function barangKeluar()
+    {
+        return $this->belongsTo(BarangKeluar::class, 'id_bk', 'id_bk');
+    }
+
     public static function boot()
     {
         parent::boot();

@@ -21,4 +21,9 @@ class Role extends Model
         parent::construct($attributes);
         $this->fillable = Schema::getColumnListing($this->table);
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class,'id_role','id_role');
+    }
 }

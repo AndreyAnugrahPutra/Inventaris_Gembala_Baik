@@ -23,6 +23,11 @@ class Unit extends Model
         $this->fillable = Schema::getColumnListing($this->table);
     }
 
+    public function users()
+    {
+         return $this->hasMany(User::class, 'id_unit', 'id_unit');
+    }
+    
     public static function boot()
     {
         parent::boot();

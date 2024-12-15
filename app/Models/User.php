@@ -23,6 +23,16 @@ class User extends Authenticatable
         $this->fillable = Schema::getColumnListing($this->table);
     }
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'id_role','id_role');
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'id_unit','id_unit');
+    }
+
     public static function boot()
     {
         parent::boot();

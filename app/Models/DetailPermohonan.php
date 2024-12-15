@@ -23,6 +23,11 @@ class DetailPermohonan extends Model
         $this->fillable = Schema::getColumnListing($this->table);
     }
 
+    public function permohonan()
+    {
+        return $this->belongsTo(Permohonan::class, 'id_permo', 'id_permo');
+    }
+
     public static function boot()
     {
         parent::boot();

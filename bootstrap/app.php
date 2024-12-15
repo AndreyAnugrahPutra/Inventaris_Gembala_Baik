@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\isAdmin;
+use App\Http\Middleware\isBendahara;
+use App\Http\Middleware\isGuru;
+use App\Http\Middleware\isKepsek;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,6 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+        ]);
+        $middleware->alias([
+            'admin' => isAdmin::class,
+            'guru' => isGuru::class,
+            'kepsek' => isKepsek::class,
+            'bendahara' => isBendahara::class,
         ]);
 
         //

@@ -23,6 +23,11 @@ class Barang extends Model
         $this->fillable = Schema::getColumnListing($this->table);
     }
 
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'id_ktg', 'id_ktg');
+    }
+
     public static function boot()
     {
         parent::boot();
