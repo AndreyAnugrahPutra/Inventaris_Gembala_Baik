@@ -106,7 +106,7 @@ return new class extends Migration
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             // $table->foreignId('user_id')->nullable()->primary();
-            $table->string('id_user')->nullable()->index()->references('id_user')->on('users')->onDelete('cascade');
+            $table->string('user_id')->nullable()->index()->references('id_user')->on('users')->onDelete('cascade');
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
