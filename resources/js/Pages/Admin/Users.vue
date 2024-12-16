@@ -68,15 +68,13 @@ const checkNotif = () =>
 {
     if(props.flash.notif_status)
     {
-        setTimeout(() => 
-            toast.add({
-                severity : props.flash.notif_status,
-                summary : 'notifikasi',
-                detail : props.flash.notif_message,
-                life : 4000,
-                group : 'tr'
-            })   
-        ,1000)
+        toast.add({
+            severity : props.flash.notif_status,
+            summary : 'notifikasi',
+            detail : props.flash.notif_message,
+            life : 4000,
+            group : 'tr'
+        })
     }
 }
 

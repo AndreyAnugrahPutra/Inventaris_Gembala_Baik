@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 // use controller
 use App\Http\Controllers\Auth\Authentication;
 use App\Http\Controllers\Kategori\KategoriController;
+use App\Http\Controllers\Unit\UnitController;
 use App\Models\Role;
 use App\Models\Unit;
 // use App\Http\Controllers\Admin\UserController;
@@ -45,6 +46,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             'roleUsers' => $roleUsers,
         ]);
     })->name('admin.users.page');
+    
     Route::post('admin/users/tambah', [UserController::class, 'tambahUser'])->name('admin.users.tambah');
     Route::post('admin/users/update', [UserController::class, 'updateUser'])->name('admin.users.update');
     Route::post('admin/users/hapus', [UserController::class, 'hapusUser'])->name('admin.users.hapus');
@@ -53,5 +55,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/kategori/tambah',[KategoriController::class, 'tambahKategori'])->name('admin.kategori.tambah');
     Route::post('admin/kategori/update',[KategoriController::class, 'updateKategori'])->name('admin.kategori.update');
     Route::post('admin/kategori/hapus',[KategoriController::class, 'hapusKategori'])->name('admin.kategori.hapus');
+
+    Route::get('admin/unit',[UnitController::class, 'unitPage'])->name('admin.unit.page');
+    Route::post('admin/unit/tambah',[UnitController::class, 'tambahunit'])->name('admin.unit.tambah');
+    Route::post('admin/unit/update',[UnitController::class, 'updateunit'])->name('admin.unit.update');
+    Route::post('admin/unit/hapus',[UnitController::class, 'hapusunit'])->name('admin.unit.hapus');
 
 });

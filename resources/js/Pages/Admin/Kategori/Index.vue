@@ -214,8 +214,8 @@ const hapusKategori = (idx) => {
                     <Column header="Action">
                         <template #body={data}>
                             <div class="flex items-center gap-x-2">
-                                <Button icon="pi pi-pen-to-square" outlined @click="editKategori(data.index)" />
-                                <Button icon="pi pi-trash" severity="danger" outlined  @click="hapusKategori(data.index)" />
+                                <Button icon="pi pi-pen-to-square" outlined @click="editKategori(data.index)" size="small" />
+                                <Button icon="pi pi-trash" severity="danger" outlined  @click="hapusKategori(data.index)" size="small" />
                             </div>
                         </template>
                     </Column>

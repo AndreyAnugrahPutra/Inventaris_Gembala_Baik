@@ -12,6 +12,7 @@ class Unit extends Model
     use HasFactory;
     public $timestamps = false;
     protected
+        $guarded = [],
         $table = 'unit',
         $primaryKey = 'id_unit',
         $keyType = 'string',
@@ -37,17 +38,17 @@ class Unit extends Model
             $model->id_unit = self::generateIdUnit();
         });
     }
-
+    
     public static function generateIdUnit()
     {
         $lastUnit = self::orderBy('id_unit', 'desc')->first();
 
         if (!$lastUnit) {
-            return 'unit-' . date('Y') . '-001';
+            return 'unit-'.date('Y').'-001';
         }
 
-        $lastNumber = substr($lastUnit->id_unit, strrpos($lastUnit->id_unit, '-') + 1);
-        $newNumber = sprintf('%05d', intval($lastNumber) + 1);
+        $lastNumber = substr($lastUnit->id_unit, strlen('unit-'.date('Y').'-'));
+        $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
         return 'unit-'.date('Y').'-'.$newNumber;
     }
