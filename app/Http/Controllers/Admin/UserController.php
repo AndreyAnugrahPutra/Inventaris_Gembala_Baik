@@ -54,7 +54,7 @@ class UserController extends Controller
 
     public function updateUser(Request $req)
     {
-        $user = User::find($req->id);
+        $user = User::find($req->id_user);
 
         if ($req->password !== null) {
             $req->validate([
@@ -67,8 +67,8 @@ class UserController extends Controller
         }
 
         $data = $req->validate([
-            'username' => 'required|unique:users,username,' . $req->id,
-            'email' => 'required|unique:users,email,' . $req->id,
+            'username' => 'required|unique:users,username,'.$req->id_user.',id_user',
+            'email' => 'required|unique:users,email,'.$req->id_user.',id_user',
             'role' => 'required',
         ], [
             '*.required' => 'Kolom wajib diisi',

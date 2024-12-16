@@ -12,6 +12,7 @@ class Kategori extends Model
     use HasFactory;
     public $timestamps = false;
     protected
+        $guarded = [],
         $table = 'kategori',
         $primaryKey = 'id_ktg',
         $keyType = 'string',
@@ -41,13 +42,14 @@ class Kategori extends Model
     public static function generateIdKtg()
     {
         $lastKategori = self::orderBy('id_ktg', 'desc')->first();
+        // dd($lastKategori);
 
         if (!$lastKategori) {
             return 'ktg-001';
         }
 
-        $lastNumber = substr($lastKategori->id_ktg, strrpos($lastKategori->id_ktg, '-') + 1);
-        $newNumber = sprintf('%04d', intval($lastNumber) + 1);
+        $lastNumber = substr($lastKategori->id_ktg, strlen('ktg-'));
+        $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
         return 'ktg-' . $newNumber;
     }

@@ -4,7 +4,6 @@ import { Head, useForm ,router} from '@inertiajs/vue3'
 
 // import komponen primevue
 import { 
-    Badge,
     Button,
     useConfirm,
     Dialog,
@@ -15,7 +14,7 @@ import {
     Password,
     InputText,
     Select,
-    Toast,useToast
+    useToast
 } from 'primevue'
 
 import {FilterMatchMode} from '@primevue/core/api'
@@ -55,12 +54,12 @@ const confirm = useConfirm()
 let dataUsersFix = ref([])
 
 const userForm = useForm({
-    id : null,
+    id_user : null,
     username : null,
     email : null,
     password : null,
-    role : null,
-    unit : null,
+    id_role : null,
+    id_unit : null,
 })
 
 const exportCSV = () => dt.value.exportCSV() 
@@ -111,7 +110,7 @@ const submitUser = () => userForm.post(route('admin.users.tambah'), {
 
 const updateUser = () => {
     confirm.require({
-        message: `Update Data ?`,
+        message: `Update Data ${userForm.nama??''}?`,
         header: 'Peringatan',
         icon: 'pi pi-exclamation-triangle',
         rejectProps: {
@@ -124,12 +123,9 @@ const updateUser = () => {
             severity: 'info'
         },
         accept: () => {
-            showForm.value = false
             userForm.post(route('admin.users.update'), {
                 onSuccess : () => refreshPage(),
-                onError : () => { 
-                    formType.value = 'editData'
-                    showForm.value = true
+                onError : () => {
                     toast.add({
                         severity : 'error',
                         summary : 'notifikasi',
@@ -143,16 +139,16 @@ const updateUser = () => {
 
     }) 
 }
-
 const editUser = idx => 
 {
     formType.value = 'editData'
     showForm.value = true
-    userForm.id = dataUsersFix.value[idx-1]['id']
+    userForm.id_user = dataUsersFix.value[idx-1]['id_user']
     userForm.username = dataUsersFix.value[idx-1]['username']
     userForm.nama = dataUsersFix.value[idx-1]['nama']
     userForm.email = dataUsersFix.value[idx-1]['email']
-    userForm.role = dataUsersFix.value[idx-1]['role']
+    userForm.id_role = dataUsersFix.value[idx-1]['id_role']
+    userForm.id_unit = dataUsersFix.value[idx-1]['id_unit']
 }
 
 const hapusUser = (idx,username) => 
@@ -198,10 +194,7 @@ const hapusUser = (idx,username) =>
     <Head :title="pageTitle"/>
     <AuthLayout :page-title="pageTitle">
         <template #pageContent>
-            <!-- toast notifikasi -->
-            <Toast position="top-right" group="tr" />
-            <!-- form tambah & edit user -->
-            <Dialog @hide="userForm.reset(),userForm.clearErrors()" v-model:visible="showForm" modal :header="formType == 'tambahData' ? 'Tambah User' : 'Edit User'" class="w-[52rem]" >
+            <Dialog @hide="hideForm()" v-model:visible="showForm" modal :header="formType == 'tambahData' ? 'Tambah User' : 'Edit User'" class="w-[52rem]" >
                 <!-- form -->
                 <form @submit.prevent="submitUser || updateUser" class="flex flex-wrap gap-[2rem] items-center my-1" autocomplete="off">
                     <!-- username -->
@@ -237,30 +230,29 @@ const hapusUser = (idx,username) =>
                     <!-- role -->
                     <div class="flex flex-col h-10">
                         <FloatLabel variant="on">
-                            <Select class="w-[14rem]" inputId="role_user" v-model="userForm.role" :options="props.roleUsers" optionValue="id_role" optionLabel="nama_role"/>
+                            <Select class="w-[14rem]" inputId="role_user" v-model="userForm.id_role" :options="props.roleUsers" optionValue="id_role" optionLabel="nama_role"/>
                             <label for="role_user">Role</label>
                         </FloatLabel>
-                        <span class="text-sm text-red-500" v-if="!!userForm.errors.role">
-                            {{ userForm.errors.role }}
+                        <span class="text-sm text-red-500" v-if="!!userForm.errors.id_role">
+                            {{ userForm.errors.id_role }}
                         </span>
                     </div>
                     <!-- role -->
                     <div class="flex flex-col h-10">
                         <FloatLabel variant="on">
-                            <Select class="w-[14rem]" inputId="unit_user" v-model="userForm.unit" :options="props.unitUsers" optionValue="id_unit" optionLabel="nama_unit"/>
+                            <Select class="w-[14rem]" inputId="unit_user" v-model="userForm.id_unit" :options="props.unitUsers" optionValue="id_unit" optionLabel="nama_unit"/>
                             <label for="unit_user">Unit</label>
                         </FloatLabel>
-                        <span class="text-sm text-red-500" v-if="!!userForm.errors.unit">
-                            {{ userForm.errors.unit }}
+                        <span class="text-sm text-red-500" v-if="!!userForm.errors.id_unit">
+                            {{ userForm.errors.id_unit }}
                         </span>
                     </div>
                     <!-- submit button -->
-                     <div class="flex items-center gap-x-2 w-full">
-                         <Button label="Batal" @click="hideForm()" severity="danger"/>
-                         <Button label="Submit" @click="submitUser()" type="submit" v-if="formType=='tambahData'"/>
-                         <Button label="Update" @click="updateUser()" v-if="formType=='editData'"/>
-                     </div>
-
+                    <div class="flex items-center gap-x-2 w-full">
+                        <Button label="Batal" @click="hideForm()" severity="danger"/>
+                        <Button label="Submit" @click="submitUser()" type="submit" v-if="formType=='tambahData'"/>
+                        <Button label="Update" @click="updateUser()" v-if="formType=='editData'"/>
+                    </div>
                 </form>
             </Dialog>
 
@@ -283,7 +275,7 @@ const hapusUser = (idx,username) =>
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada User</span>
                         </template>
-                        <Column sortable header="No" field="index"/>
+                        <Column sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Username" field="username"/>
                         <Column sortable header="Email" field="email"/>
                         <Column sortable header="Role" field="role.nama_role"/>

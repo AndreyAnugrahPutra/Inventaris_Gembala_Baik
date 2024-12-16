@@ -50,5 +50,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/users/hapus', [UserController::class, 'hapusUser'])->name('admin.users.hapus');
 
     Route::get('admin/kategori',[KategoriController::class, 'kategoriPage'])->name('admin.kategori.page');
+    Route::post('admin/kategori/tambah',[KategoriController::class, 'tambahKategori'])->name('admin.kategori.tambah');
+    Route::post('admin/kategori/update',[KategoriController::class, 'updateKategori'])->name('admin.kategori.update');
+    Route::post('admin/kategori/hapus',[KategoriController::class, 'hapusKategori'])->name('admin.kategori.hapus');
 
 });

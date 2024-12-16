@@ -3,6 +3,7 @@ import {onBeforeMount, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { 
     Button,
+    Toast,
     useConfirm,ConfirmDialog, 
     Popover
 } from 'primevue'
@@ -59,8 +60,10 @@ const confirmLogout = () =>
 </script>
 
 <template>
+    <!-- toast notifikasi -->
+    <Toast class="z-50" position="top-right" group="tr"/>
+    <!-- dialog logout -->
     <ConfirmDialog class="w-[24rem]"></ConfirmDialog>
-
     <!-- #layout utama -->
     <div class="bg-slate-200 flex p-1 min-h-screen overflow-hidden">
 
