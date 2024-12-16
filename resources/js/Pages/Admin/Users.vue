@@ -1,5 +1,5 @@
 <script setup>
-import { defineAsyncComponent, onMounted,ref } from 'vue'
+import { onMounted,ref } from 'vue'
 import { Head, useForm ,router} from '@inertiajs/vue3'
 
 // import komponen primevue
@@ -69,7 +69,7 @@ const checkNotif = () =>
 {
     if(props.flash.notif_status)
     {
-        setTimeout(()=> 
+        setTimeout(() => 
             toast.add({
                 severity : props.flash.notif_status,
                 summary : 'notifikasi',

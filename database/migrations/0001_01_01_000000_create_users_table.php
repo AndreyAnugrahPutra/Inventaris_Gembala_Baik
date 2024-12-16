@@ -29,7 +29,7 @@ return new class extends Migration
         );
         // tabel kategori barang
         Schema::create('kategori', function (Blueprint $table) {
-            $table->string('string_ktg')->primary();
+            $table->string('id_ktg')->primary();
             $table->string('nama_kategori');
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable();

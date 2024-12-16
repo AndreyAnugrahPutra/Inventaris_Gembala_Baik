@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 // use controller
 use App\Http\Controllers\Auth\Authentication;
+use App\Http\Controllers\Kategori\KategoriController;
 use App\Models\Role;
 use App\Models\Unit;
 // use App\Http\Controllers\Admin\UserController;
@@ -44,11 +45,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
             'roleUsers' => $roleUsers,
         ]);
     })->name('admin.users.page');
-
-
     Route::post('admin/users/tambah', [UserController::class, 'tambahUser'])->name('admin.users.tambah');
-
     Route::post('admin/users/update', [UserController::class, 'updateUser'])->name('admin.users.update');
     Route::post('admin/users/hapus', [UserController::class, 'hapusUser'])->name('admin.users.hapus');
+
+    Route::get('admin/kategori',[KategoriController::class, 'kategoriPage'])->name('admin.kategori.page');
 
 });
