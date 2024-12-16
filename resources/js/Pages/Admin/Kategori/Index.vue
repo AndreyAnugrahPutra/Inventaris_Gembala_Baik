@@ -189,38 +189,40 @@ const hapusKategori = (idx) => {
                 <Button label="Tambah Kategori" severity="success" @click="showForm = true, formType = 'tambahData'" class="w-[fit-content]" icon="pi pi-tag" size="small"/>
 
                 <!-- datatable kategori -->
-                <DataTable :globalFilterFields="['index','nama_kategori','barang_count']" removable-sort striped-rows :value="dataKategoriFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
-                    <template #header>
-                        <div class="flex justify-between items-center gap-x-2">
-                            <IconField class="w-full">
-                                <InputIcon>
-                                    <i class="pi pi-search me-4" />
-                                </InputIcon>
-                                <InputText v-model="filters['global'].value" placeholder="Cari Data Kategori" size="small" fluid/>
-                            </IconField>
-                            <Button severity="contrast" icon="pi pi-print" @click="exportCSV()" label="Export" size="small"/>
-                        </div>
-                    </template>
-                    <template #empty>
-                            <span class="flex justify-center">Tidak Ada Data Kategori</span>
-                    </template>
-                    <Column sortable header="No" field="index" class="w-4" />
-                    <Column sortable header="Nama Kategori" field="nama_kategori" />
-                    <Column sortable header="Jumlah Barang">
-                        <template #body={data}>
-                            <Badge :severity="data.barang_count > 0 ? 'success' : 'danger'" :value="data.barang_count" />
-                        </template>
-                    </Column>
-                    <Column header="Action">
-                        <template #body={data}>
-                            <div class="flex items-center gap-x-2">
-                                <Button icon="pi pi-pen-to-square" outlined @click="editKategori(data.index)" size="small" />
-                                <Button icon="pi pi-trash" severity="danger" outlined  @click="hapusKategori(data.index)" size="small" />
+                <div class="rounded-lg size-full overflow-hidden">
+                    <DataTable :globalFilterFields="['index','nama_kategori','barang_count']" removable-sort striped-rows :value="dataKategoriFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                        <template #header>
+                            <div class="flex justify-between items-center gap-x-2">
+                                <IconField class="w-full">
+                                    <InputIcon>
+                                        <i class="pi pi-search me-4" />
+                                    </InputIcon>
+                                    <InputText v-model="filters['global'].value" placeholder="Cari Data Kategori" size="small" fluid/>
+                                </IconField>
+                                <Button severity="contrast" icon="pi pi-print" @click="exportCSV()" label="Export" size="small"/>
                             </div>
                         </template>
-                    </Column>
-                </DataTable>
-            </div>
+                        <template #empty>
+                                <span class="flex justify-center">Tidak Ada Data Kategori</span>
+                        </template>
+                        <Column sortable header="No" field="index" class="w-4" />
+                        <Column sortable header="Nama Kategori" field="nama_kategori" />
+                        <Column sortable header="Jumlah Barang">
+                            <template #body={data}>
+                                <Badge :severity="data.barang_count > 0 ? 'success' : 'danger'" :value="data.barang_count" />
+                            </template>
+                        </Column>
+                        <Column header="Action">
+                            <template #body={data}>
+                                <div class="flex items-center gap-x-2">
+                                    <Button icon="pi pi-pen-to-square" outlined @click="editKategori(data.index)" size="small" />
+                                    <Button icon="pi pi-trash" severity="danger" outlined  @click="hapusKategori(data.index)" size="small" />
+                                </div>
+                            </template>
+                        </Column>
+                    </DataTable>
+                </div>
+                </div>
         </template>
     </AuthLayout>
 </template>

@@ -5,4 +5,4 @@ export const adminMenu = [
     { label: "Barang", icon: "pi pi-box", route: "admin.barang.page" },
     { label: "Users", icon: "pi pi-users", route: "admin.users.page" },
     { label: "Unit", icon: "pi pi-id-card", route: "admin.unit.page" },
-];
+]

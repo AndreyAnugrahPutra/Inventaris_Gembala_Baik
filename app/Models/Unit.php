@@ -38,7 +38,7 @@ class Unit extends Model
             $model->id_unit = self::generateIdUnit();
         });
     }
-    
+
     public static function generateIdUnit()
     {
         $lastUnit = self::orderBy('id_unit', 'desc')->first();

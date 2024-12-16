@@ -46,7 +46,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             'roleUsers' => $roleUsers,
         ]);
     })->name('admin.users.page');
-    
+
     Route::post('admin/users/tambah', [UserController::class, 'tambahUser'])->name('admin.users.tambah');
     Route::post('admin/users/update', [UserController::class, 'updateUser'])->name('admin.users.update');
     Route::post('admin/users/hapus', [UserController::class, 'hapusUser'])->name('admin.users.hapus');

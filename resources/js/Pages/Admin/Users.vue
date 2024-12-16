@@ -256,7 +256,7 @@ const hapusUser = (idx,username) =>
 
             <div class="flex flex-col gap-[1rem]">
                 <Button label="Tambah User" severity="success" @click="showForm = true, formType = 'tambahData'" class="w-[fit-content]" icon="pi pi-user-plus" size="small"/>
-                <!-- Tabel Users -->
+                <!-- datatabel Users -->
                 <div class="rounded-lg size-full overflow-hidden">
                     <DataTable removable-sort striped-rows :value="dataUsersFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
                         <template #header>
@@ -267,7 +267,7 @@ const hapusUser = (idx,username) =>
                                     </InputIcon>
                                     <InputText v-model="filters['global'].value" placeholder="Cari Data Users" size="small" fluid/>
                                 </IconField>
-                                <Button icon="pi pi-external-link" @click="exportCSV()" label="Export" size="small"/>
+                                <Button icon="pi pi-print" severity="contrast" @click="exportCSV()" label="Export" size="small"/>
                             </div>
                         </template>
                         <template #empty>
