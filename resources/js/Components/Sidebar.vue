@@ -41,15 +41,6 @@ const closePanel = () =>
                     </a>
                 </template>
             </PanelMenu>
-            <!-- <PanelMenu @panel-open="openPanel=true" @panel-close="openPanel=false" class="rounded"  :model="adminPanels" v-if="$page.props.auth.user.id_role === 1" :class="{'w-full':!props.isSidebarCollapsed,'rounded':openPanel}" unstyled>
-                <template #item="{item}">
-                    <Button v-if="item.route" :label="props.isSidebarCollapsed?null:item.label" :icon="item.icon" class="w-full p-1 flex items-center justify-center" :class="{'bg-slate-100 text-sky-500' : openPanel,'gap-0':props.isSidebarCollapsed,'gap-2':!props.isSidebarCollapsed}" @click="router.visit(route(item.route))" unstyled/>
-                    <a v-else class="flex justify-center items-center cursor-pointer" :target="item.target" :class="{'gap-0':props.isSidebarCollapsed,'gap-x-2':!props.isSidebarCollapsed,'bg-slate-100 text-sky-500':openPanel,'text-white':!openPanel}">
-                        <span class="ml-2" :class="{'hidden':props.isSidebarCollapsed}">{{ item.label }}</span>
-                        <span v-if="item.items" class="pi pi-angle-down text-primary " />
-                    </a>
-                </template>
-            </PanelMenu> -->
         </div>
     </div>
 </template>

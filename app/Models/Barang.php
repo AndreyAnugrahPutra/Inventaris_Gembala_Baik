@@ -30,6 +30,16 @@ class Barang extends Model
         return $this->belongsTo(Kategori::class, 'id_ktg', 'id_ktg');
     }
 
+    public function permo_details()
+    {
+        return $this->hasMany(DetailPermohonan::class,'id_brg','id_brg');
+    }
+
+    public function bk_details()
+    {
+        return $this->hasMany(BarangKeluar::class,'id_brg','id_brg');
+    }
+
     public static function boot()
     {
         parent::boot();

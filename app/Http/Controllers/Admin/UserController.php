@@ -17,8 +17,8 @@ class UserController extends Controller
             'username' => 'required|unique:users,username',
             'email' => 'required|unique:users,email',
             'password' => 'required|min:6',
-            'role' => 'required',
-            'unit' => 'required',
+            'id_role' => 'required',
+            'id_unit' => 'required',
         ], [
             '*.required' => 'Kolom wajib diisi',
             'password.min' => 'Password minimal 6 karakter',
@@ -31,8 +31,8 @@ class UserController extends Controller
             'username' => $req->username,
             'email' => $req->email,
             'password' => Hash::make($req->password),
-            'id_role' => $req->role,
-            'id_unit' => $req->unit,
+            'id_role' => $req->id_role,
+            'id_unit' => $req->id_unit,
             'created_at' => Carbon::now('Asia/Jayapura')
         ]);
 
@@ -69,7 +69,8 @@ class UserController extends Controller
         $data = $req->validate([
             'username' => 'required|unique:users,username,'.$req->id_user.',id_user',
             'email' => 'required|unique:users,email,'.$req->id_user.',id_user',
-            'role' => 'required',
+            'id_role' => 'required',
+            'id_unit' => 'required',
         ], [
             '*.required' => 'Kolom wajib diisi',
             'password.min' => 'Password minimal 6 karakter',

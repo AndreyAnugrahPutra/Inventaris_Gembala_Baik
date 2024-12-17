@@ -12,6 +12,7 @@ class DetailBarangKeluar extends Model
     use HasFactory;
     public $timestamps = false;
     protected
+        $guarded = [],
         $table = 'detail_barang_keluar',
         $primaryKey = 'id_dbk',
         $keyType = 'string',
@@ -22,6 +23,11 @@ class DetailBarangKeluar extends Model
     {
         parent::construct($attributes);
         $this->fillable = Schema::getColumnListing($this->table);
+    }
+
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class, 'id_brg', 'id_brg');
     }
 
     public function barangKeluar()

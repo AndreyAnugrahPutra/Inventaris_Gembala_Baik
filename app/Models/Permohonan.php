@@ -12,6 +12,7 @@ class Permohonan extends Model
     use HasFactory;
     public $timestamps = false;
     protected
+        $guarded = [],
         $table = 'permohonan',
         $primaryKey = 'id_permo',
         $keyType = 'string',

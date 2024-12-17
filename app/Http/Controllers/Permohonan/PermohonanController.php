@@ -12,7 +12,7 @@ class PermohonanController extends Controller
     //
     public function permohonanPage()
     {
-        $dataPermo = Permohonan::with('details')->get();
+        $dataPermo = Permohonan::with('detail')->get();
 
         return Inertia::render('Admin/Permohonan/Index', [
             'dataPermo' => $dataPermo,

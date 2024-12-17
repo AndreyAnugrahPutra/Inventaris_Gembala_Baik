@@ -92,23 +92,32 @@ const refreshPage = () =>
     router.visit(route('admin.users.page'))
 }
 
-const submitUser = () => userForm.post(route('admin.users.tambah'), {
-    onSuccess : () => refreshPage(),
-    onError : () => { 
-        showForm.value = true
-        toast.add({
-            severity : 'error',
-            summary : 'notifikasi',
-            detail : 'Gagal menambahkan user',
-            life : 4000,
-            group : 'tr'
-        })
-    } 
-})
+const submitUser = () => {
+    confirm.require({
+        message: `Tambah User ${userForm.username??''}?`,
+        header: 'Peringatan',
+        icon: 'pi pi-exclamation-triangle',
+        rejectProps: {
+            label: 'Batal',
+            severity: 'secondary',
+            outlined: true,
+        },
+        acceptProps: {
+            label: 'Tambah',
+            severity: 'info'
+        },
+        accept: () => {
+            userForm.post(route('admin.users.tambah'), {
+                onSuccess : () => refreshPage()
+            })
+        },
+
+    }) 
+}
 
 const updateUser = () => {
     confirm.require({
-        message: `Update Data ${userForm.nama??''}?`,
+        message: `Update Data ${userForm.username??''}?`,
         header: 'Peringatan',
         icon: 'pi pi-exclamation-triangle',
         rejectProps: {
@@ -122,16 +131,7 @@ const updateUser = () => {
         },
         accept: () => {
             userForm.post(route('admin.users.update'), {
-                onSuccess : () => refreshPage(),
-                onError : () => {
-                    toast.add({
-                        severity : 'error',
-                        summary : 'notifikasi',
-                        detail : 'Gagal update user',
-                        life : 4000,
-                        group : 'tr'
-                    })
-                } 
+                onSuccess : () => refreshPage()
             })
         },
 
@@ -169,17 +169,7 @@ const hapusUser = (idx,username) =>
         accept: () => {
             showForm.value = false
             userForm.post(route('admin.users.hapus'), {
-                onSuccess : () => refreshPage(),
-                onError : () => { 
-                    userForm.reset()
-                    toast.add({
-                        severity : 'error',
-                        summary : 'notifikasi',
-                        detail : 'Gagal menghapus user',
-                        life : 4000,
-                        group : 'tr'
-                    })
-                } 
+                onSuccess : () => refreshPage()
             })
         },
 

@@ -12,6 +12,7 @@ class DetailPermohonan extends Model
     use HasFactory;
     public $timestamps = false;
     protected
+        $guarded = [],
         $table = 'detail_permohonan',
         $primaryKey = 'id_dp',
         $keyType = 'string',
@@ -24,9 +25,16 @@ class DetailPermohonan extends Model
         $this->fillable = Schema::getColumnListing($this->table);
     }
 
+
+
     public function permohonan()
     {
         return $this->belongsTo(Permohonan::class, 'id_permo', 'id_permo');
+    }
+
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class,'id_brg','id_brg');
     }
 
     public static function boot()

@@ -26,7 +26,7 @@ class BarangKeluar extends Model
 
     public function details()
     {
-        return $this->hasMany(DetailBarangKeluar::class, 'id_bk','id_bk');
+        return $this->hasMany(DetailBarangKeluar::class, 'id_bk', 'id_bk');
     }
 
     public static function boot()
@@ -49,6 +49,6 @@ class BarangKeluar extends Model
         $lastNumber = substr($lastBk->id_bk, strrpos($lastBk->id_bk, '-') + 1);
         $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
-        return 'bk-'.date('Y').'-'.$newNumber;
+        return 'bk-' . date('Y') . '-' . $newNumber;
     }
 }
