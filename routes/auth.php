@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 // use controller
 use App\Http\Controllers\Auth\Authentication;
+use App\Http\Controllers\Barang\BarangController;
 use App\Http\Controllers\Kategori\KategoriController;
+use App\Http\Controllers\Permohonan\PermohonanController;
 use App\Http\Controllers\Unit\UnitController;
 use App\Models\Role;
 use App\Models\Unit;
@@ -51,6 +53,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/users/update', [UserController::class, 'updateUser'])->name('admin.users.update');
     Route::post('admin/users/hapus', [UserController::class, 'hapusUser'])->name('admin.users.hapus');
 
+    Route::get('admin/barang',[BarangController::class, 'barangPage'])->name('admin.barang.page');
+    Route::post('admin/barang/tambah',[BarangController::class, 'tambahbarang'])->name('admin.barang.tambah');
+    Route::post('admin/barang/update',[BarangController::class, 'updatebarang'])->name('admin.barang.update');
+    Route::post('admin/barang/hapus',[BarangController::class, 'hapusbarang'])->name('admin.barang.hapus');
+
     Route::get('admin/kategori',[KategoriController::class, 'kategoriPage'])->name('admin.kategori.page');
     Route::post('admin/kategori/tambah',[KategoriController::class, 'tambahKategori'])->name('admin.kategori.tambah');
     Route::post('admin/kategori/update',[KategoriController::class, 'updateKategori'])->name('admin.kategori.update');
@@ -60,5 +67,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/unit/tambah',[UnitController::class, 'tambahunit'])->name('admin.unit.tambah');
     Route::post('admin/unit/update',[UnitController::class, 'updateunit'])->name('admin.unit.update');
     Route::post('admin/unit/hapus',[UnitController::class, 'hapusunit'])->name('admin.unit.hapus');
+
+    Route::get('admin/permohonan',[PermohonanController::class, 'permohonanPage'])->name('admin.permohonan.page');
+    Route::post('admin/permohonan/tambah',[PermohonanController::class, 'tambahpermohonan'])->name('admin.permohonan.tambah');
+    Route::post('admin/permohonan/update',[PermohonanController::class, 'updatepermohonan'])->name('admin.permohonan.update');
+    Route::post('admin/permohonan/hapus',[PermohonanController::class, 'hapuspermohonan'])->name('admin.permohonan.hapus');
 
 });

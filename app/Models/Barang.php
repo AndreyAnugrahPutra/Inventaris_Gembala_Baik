@@ -12,6 +12,7 @@ class Barang extends Model
     use HasFactory;
     public $timestamps = false;
     protected
+        $guarded = [],
         $table = 'barang',
         $primaryKey = 'id_brg',
         $keyType = 'string',
@@ -46,9 +47,9 @@ class Barang extends Model
             return 'brg-001';
         }
 
-        $lastNumber = substr($lastBrg->id_brg, strrpos($lastBrg->id_brg, '-') + 1);
-        $newNumber = sprintf('%04d', intval($lastNumber) + 1);
+        $lastNumber = substr($lastBrg->id_brg, strlen('ktg-'));
+        $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
-        return 'brg-' . $newNumber;
+        return 'brg-'.$newNumber;
     }
 }
