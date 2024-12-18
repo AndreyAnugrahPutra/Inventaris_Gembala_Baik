@@ -11,6 +11,7 @@ import {
     Dialog,
     FloatLabel,
     IconField,
+    Image,
     InputIcon,
     InputText,
     useConfirm,
@@ -82,6 +83,19 @@ const openForm = (type) =>
                         </template>
                         <Column sortable header="No" field="index"/>
                         <Column sortable header="Tanggal Permohonan" field="tgl_permo"/>
+                        <Column sortable header="Nama Barang" field="barang.nama_brg"/>
+                        <Column sortable header="Jumlah Permohonan" field="details.jum_per"/>
+                        <Column sortable header="Jumlah Disetujui" field="details.jum_setuju"/>
+                        <Column sortable header="Satuan" field="barang.satuan"/>
+                        <Column sortable header="Bukti">
+                            <template #body="{data}">
+                                <div class="size-20 overflow-hidden rounded" v-if="data?.bukti">
+                                    <Image :src="data?.bukti" />
+                                </div>
+                                <span class="text-sm">Tidak ada foto</span>
+                            </template>
+                        </Column>
+                        <Column sortable header="Status" field="status"/>
                     </DataTable>
                 </div>
             </div>
