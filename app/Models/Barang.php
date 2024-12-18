@@ -57,7 +57,7 @@ class Barang extends Model
             return 'brg-001';
         }
 
-        $lastNumber = substr($lastBrg->id_brg, strlen('ktg-'));
+        $lastNumber = substr($lastBrg->id_brg, strlen('brg-'));
         $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
         return 'brg-'.$newNumber;

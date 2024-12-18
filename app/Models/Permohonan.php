@@ -44,12 +44,12 @@ class Permohonan extends Model
         $lastPermo = self::orderBy('id_permo', 'desc')->first();
 
         if (!$lastPermo) {
-            return 'per-001';
+            return 'per-'.date('Y').'-001';
         }
 
-        $lastNumber = substr($lastPermo->id_permo, strrpos($lastPermo->id_permo, '-') + 1);
-        $newNumber = sprintf('%04d', intval($lastNumber) + 1);
+        $lastNumber = substr($lastPermo->id_permo, strlen('per-'.date('Y').'-'));
+        $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
-        return 'per-'. $newNumber;
+        return 'per-'.date('Y').'-'.$newNumber;
     }
 }

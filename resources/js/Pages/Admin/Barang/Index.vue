@@ -208,7 +208,7 @@ const hapusBarang = idx => {
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
                                 <InputNumber fluid inputId="stok" v-model="barangForm.stok_brg"/>
-                                <label for="custom">Stok Barang</label>
+                                <label for="stok">Stok Barang</label>
                             </FloatLabel>
                             <span class="text-sm text-red-500" v-if="!!barangForm.errors.stok_brg">
                                 {{ barangForm.errors.stok_brg }}
@@ -217,8 +217,8 @@ const hapusBarang = idx => {
                         <!-- satuan barang -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
-                                <InputText class="w-50" inputId="custom" v-model="barangForm.satuan"/>
-                                <label for="custom">Satuan Barang</label>
+                                <InputText class="w-50" inputId="satuan" v-model="barangForm.satuan"/>
+                                <label for="satuan">Satuan Barang</label>
                             </FloatLabel>
                             <span class="text-sm text-red-500" v-if="!!barangForm.errors.satuan">
                                 {{ barangForm.errors.satuan }}

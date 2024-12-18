@@ -51,12 +51,12 @@ class DetailPermohonan extends Model
         $lastDp = self::orderBy('id_dp', 'desc')->first();
 
         if (!$lastDp) {
-            return 'dp-'.date('m').date('Y').'-001';
+            return 'dp-'.date('m-Y').'-001';
         }
 
-        $lastNumber = substr($lastDp->id_dp, strrpos($lastDp->id_dp, '-') + 1);
+        $lastNumber = substr($lastDp->id_dp, strlen('dp-'.date('m-Y').'-'));
         $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
-        return 'dp-'.date('m').date('Y').'-'.$newNumber;
+        return 'dp-'.date('m-Y').'-'.$newNumber;
     }
 }
