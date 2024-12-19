@@ -35,6 +35,8 @@ class Authentication extends Controller
             {
                 case 1 : return redirect()->route('admin.dashboard')->with($notification);
                 break;
+                case 4 : return redirect()->route('bendahara.dashboard')->with($notification);
+                break;
             }
 
         }

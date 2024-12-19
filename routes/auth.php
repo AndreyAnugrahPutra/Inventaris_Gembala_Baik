@@ -9,6 +9,7 @@ use App\Http\Controllers\Barang\BarangController;
 use App\Http\Controllers\Kategori\KategoriController;
 use App\Http\Controllers\Permohonan\PermohonanController;
 use App\Http\Controllers\Unit\UnitController;
+use App\Models\Permohonan;
 use App\Models\Role;
 use App\Models\Unit;
 // use App\Http\Controllers\Admin\UserController;
@@ -20,10 +21,6 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-
-    Route::get('/barang', function(){
-        return redirect()->route('dashboard');
-    })->name('barang');
     
     Route::get('logout', [Authentication::class, 'logout']);
     Route::post('logout', [Authentication::class, 'logout'])
@@ -72,5 +69,26 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/permohonan/tambah',[PermohonanController::class, 'tambahpermohonan'])->name('admin.permohonan.tambah');
     Route::post('admin/permohonan/update',[PermohonanController::class, 'updatepermohonan'])->name('admin.permohonan.update');
     Route::post('admin/permohonan/hapus',[PermohonanController::class, 'hapuspermohonan'])->name('admin.permohonan.hapus');
+
+});
+
+Route::middleware(['auth', 'bendahara'])->group(function () {
+
+    Route::get('/bendahara/dashboard', function(){
+        $permohonanCount = Permohonan::count();
+        return Inertia::render('Bendahara/Dashboard', [
+            'permohonanCount' => $permohonanCount,
+        ]);
+    })->name('bendahara.dashboard');
+
+    Route::get('bendahara/validasi-permohonan',function(){
+        $dataPermohonan = Permohonan::with('details','details.barang')->get();
+        return Inertia::render('Bendahara/Permohonan/Index',[
+            'dataPermo' => $dataPermohonan
+        ]);
+    })->name('bendahara.permohonan.page');
+
+    Route::post('bendara/validasi-permohonan/terima', [PermohonanController::class, 'terimaPermohonan'])->name('bendahara.permohonan.terima');
+
 
 });

@@ -76,8 +76,6 @@ class PermohonanController extends Controller
         }
     }
 
-    public function validasiPermohonan(Request $req){}
-
     public function updatePermohonan(Request $req)
     {
         $permo = Permohonan::find($req->id_permo);
@@ -138,6 +136,53 @@ class PermohonanController extends Controller
             return redirect()->back()->with([
                 'notif_status' => 'error',
                 'notif_message' => 'Gagal hapus permohonan',
+            ]);
+        }
+    }
+
+    public function terimaPermohonan(Request $req) 
+    {
+        $barang = Barang::find($req->id_brg);
+
+        $req->validate([
+            'status' => 'required',
+            'ket_permo' => 'required',
+            'jumlah_per' => 'required|numeric',
+            'jumlah_setuju' => 'required|numeric|max:'.$req->jumlah_per,
+        ],[
+            'status.required' => 'Kolom wajib diisi',
+            'ket_permo.required' => 'Kolom wajib diisi',
+            'jumlah_setuju.required' => 'Kolom wajib diisi',
+            'jumlah_setuju.max' => 'Melebihi permohonan',
+        ]);
+
+        if($req->status === 'diterima')
+        {
+            $barang->update([
+                'stok_brg' => $barang->stok_brg - $req->jumlah_setuju,
+            ]);
+        } 
+
+        $insert = Permohonan::find($req->id_permo)->update([
+            'status' => $req->status,
+            'updated_at' => Carbon::now('Asia/Jayapura'),
+        ]);
+
+        $insertDetail = DetailPermohonan::find($req->id_dp)->update([
+            'jumlah_setuju' => $req->jumlah_setuju,
+            'ket_permo' => $req->ket_permo,
+            'updated_at' => Carbon::now('Asia/Jayapura'),
+        ]);
+
+        if ($insert && $insertDetail) {
+            return redirect()->back()->with([
+                'notif_status' => 'success',
+                'notif_message' => 'Berhasil validasi permohonan',
+            ]);
+        } else {
+            return redirect()->back()->with([
+                'notif_status' => 'error',
+                'notif_message' => 'Gagal validasi permohonan',
             ]);
         }
     }
