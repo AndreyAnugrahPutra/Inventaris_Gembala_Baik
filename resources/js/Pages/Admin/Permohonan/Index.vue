@@ -27,7 +27,6 @@ onMounted(() =>
 {
     checkNotif()
     dataPermoFix.value = props.dataPermo?.map((p,i) => ({index:i+1,...p}))
-    console.log(dataPermoFix.value[0].details[0].jumlah_per)
 })
 
 const props = defineProps({
@@ -70,10 +69,14 @@ const dataPermoFix = ref([])
 const pageTitle = 'Permohonan'
 
 const permoForm = useForm({
+    id_permo : null,
     tgl_permo : null,
     bukti_permo : null,
+    status : null,
+    id_dp : null,
     id_brg : null,
     jumlah_per : null,
+    ket_permo : null,
 })
 
 const openForm = (type) =>
@@ -102,8 +105,6 @@ const onUpload = (e) =>
 {
     permoForm.bukti_permo = e.files[0]
 
-    console.log(permoForm.bukti_permo)
-
     if(permoForm.bukti_permo?.size < 1000000)
     {
         permoForm.clearErrors('bukti_permo')
@@ -121,6 +122,22 @@ const onUpload = (e) =>
     };
 
     reader.readAsDataURL(permoForm.bukti_permo);
+}
+
+const editPermo = (idx) => 
+{
+    formType.value = 'Edit Permohonan'
+
+    permoForm.id_permo = dataPermoFix.value[idx-1]['id_permo']
+    permoForm.tgl_permo = dataPermoFix.value[idx-1]['tgl_permo']
+    permoForm.bukti_permo = dataPermoFix.value[idx-1]['bukti_permo']
+    permoForm.status = dataPermoFix.value[idx-1]['status']
+    permoForm.id_dp = dataPermoFix.value[idx-1]['details'][0].id_dp
+    permoForm.id_brg = dataPermoFix.value[idx-1]['details'][0].id_brg
+    permoForm.jumlah_per = dataPermoFix.value[idx-1]['details'][0].jumlah_per
+    permoForm.ket_permo = dataPermoFix.value[idx-1]['details'][0].ket_permo
+
+    showForm.value = true
 }
 
 
@@ -146,6 +163,54 @@ const submitPermo = () => {
     })
 }
 
+const updatePermo = idx => {
+    confirm.require({
+        message: `Update Permohonan ?`,
+        header: 'Peringatan',
+        icon: 'pi pi-exclamation-triangle',
+        rejectProps: {
+            label: 'Batal',
+            severity: 'secondary',
+            outlined: true,
+        },
+        acceptProps: {
+            label: 'Update',
+            severity: 'info'
+        },
+        accept: () => {
+            permoForm.post(route('admin.permohonan.update'), {
+                onSuccess : () => refreshPage(),
+            })
+        },
+    })
+}
+
+const hapusPermo = idx => {
+    permoForm.id_permo = dataPermoFix.value[idx-1]['id_permo']
+    permoForm.bukti_permo = dataPermoFix.value[idx-1]['bukti_permo']
+    permoForm.id_dp = dataPermoFix.value[idx-1]['details'][0].id_dp
+
+    confirm.require({
+        message: `Hapus Permohonan ?`,
+        header: 'Peringatan',
+        icon: 'pi pi-exclamation-triangle',
+        rejectProps: {
+            label: 'Batal',
+            severity: 'secondary',
+            outlined: true,
+        },
+        acceptProps: {
+            label: 'Hapus',
+            severity: 'danger'
+        },
+        accept: () => {
+            permoForm.post(route('admin.permohonan.hapus'), {
+                onSuccess : () => refreshPage(),
+            })
+        },
+    })
+}
+
 </script>
 
 <template>
@@ -164,8 +229,8 @@ const submitPermo = () => {
                     </div>
                 </Dialog>
                 <!-- Dialog Tambah Permohonan -->
-                <Dialog @hide="hideForm()" v-model:visible="showForm" :header="formType" class="w-[32rem]" modal>
-                    <form @submit.prevent class="flex flex-wrap gap-[2rem] items-center my-1" autocomplete="off">
+                <Dialog @hide="hideForm()" v-model:visible="showForm" :header="formType" class="w-[36rem]" modal>
+                    <form @submit.prevent class="flex flex-wrap gap-y-8 gap-x-20 items-center my-1" autocomplete="off">
                         <!-- Tanggal Permohonan -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
@@ -208,6 +273,7 @@ const submitPermo = () => {
                         <div class="flex items-center gap-x-2 w-full">
                             <Button @click="hideForm()" label="Batal" severity="danger"/>
                             <Button @click="submitPermo()" label="Submit" v-if="formType!=='Edit Permohonan'" :disabled="disableSubmit"/>
+                            <Button @click="updatePermo()" label="Update" v-else :disabled="disableSubmit"/>
                         </div>
                     </form>
                 </Dialog>
@@ -219,35 +285,43 @@ const submitPermo = () => {
                         </template>
                         <Column sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Tanggal Permohonan" field="tgl_permo" class="w-4"/>
-                        <Column sortable header="Nama Barang">
+                        <Column sortable header="Nama Barang" class="w-4">
                              <template #body="{data}">
                                 {{ data.details[0].barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Permohonan">
+                        <Column sortable header="Jumlah Permohonan" class="w-4">
                             <template #body="{data}">
                                {{ data.details[0].jumlah_per}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui">
+                        <Column sortable header="Jumlah Disetujui" class="w-4">
                             <template #body="{data}">
                                 {{ data.details[0].jumlah_setuju??'Menunggu Validasi Bendahara'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan">
+                        <Column sortable header="Satuan" class="w-4">
                             <template #body="{data}">
                                 {{ data.details[0].barang.satuan}}
                             </template>
                         </Column>
-                        <Column sortable header="Bukti">
+                        <Column sortable header="Bukti" class="w-4">
                             <template #body="{data}">
                                 <div class="size-20 overflow-hidden border rounded" v-if="data?.bukti_permo">
-                                    <Image :src="data?.bukti_permo" preview />
+                                    <Image :src="data?.bukti_permo" class="size-full" preview />
                                 </div>
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="status"/>
+                        <Column sortable header="Status" field="status" class="w-4"/>
+                        <Column header="Action" frozen alignFrozen="right" class="w-4">
+                            <template #body="{data}">
+                                <div class="flex items-center gap-x-2">
+                                    <Button :disabled="data.details[0].jumlah_setuju" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.details[0].jumlah_setuju" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
+                                </div>
+                            </template>
+                        </Column>
                     </DataTable>
                 </div>
             </div>

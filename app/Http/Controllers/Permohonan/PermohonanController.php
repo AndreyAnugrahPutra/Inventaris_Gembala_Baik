@@ -9,6 +9,7 @@ use App\Models\Permohonan;
 use App\Services\ImageValidation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class PermohonanController extends Controller
@@ -28,16 +29,18 @@ class PermohonanController extends Controller
 
     public function tambahPermohonan(Request $req)
     {
+        $barang = Barang::where('id_brg',$req->id_brg)->get('stok_brg');
 
         $imageValidation = new ImageValidation();
 
         $req->validate([
-            '*' => 'required'
-            // 'tgl_permo' =>'required',
-            // 'id_brg' => 'required',
-            // 'jumlah_per' => 'required',
+            'tgl_permo' => 'required',
+            'bukti_permo' => 'required',
+            'id_brg' => 'required',
+            'jumlah_per' => 'required|numeric|max:'.$barang[0]['stok_brg'],
         ],[
-            '*.required' => 'Kolom wajib diisi'
+            '*.required' => 'Kolom wajib diisi',
+            'jumlah_per.max' => 'Melebihi Stok! Stok Tersisa : '.$barang[0]['stok_brg']
         ]);
 
         $linkFile = $imageValidation->validateImage($req,'bukti_permo',$this->file_path);
@@ -49,7 +52,7 @@ class PermohonanController extends Controller
             'created_at' => Carbon::now('Asia/Jayapura')
         ]);      
 
-        sleep(1);
+        sleep(1); // delay selama 1 detik lalu melanjutkan ke insertDetails
 
         $insertDetail = DetailPermohonan::create([
             'id_permo' => $insert->latest()->first()->id_permo,
@@ -71,10 +74,71 @@ class PermohonanController extends Controller
                 'notif_message' => 'Gagal tambah permohonan',
             ]);
         }
-
-
     }
-    public function validasiPermohonan(){}
-    public function updatePermohonan(){}
-    public function hapusPermohonan(){}
+
+    public function validasiPermohonan(Request $req){}
+
+    public function updatePermohonan(Request $req)
+    {
+        $permo = Permohonan::find($req->id_permo);
+        $details = DetailPermohonan::find($req->id_dp);
+
+        $linkFile = $req->bukti_permo;
+
+        $imageValidation = new ImageValidation();
+
+        if($req->hasFile('bukti_permo') && $permo->bukti_permo !== $req->bukti_permo)
+        {
+            // hapus bukti lama di storage
+            Storage::disk('public')->delete($this->file_path . basename($permo->bukti_permo));
+            // validasi bukti baru
+            $linkFile = $imageValidation->validateImage($req,'bukti_permo',$this->file_path);
+        }
+
+        $insert = $permo->update(['tgl_permo' => Carbon::parse($req->tgl_permo)->timezone('Asia/Jayapura')->format('Y-m-d'),
+            'bukti_permo' => $linkFile,
+            'status' => $req->status??NULL,
+            'updated_at' => Carbon::now('Asia/Jayapura')
+        ]);
+
+        $insertDetail = $details->update([
+            'id_brg' => $req->id_brg,
+            'jumlah_per' => $req->jumlah_per,
+            'jumlah_setuju' => $req->jumlah_setuju??NULL,
+            'ket_permo' => $req->ket_permo??NULL,
+            'updated_at' => Carbon::now('Asia/Jayapura')
+        ]);
+
+        if ($insert && $insertDetail) {
+            return redirect()->back()->with([
+                'notif_status' => 'success',
+                'notif_message' => 'Berhasil update permohonan',
+            ]);
+        } else {
+            return redirect()->back()->with([
+                'notif_status' => 'error',
+                'notif_message' => 'Gagal update permohonan',
+            ]);
+        }
+    }
+    public function hapusPermohonan(Request $req)
+    {
+        
+        $insert = Permohonan::find($req->id_permo)->delete();
+        $insertDetail = DetailPermohonan::find($req->id_dp)->delete();
+
+        Storage::disk('public')->delete($this->file_path . basename($req->bukti_permo));
+
+        if ($insert && $insertDetail) {
+            return redirect()->back()->with([
+                'notif_status' => 'success',
+                'notif_message' => 'Berhasil hapus permohonan',
+            ]);
+        } else {
+            return redirect()->back()->with([
+                'notif_status' => 'error',
+                'notif_message' => 'Gagal hapus permohonan',
+            ]);
+        }
+    }
 }
