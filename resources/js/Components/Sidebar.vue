@@ -9,7 +9,8 @@ import {
 
 import {
     adminMenu, adminPanel,
-    bendaharaMenu, bendaharaPanel
+    bendaharaMenu, bendaharaPanel,
+    guruMenu,
 } from './Composables/sidebarLists'
 
 
@@ -24,6 +25,8 @@ const adminPanels = ref(adminPanel)
 
 const bendaharaMenus = ref(bendaharaMenu)
 const bendaharaPanels = ref(bendaharaPanel)
+
+const guruMenus = ref(guruMenu)
 
 const closePanel = () =>
 {
@@ -59,6 +62,8 @@ const closePanel = () =>
                     </a>
                 </template>
             </PanelMenu>
+
+            <Button v-if="$page.props.auth.user.id_role === 2" v-for="menu in guruMenus" :key="menu.route" :label="props.isSidebarCollapsed?null:menu.label" :icon="menu.icon" class="w-full p-1 flex items-center justify-center" :class="{'bg-slate-100 text-sky-500 rounded' : route().current(menu.route),'text-slate-50' : !route().current(menu.route),'gap-0 rounded-lg':props.isSidebarCollapsed,'gap-2':!props.isSidebarCollapsed}" @click="router.visit(route(menu.route))" unstyled/>
         </div>
     </div>
 </template>

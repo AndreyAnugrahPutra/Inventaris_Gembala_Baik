@@ -9,6 +9,7 @@ use App\Http\Controllers\Barang\BarangController;
 use App\Http\Controllers\Kategori\KategoriController;
 use App\Http\Controllers\Permohonan\PermohonanController;
 use App\Http\Controllers\Unit\UnitController;
+use App\Models\BarangKeluar;
 use App\Models\Permohonan;
 use App\Models\Role;
 use App\Models\Unit;
@@ -91,4 +92,14 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
     Route::post('bendara/validasi-permohonan/terima', [PermohonanController::class, 'terimaPermohonan'])->name('bendahara.permohonan.terima');
 
 
+});
+
+Route::middleware(['auth', 'guru'])->group(function () {
+
+    Route::get('/guru/dashboard', function(){
+        $barangKeluarCount = BarangKeluar::where('id_user', auth()->guard()->user()->id_role)->count();
+        return Inertia::render('Guru/Dashboard', [
+            'barangKeluarCount' => $barangKeluarCount,
+        ]);
+    })->name('guru.dashboard');
 });

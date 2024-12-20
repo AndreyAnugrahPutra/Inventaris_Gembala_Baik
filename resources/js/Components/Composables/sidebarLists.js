@@ -31,7 +31,6 @@ export const adminPanel = [
 
 export const bendaharaMenu = [
     { label: "Dashboard", icon: "pi pi-home", route: "bendahara.dashboard" },
-    // { label: "Permohonan", icon: "pi pi-file", route: "bendahara.permohonan.page" },
     { label: "Validasi", icon: "pi pi-file-check", route: "bendahara.permohonan.page" },
 ];
 export const bendaharaPanel = [
@@ -55,6 +54,12 @@ export const bendaharaPanel = [
             },
         ],
     },
+];
+
+export const guruMenu = [
+    { label: "Dashboard", icon: "pi pi-home", route: "guru.dashboard" },
+    { label: "Permohonan",icon: "pi pi-file-check", route: "guru.permohonan.page",},
+    { label: "Profile",icon: "pi pi-file-user", route: "guru.profile.page",},
 ];
 
 
