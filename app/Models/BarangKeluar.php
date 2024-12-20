@@ -12,6 +12,7 @@ class BarangKeluar extends Model
     use HasFactory;
     public $timestamps = false;
     protected
+    $guarded = [],
         $table = 'barang_keluar',
         $primaryKey = 'id_bk',
         $keyType = 'string',
@@ -26,7 +27,12 @@ class BarangKeluar extends Model
 
     public function details()
     {
-        return $this->hasMany(DetailBarangKeluar::class, 'id_bk', 'id_bk');
+        return $this->hasOne(DetailBarangKeluar::class, 'id_bk', 'id_bk');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user','id_user');
     }
 
     public static function boot()
@@ -43,12 +49,12 @@ class BarangKeluar extends Model
         $lastBk = self::orderBy('id_bk', 'desc')->first();
 
         if (!$lastBk) {
-            return 'bk-' . date('Y') . '-001';
+            return 'bk-'.date('Y').'-001';
         }
 
-        $lastNumber = substr($lastBk->id_bk, strrpos($lastBk->id_bk, '-') + 1);
+        $lastNumber = substr($lastBk->id_bk, strlen('bk-'.date('Y').'-'));
         $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
-        return 'bk-' . date('Y') . '-' . $newNumber;
+        return 'bk-'.date('Y').'-'.$newNumber;
     }
 }

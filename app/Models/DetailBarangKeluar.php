@@ -49,12 +49,12 @@ class DetailBarangKeluar extends Model
         $lastDbk = self::orderBy('id_dbk', 'desc')->first();
 
         if (!$lastDbk) {
-            return 'dbk-' . date('m') . date('Y') . '-001';
+            return 'dbk-'.date('m-Y').'-001';
         }
 
-        $lastNumber = substr($lastDbk->id_dbk, strrpos($lastDbk->id_dbk, '-') + 1);
-        $newNumber = sprintf('%04d', intval($lastNumber) + 1);
+        $lastNumber = substr($lastDbk->id_dbk, strlen('dbk-'.date('m-Y').'-'));
+        $newNumber = sprintf('%03d', intval($lastNumber) + 1);
 
-        return 'dbk-'.date('m').date('Y').'-'.$newNumber;
+        return 'dbk-'.date('m-Y').'-'.$newNumber;
     }
 }

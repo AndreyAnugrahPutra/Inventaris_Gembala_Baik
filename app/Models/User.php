@@ -36,6 +36,11 @@ class User extends Authenticatable
         return $this->belongsTo(Unit::class, 'id_unit','id_unit');
     }
 
+    public function barangKeluar()
+    {
+        return $this->hasMany(BarangKeluar::class, 'id_user','id_user');
+    }
+
     public static function boot()
     {
         parent::boot();

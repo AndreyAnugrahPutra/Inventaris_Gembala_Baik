@@ -83,9 +83,12 @@ const confirmLogout = () =>
                         </h1>
                     </div>
 
-                    <Button @click="toggleProfileMenu" class="bg-slate-200 py-2 px-3 rounded-full text-center" unstyled>
-                        <i class="pi pi-user"></i>
-                    </Button>
+                    <div class="flex items-center gap-x-4">
+                        <span class="uppercase">{{ $page.props.auth.user.username }}</span>
+                        <Button @click="toggleProfileMenu" class="bg-slate-200 py-2 px-3 rounded-full text-center" unstyled>
+                            <i class="pi pi-user"></i>
+                        </Button>
+                    </div>
 
                     <!-- popover profile menu -->
                     <Popover ref="openProfileMenu">

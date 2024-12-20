@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Route;
 // use controller
 use App\Http\Controllers\Auth\Authentication;
 use App\Http\Controllers\Barang\BarangController;
+use App\Http\Controllers\BarangKeluar\BarangKeluarController;
 use App\Http\Controllers\Kategori\KategoriController;
 use App\Http\Controllers\Permohonan\PermohonanController;
 use App\Http\Controllers\Unit\UnitController;
+use App\Models\Barang;
 use App\Models\BarangKeluar;
 use App\Models\Permohonan;
 use App\Models\Role;
@@ -56,6 +58,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/barang/update',[BarangController::class, 'updatebarang'])->name('admin.barang.update');
     Route::post('admin/barang/hapus',[BarangController::class, 'hapusbarang'])->name('admin.barang.hapus');
 
+    Route::get('admin/barang-keluar', function(){
+        $dataBarangKeluar = BarangKeluar::with('details','details.barang')->get();
+        return Inertia::render('Admin/BarangKeluar/Index',[
+            'dataBarangKeluar' => $dataBarangKeluar,
+        ]);
+    })->name('admin.barang_keluar.page');
+
+    Route::post('admin/barang_keluar/validasi', [BarangKeluarController::class, 'validasiPermohonan'])->name('admin.barang_keluar.validasi');
+
+
     Route::get('admin/kategori',[KategoriController::class, 'kategoriPage'])->name('admin.kategori.page');
     Route::post('admin/kategori/tambah',[KategoriController::class, 'tambahKategori'])->name('admin.kategori.tambah');
     Route::post('admin/kategori/update',[KategoriController::class, 'updateKategori'])->name('admin.kategori.update');
@@ -97,9 +109,27 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
 Route::middleware(['auth', 'guru'])->group(function () {
 
     Route::get('/guru/dashboard', function(){
-        $barangKeluarCount = BarangKeluar::where('id_user', auth()->guard()->user()->id_role)->count();
+        $barangKeluarCount = BarangKeluar::where('id_user', auth()->guard()->user()->id_user)->count();
         return Inertia::render('Guru/Dashboard', [
             'barangKeluarCount' => $barangKeluarCount,
         ]);
     })->name('guru.dashboard');
+
+    Route::get('/guru/profile', function () {
+        $dataProfile = User::with('unit')->withCount('barangKeluar')->find(auth()->guard()->user()->id_user);
+        return Inertia::render('Guru/Profile', [
+            'dataProfile' => $dataProfile,
+        ]);
+    })->name('guru.profile');
+
+    Route::get('/guru/permohonan', function(){
+        $dataPermo = BarangKeluar::with('details', 'details.barang')->get();
+        $dataBarang = Barang::get(['id_brg', 'nama_brg']);
+        return Inertia::render('Guru/Permohonan/Index', [
+            'dataPermo' => $dataPermo,
+            'dataBarang' => $dataBarang,
+        ]);
+    })->name('guru.permohonan.page');
+
+    Route::post('guru/permohonan/tambah',[BarangKeluarController::class, 'tambahPermohonan'])->name('guru.permohonan.tambah');
 });
