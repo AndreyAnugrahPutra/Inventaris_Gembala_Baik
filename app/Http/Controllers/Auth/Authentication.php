@@ -37,6 +37,8 @@ class Authentication extends Controller
                 break;
                 case 2 : return redirect()->route('guru.dashboard')->with($notification);
                 break;
+                case 3 : return redirect()->route('kepsek.dashboard')->with($notification);
+                break;
                 case 4 : return redirect()->route('bendahara.dashboard')->with($notification);
                 break;
             }

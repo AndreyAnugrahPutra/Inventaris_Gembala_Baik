@@ -14,17 +14,17 @@ export const adminPanel = [
             {
                 label: "Barang",
                 icon: "pi pi-box",
-                route: "admin.dashboard",
+                route: "admin.laporan.barang",
             },
             {
                 label: "Permohonan",
                 icon: "pi pi-file",
-                route: "admin.dashboard",
+                route: "admin.laporan.permohonan",
             },
             {
                 label: "Barang Keluar",
                 icon: "pi pi-box",
-                route: "admin.dashboard",
+                route: "admin.laporan.barang_keluar",
             },
         ],
     },
@@ -41,17 +41,17 @@ export const bendaharaPanel = [
             {
                 label: "Barang",
                 icon: "pi pi-box",
-                route: "bendahara.dashboard",
+                route: "bendahara.laporan.barang",
             },
             {
                 label: "Permohonan",
                 icon: "pi pi-file",
-                route: "bendahara.dashboard",
+                route: "bendahara.laporan.permohonan",
             },
             {
                 label: "Barang Keluar",
                 icon: "pi pi-box",
-                route: "bendahara.dashboard",
+                route: "bendahara.laporan.barang_keluar",
             },
         ],
     },
@@ -63,4 +63,29 @@ export const guruMenu = [
     { label: "Profile",icon: "pi pi-user", route: "guru.profile",},
 ];
 
+export const kepsekMenu = [
+    { label: "Dashboard", icon: "pi pi-home", route: "kepsek.dashboard" },
+];
+export const kepsekPanel = [
+    {
+        label: "Laporan",
+        items: [
+            {
+                label: "Barang",
+                icon: "pi pi-box",
+                route: "kepsek.laporan.barang",
+            },
+            {
+                label: "Permohonan",
+                icon: "pi pi-file",
+                route: "kepsek.laporan.permohonan",
+            },
+            {
+                label: "Barang Keluar",
+                icon: "pi pi-box",
+                route: "kepsek.laporan.barang_keluar",
+            },
+        ],
+    },
+];
 

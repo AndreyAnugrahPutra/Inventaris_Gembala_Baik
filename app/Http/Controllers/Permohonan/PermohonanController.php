@@ -190,7 +190,6 @@ class PermohonanController extends Controller
 
     public function permohonanPDF(Request $req)
     {
-        // dd($req);
         $data = $req->data;
         // Buat objek FPDF
         $pdf = new FPDF();
@@ -207,8 +206,6 @@ class PermohonanController extends Controller
         $pdf->Cell(30, 10, 'Jumlah Permohonan', 1, 0, 'L');
         $pdf->Cell(22, 10, 'Jumlah Setuju', 1, 0, 'L');
         $pdf->Cell(15, 10, 'Satuan', 1, 0, 'L');
-        $pdf->Cell(16, 10, 'Status', 1, 0, 'L');
-        $pdf->Cell(25, 10, 'Keterangan', 1, 0, 'L');
         $pdf->Ln();
 
         foreach ($data as $row) {
@@ -218,20 +215,10 @@ class PermohonanController extends Controller
             $pdf->Cell(30, 10, $row['details']['jumlah_per'], 1);
             $pdf->Cell(22, 10, $row['details']['jumlah_setuju'], 1);
             $pdf->Cell(15, 10, $row['details']['barang']['satuan'], 1);
-            $pdf->Cell(16, 10, $row['status'], 1);
-            $pdf->Cell(25, 10, $row['details']['ket_permo'], 1);
             $pdf->Ln();
         }
-        // $pdf->Ln();
         $pdf->Cell(40, 10, 'Laporan Dicetak Pada Tanggal '.Carbon::now('Asia/Jayapura')->format('d-m-Y'));
-
-        // sleep(1);
-        // Output PDF
-        // $pdf->Output('doc','F');
-        $pdf->Output('D','data-export.pdf');
+        $pdf->Output('D','laporan-permohonan-export.pdf');
         exit;
-
-        // dd($output?true:false);
-        // if($output) return $output;
     }
 }

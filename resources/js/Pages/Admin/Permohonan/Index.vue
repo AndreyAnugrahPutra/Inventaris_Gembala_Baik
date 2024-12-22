@@ -79,17 +79,7 @@ const permoForm = useForm({
     ket_permo : null,
 })
 
-// const exportForm = useForm({
-//     data : null
-// })
-
 const exportCSV = () => dt.value.exportCSV()
-
-const exportPDF = async () => { 
-    router.post(route('admin.permohonan.pdf'),{data : dt.value.processedData},{
-        onFinish : () => setTimeout(() => console.clear(),500)
-    })
-}
 
 const openForm = (type) =>
 {
@@ -159,8 +149,6 @@ const showProsesData = () =>
     setTimeout(() =>
     { 
         exportData.value = dt.value.processedData.map((p,i) => ({index:i+1, ...p}))
-        console.log(dt.value.processedData)
-        console.log(exportData.value)
     }
     ,500)
 }
@@ -314,7 +302,6 @@ const hapusPermo = idx => {
                                     <InputText v-model="filters['global'].value" placeholder="Cari Data Permohonan" size="small" fluid/>
                                 </IconField>
                                 <Button icon="pi pi-print" severity="contrast" @click="exportCSV()" label="Export" size="small"/>
-                                <Button class="w-fit" icon="pi pi-print" severity="contrast" @click="exportPDF()" label="PDF" size="small"/>
                             </div>
                         </template>
                         <template #empty>

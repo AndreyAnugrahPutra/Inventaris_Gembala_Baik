@@ -12,6 +12,7 @@ use App\Http\Controllers\Permohonan\PermohonanController;
 use App\Http\Controllers\Unit\UnitController;
 use App\Models\Barang;
 use App\Models\BarangKeluar;
+use App\Models\Kategori;
 use App\Models\Permohonan;
 use App\Models\Role;
 use App\Models\Unit;
@@ -24,6 +25,11 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+
+    Route::post('laporan/permohonan/pdf', [PermohonanController::class, 'permohonanPDF'])->name('laporan.permohonan.pdf');
+    Route::post('laporan/barang/pdf', [BarangController::class, 'barangPDF'])->name('laporan.barang.pdf');
+    Route::post('laporan/barang-keluar/pdf', [BarangKeluarController::class, 'barangKeluarPDF'])->name('laporan.barang_keluar.pdf');
+
     
     Route::get('logout', [Authentication::class, 'logout']);
     Route::post('logout', [Authentication::class, 'logout'])
@@ -82,8 +88,71 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/permohonan/tambah',[PermohonanController::class, 'tambahPermohonan'])->name('admin.permohonan.tambah');
     Route::post('admin/permohonan/update',[PermohonanController::class, 'updatePermohonan'])->name('admin.permohonan.update');
     Route::post('admin/permohonan/hapus',[PermohonanController::class, 'hapusPermohonan'])->name('admin.permohonan.hapus');
+    
+    Route::get('admin/laporan/barang',function (){
+        $dataBarang = Barang::with('kategori')->get();
+        $dataKategori = Kategori::select('id_ktg', 'nama_kategori')->get();
 
-    Route::post('admin/permohonan/pdf',[PermohonanController::class, 'permohonanPDF'])->name('admin.permohonan.pdf');
+        return Inertia::render('Laporan/Barang',[
+            'dataBarang' => $dataBarang,
+            'dataKategori' => $dataKategori,
+        ]);
+    })->name('admin.laporan.barang');
+    
+    Route::get('admin/laporan/barang_keluar',function (){
+        $dataBarangKeluar = BarangKeluar::with('details', 'details.barang','user','user.unit')->get();
+        
+        return Inertia::render('Laporan/BarangKeluar',[
+            'dataBarangKeluar' => $dataBarangKeluar,
+        ]);
+    })->name('admin.laporan.barang_keluar');
+
+    Route::get('admin/laporan/permohonan',function (){
+        $dataPermo = Permohonan::with('details', 'details.barang','details.barang.kategori')->get();
+        $dataBarang = Barang::with('kategori')->get();
+        return Inertia::render('Laporan/Permohonan', [
+            'dataPermo' => $dataPermo,
+            'dataBarang' => $dataBarang,
+        ]);
+    })->name('admin.laporan.permohonan');
+
+});
+
+Route::middleware(['auth', 'kepsek'])->group(function () {
+
+    Route::get('kepsek/dashboard', function () {
+        $permohonanCount = Permohonan::count();
+        return Inertia::render('Bendahara/Dashboard', [
+            'permohonanCount' => $permohonanCount,
+        ]);
+    })->name('kepsek.dashboard');
+
+    Route::get('kepsek/laporan/barang', function () {
+        $dataBarang = Barang::with('kategori')->get();
+        $dataKategori = Kategori::select('id_ktg', 'nama_kategori')->get();
+
+        return Inertia::render('Laporan/Barang', [
+            'dataBarang' => $dataBarang,
+            'dataKategori' => $dataKategori,
+        ]);
+    })->name('kepsek.laporan.barang');
+
+    Route::get('kepsek/laporan/barang_keluar', function () {
+        $dataBarangKeluar = BarangKeluar::with('details', 'details.barang', 'user', 'user.unit')->get();
+
+        return Inertia::render('Laporan/BarangKeluar', [
+            'dataBarangKeluar' => $dataBarangKeluar,
+        ]);
+    })->name('kepsek.laporan.barang_keluar');
+
+    Route::get('kepsek/laporan/permohonan', function () {
+        $dataPermo = Permohonan::with('details', 'details.barang', 'details.barang.kategori')->get();
+        $dataBarang = Barang::with('kategori')->get();
+        return Inertia::render('Laporan/Permohonan', [
+            'dataPermo' => $dataPermo,
+            'dataBarang' => $dataBarang,
+        ]);
+    })->name('kepsek.laporan.permohonan');
 
 });
 
@@ -105,6 +174,32 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
 
     Route::post('bendara/validasi-permohonan/terima', [PermohonanController::class, 'terimaPermohonan'])->name('bendahara.permohonan.terima');
 
+    Route::get('bendahara/laporan/barang', function () {
+        $dataBarang = Barang::with('kategori')->get();
+        $dataKategori = Kategori::select('id_ktg', 'nama_kategori')->get();
+
+        return Inertia::render('Laporan/Barang', [
+            'dataBarang' => $dataBarang,
+            'dataKategori' => $dataKategori,
+        ]);
+    })->name('bendahara.laporan.barang');
+
+    Route::get('bendahara/laporan/barang_keluar', function () {
+        $dataBarangKeluar = BarangKeluar::with('details', 'details.barang', 'user', 'user.unit')->get();
+
+        return Inertia::render('Laporan/BarangKeluar', [
+            'dataBarangKeluar' => $dataBarangKeluar,
+        ]);
+    })->name('bendahara.laporan.barang_keluar');
+
+    Route::get('bendahara/laporan/permohonan', function () {
+        $dataPermo = Permohonan::with('details', 'details.barang', 'details.barang.kategori')->get();
+        $dataBarang = Barang::with('kategori')->get();
+        return Inertia::render('Laporan/Permohonan', [
+            'dataPermo' => $dataPermo,
+            'dataBarang' => $dataBarang,
+        ]);
+    })->name('bendahara.laporan.permohonan');
 
 });
 
