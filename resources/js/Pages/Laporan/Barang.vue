@@ -9,7 +9,6 @@ import {
     DataTable,
     InputText,
     Select,
-    useToast,
 } from 'primevue'
 
 import AuthLayout from '@/Layouts/AuthLayout.vue'
@@ -27,26 +26,9 @@ const props = defineProps({
     dataKategori : Object,
 })
 
-const checkNotif = () =>
-{
-    if(props.flash?.notif_status)
-    {
-        toast.add({
-            severity : props.flash.notif_status,
-            summary : 'notifikasi',
-            detail : props.flash.notif_message,
-            life : 4000,
-            group : 'tr',
-        })   
-    }
-}
-
-const toast = useToast()    
 const dt = ref()
 
 const loading = ref(true)
-
-const showForm = ref(false)
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -98,7 +80,6 @@ const exportPDF = () => {
         onFinish : () => setTimeout(() => console.clear(),500)
     })
 }
-
 </script>
 
 <template>

@@ -9,7 +9,6 @@ import {
     DataTable,
     InputText,
     Select,
-    useToast,
 } from 'primevue'
 
 import AuthLayout from '@/Layouts/AuthLayout.vue'
@@ -26,7 +25,6 @@ const props = defineProps({
     dataBarangKeluar : Object,
 })
 
-const toast = useToast()    
 const dt = ref()
 
 const loading = ref(true)
@@ -81,7 +79,6 @@ const exportPDF = () => {
         onFinish : () => setTimeout(() => console.clear(),500)
     })
 }
-
 </script>
 
 <template>
