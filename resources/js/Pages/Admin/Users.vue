@@ -248,7 +248,7 @@ const hapusUser = (idx,username) =>
                 <Button label="Tambah User" severity="success" @click="showForm = true, formType = 'tambahData'" class="w-[fit-content]" icon="pi pi-user-plus" size="small"/>
                 <!-- datatabel Users -->
                 <div class="rounded-lg size-full overflow-hidden">
-                    <DataTable removable-sort striped-rows :value="dataUsersFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                    <DataTable exportFilename="data-users" removable-sort striped-rows :value="dataUsersFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
                         <template #header>
                             <div class="flex justify-between items-center gap-x-2">
                                 <IconField class="w-full">
@@ -263,7 +263,7 @@ const hapusUser = (idx,username) =>
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada User</span>
                         </template>
-                        <Column sortable header="No" field="index" class="w-4"/>
+                        <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Username" field="username"/>
                         <Column sortable header="Email" field="email"/>
                         <Column sortable header="Role" field="role.nama_role"/>

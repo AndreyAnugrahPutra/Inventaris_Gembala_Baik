@@ -292,7 +292,7 @@ const hapusPermo = idx => {
                 </Dialog>
                 <!-- Datatable Permohonan -->
                 <div class="rounded-lg size-full overflow-hidden">
-                    <DataTable @filter="showProsesData()"scrollable  removable-sort striped-rows :value="dataPermoFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                    <DataTable exportFilename="permohonan-barang" @filter="showProsesData()"scrollable  removable-sort striped-rows :value="dataPermoFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
                         <template #header>
                             <div class="flex justify-between items-center gap-x-2">
                                 <IconField class="w-full">
@@ -307,24 +307,24 @@ const hapusPermo = idx => {
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada Permohonan</span>
                         </template>
-                        <Column sortable header="No" field="index" class="w-4"/>
+                        <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Tanggal Permohonan" field="tgl_permo" class="w-4"/>
-                        <Column sortable header="Nama Barang" filterField="details.barang.nama_brg" class="w-4">
+                        <Column sortable header="Nama Barang" field="details.barang.nama_brg" filterField="details.barang.nama_brg" class="w-4">
                              <template #body="{data}">
                                 {{ data.details.barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Permohonan" filterField="details.jumlah_per" class="w-4">
+                        <Column sortable header="Jumlah Permohonan" field="details.jumlah_per" filterField="details.jumlah_per" class="w-4">
                             <template #body="{data}">
                                {{ data.details.jumlah_per}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui" filterField="details.jumlah_setuju" class="w-4">
+                        <Column sortable header="Jumlah Disetujui" field="details.jumlah_setuju" filterField="details.jumlah_setuju" class="w-4">
                             <template #body="{data}">
                                 {{ data.details.jumlah_setuju??'Menunggu Validasi Bendahara'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan" filterField="details.barang.satuan" class="w-4">
+                        <Column sortable header="Satuan" field="details.barang.satuan" filterField="details.barang.satuan" class="w-4">
                             <template #body="{data}">
                                 {{ data.details.barang.satuan}}
                             </template>

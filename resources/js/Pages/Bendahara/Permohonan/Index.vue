@@ -109,15 +109,15 @@ const editPermo = (idx) =>
 
     permoForm.id_permo = dataPermoFix.value[idx-1]['id_permo']
     permoForm.status = dataPermoFix.value[idx-1]['status']
-    permoForm.id_dp = dataPermoFix.value[idx-1]['details'][0].id_dp
-    permoForm.id_brg = dataPermoFix.value[idx-1]['details'][0].id_brg
-    permoForm.ket_permo = dataPermoFix.value[idx-1]['details'][0].ket_permo
-    permoForm.jumlah_per = dataPermoFix.value[idx-1]['details'][0].jumlah_per
-    permoForm.jumlah_setuju = dataPermoFix.value[idx-1]['details'][0].jumlah_setuju
+    permoForm.id_dp = dataPermoFix.value[idx-1]['details'].id_dp
+    permoForm.id_brg = dataPermoFix.value[idx-1]['details'].id_brg
+    permoForm.ket_permo = dataPermoFix.value[idx-1]['details'].ket_permo
+    permoForm.jumlah_per = dataPermoFix.value[idx-1]['details'].jumlah_per
+    permoForm.jumlah_setuju = dataPermoFix.value[idx-1]['details'].jumlah_setuju
 
-    permoFormDisabled.nama_brg = dataPermoFix.value[idx-1]['details'][0].barang.nama_brg
+    permoFormDisabled.nama_brg = dataPermoFix.value[idx-1]['details'].barang.nama_brg
     permoFormDisabled.tgl_permo = dataPermoFix.value[idx-1]['tgl_permo']
-    permoFormDisabled.jumlah_per = dataPermoFix.value[idx-1]['details'][0].jumlah_per
+    permoFormDisabled.jumlah_per = dataPermoFix.value[idx-1]['details'].jumlah_per
 
     showForm.value = true
 }
@@ -247,7 +247,7 @@ const tolakPermo = () => {
                
                 <!-- Datatable Permohonan -->
                 <div class="rounded-lg size-full overflow-hidden">
-                    <DataTable scrollable  removable-sort striped-rows :value="dataPermoFix" dataKey="id_permo" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                    <DataTable exportFilename="data-permohonan-barang-guru" scrollable  removable-sort stripedRows :value="dataPermoFix" dataKey="id_permo" v-model:filters="filters" ref="dt" :rows="5" paginator>
                         <template #header>
                             <div class="flex justify-between items-center gap-x-2">
                                 <IconField class="w-full">
@@ -262,26 +262,26 @@ const tolakPermo = () => {
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada Permohonan</span>
                         </template>
-                        <Column sortable header="No" field="index" class="w-4"/>
+                        <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Tanggal Permohonan" field="tgl_permo" class="w-4"/>
-                        <Column sortable header="Nama Barang" class="w-4">
+                        <Column sortable header="Nama Barang" field="details.barang.nama_brg" class="w-4">
                              <template #body="{data}">
-                                {{ data.details[0].barang.nama_brg}}
+                                {{ data.details.barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Permohonan" class="w-4">
+                        <Column sortable header="Jumlah Permohonan" field="details.jumlah_per" class="w-4">
                             <template #body="{data}">
-                               {{ data.details[0].jumlah_per}}
+                               {{ data.details.jumlah_per}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui" class="w-4">
+                        <Column sortable header="Jumlah Disetujui" field="details.jumlah_setuju" class="w-4">
                             <template #body="{data}">
-                                {{ data.details[0].jumlah_setuju??'Menunggu Validasi Bendahara'}}
+                                {{ data.details.jumlah_setuju??'Menunggu Validasi Bendahara'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan" class="w-4">
+                        <Column sortable header="Satuan" field="details.barang.satuan" class="w-4">
                             <template #body="{data}">
-                                {{ data.details[0].barang.satuan}}
+                                {{ data.details.barang.satuan}}
                             </template>
                         </Column>
                         <Column sortable header="Bukti" class="w-4">
@@ -293,15 +293,15 @@ const tolakPermo = () => {
                             </template>
                         </Column>
                         <Column sortable header="Status" field="status" class="w-4"/>
-                        <Column sortable header="Keterangan" style="min-width: 200px">
+                        <Column sortable header="Keterangan" field="details.ket_permo" style="min-width: 200px">
                             <template #body="{data}">
-                                {{ data.details[0].ket_permo??'Tidak ada keterangan'}}
+                                {{ data.details.ket_permo??'Tidak ada keterangan'}}
                             </template>
                         </Column>
                         <Column header="Action" frozen alignFrozen="right" style="min-width: 1rem">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.details[0].jumlah_setuju" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.details.jumlah_setuju" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

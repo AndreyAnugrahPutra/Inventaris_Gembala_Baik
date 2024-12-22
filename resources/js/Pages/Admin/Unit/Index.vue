@@ -203,7 +203,7 @@ const hapusUnit = (idx) => {
 
                 <!-- Datatable Unit -->
                 <div class="rounded-lg size-full overflow-hidden">
-                    <DataTable :globalFilterFields="['index','nama_unit','users_count']" removable-sort striped-rows :value="dataUnitFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                    <DataTable exportFilename="data-unit" :globalFilterFields="['index','nama_unit','users_count']" removable-sort striped-rows :value="dataUnitFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
                         <template #header>
                             <div class="flex justify-between items-center gap-x-2">
                                 <IconField class="w-full">
@@ -218,9 +218,9 @@ const hapusUnit = (idx) => {
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada Unit</span>
                         </template>
-                        <Column sortable header="No" field="index" class="w-4"/>
+                        <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Nama Unit" field="nama_unit"/>
-                        <Column sortable header="Jumlah Anggota">
+                        <Column sortable header="Jumlah Anggota" field="users_count">
                             <template #body={data}>
                                 <Badge :severity="data.users_count>0?'success':'danger'" :value="data.users_count"/>
                             </template>

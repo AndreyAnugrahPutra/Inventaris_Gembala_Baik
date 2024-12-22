@@ -68,7 +68,7 @@ const confirm = useConfirm()
 
 const dataBarangKeluarFix = ref([])
 
-const pageTitle = 'Permohonan'
+const pageTitle = 'Barang Keluar'
 
 const permoFormDisabled = useForm({
     tgl_bk : null,
@@ -224,7 +224,7 @@ const validasiPermo = () => {
                
                 <!-- Datatable Permohonan -->
                 <div class="rounded-lg size-full overflow-hidden">
-                    <DataTable scrollable  removable-sort striped-rows :value="dataBarangKeluarFix" dataKey="id_bk" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                    <DataTable exportFilename="data-barang-keluar" scrollable  removable-sort striped-rows :value="dataBarangKeluarFix" dataKey="id_bk" v-model:filters="filters" ref="dt" :rows="5" paginator>
                         <template #header>
                             <div class="flex justify-between items-center gap-x-2">
                                 <IconField class="w-full">
@@ -239,24 +239,24 @@ const validasiPermo = () => {
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada Permohonan</span>
                         </template>
-                        <Column sortable header="No" field="index" class="w-4"/>
+                        <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Tanggal Permohonan" field="tgl_bk" class="w-4"/>
-                        <Column sortable header="Nama Barang" filterField="details.barang.nama_brg" class="w-4">
+                        <Column sortable header="Nama Barang" field="details.barang.nama_brg" filterField="details.barang.nama_brg" class="w-4">
                              <template #body="{data}">
                                 {{ data.details.barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Permohonan" filterField="details.jum_bk" class="w-4">
+                        <Column sortable header="Jumlah Permohonan" field="details.jum_bk" filterField="details.jum_bk" class="w-4">
                             <template #body="{data}">
                                {{ data.details.jum_bk}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui" filterField="details.jum_setuju_bk" class="w-4">
+                        <Column sortable header="Jumlah Disetujui" field="details.jum_setuju_bk" filterField="details.jum_setuju_bk" class="w-4">
                             <template #body="{data}">
                                 {{ data.details.jum_setuju_bk??'Menunggu Validasi'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan" filterField="details.barang.satuan" class="w-4">
+                        <Column sortable header="Satuan" field="details.barang.satuan" filterField="details.barang.satuan" class="w-4">
                             <template #body="{data}">
                                 {{ data.details.barang.satuan}}
                             </template>
@@ -270,7 +270,7 @@ const validasiPermo = () => {
                             </template>
                         </Column>
                         <Column sortable header="Status" field="status_bk" class="w-4"/>
-                        <Column sortable header="Keterangan">
+                        <Column sortable header="Keterangan" field="details.ket_bk">
                             <template #body="{data}">
                                 {{ data.details.ket_bk??'Tidak ada keterangan'}}
                             </template>

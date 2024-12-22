@@ -235,7 +235,7 @@ const hapusBarang = idx => {
                 <Button @click="openForm('tambahData')" class="w-fit" severity="success" label="Tambah Barang" icon="pi pi-box" size="small" />
                 <!-- Datatable Barang -->
                 <div class="rounded-lg size-full overflow-hidden">
-                    <DataTable  removable-sort striped-rows :value="dataBarangFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                    <DataTable exportFilename="data-stok-barang" removable-sort striped-rows :value="dataBarangFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
                         <template #header>
                             <div class="flex justify-between items-center gap-x-2">
                                 <IconField class="w-full">
@@ -250,7 +250,7 @@ const hapusBarang = idx => {
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada Barang</span>
                         </template>
-                        <Column sortable header="No" field="index" class="w-4"/>
+                        <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Nama Barang" field="nama_brg"/>
                         <Column sortable header="Kategori Barang" field="kategori.nama_kategori"/>
                         <Column sortable header="Jumlah Barang" field="stok_brg"/>

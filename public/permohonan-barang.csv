@@ -1,0 +1,5 @@
+﻿"Tanggal Permohonan","Nama Barang","Jumlah Permohonan","Jumlah Disetujui","Satuan","Status","Keterangan"
+"2024-12-19","Kertas A4","1","1","rim","diterima","ok"
+"2024-12-21","Deterjen","1","1","pcs","diterima","lanjut"
+"2024-12-20","Kertas A4","2","2","rim","diterima","lanjutkan"
+"2024-12-21","Kertas A4","5","0","rim","ditolak","terlalu banyak"
