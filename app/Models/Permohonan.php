@@ -27,7 +27,7 @@ class Permohonan extends Model
 
     public function details()
     {
-         return $this->hasMany(DetailPermohonan::class, 'id_permo','id_permo');
+         return $this->hasOne(DetailPermohonan::class, 'id_permo','id_permo');
     }
 
     public static function boot()

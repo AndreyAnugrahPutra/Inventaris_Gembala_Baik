@@ -79,6 +79,18 @@ const permoForm = useForm({
     ket_permo : null,
 })
 
+// const exportForm = useForm({
+//     data : null
+// })
+
+const exportCSV = () => dt.value.exportCSV()
+
+const exportPDF = async () => { 
+    router.post(route('admin.permohonan.pdf'),{data : dt.value.processedData},{
+        onFinish : () => setTimeout(() => console.clear(),500)
+    })
+}
+
 const openForm = (type) =>
 {
     showForm.value = true
@@ -132,12 +144,25 @@ const editPermo = (idx) =>
     permoForm.tgl_permo = dataPermoFix.value[idx-1]['tgl_permo']
     permoForm.bukti_permo = dataPermoFix.value[idx-1]['bukti_permo']
     permoForm.status = dataPermoFix.value[idx-1]['status']
-    permoForm.id_dp = dataPermoFix.value[idx-1]['details'][0].id_dp
-    permoForm.id_brg = dataPermoFix.value[idx-1]['details'][0].id_brg
-    permoForm.jumlah_per = dataPermoFix.value[idx-1]['details'][0].jumlah_per
-    permoForm.ket_permo = dataPermoFix.value[idx-1]['details'][0].ket_permo
+    permoForm.id_dp = dataPermoFix.value[idx-1]['details'].id_dp
+    permoForm.id_brg = dataPermoFix.value[idx-1]['details'].id_brg
+    permoForm.jumlah_per = dataPermoFix.value[idx-1]['details'].jumlah_per
+    permoForm.ket_permo = dataPermoFix.value[idx-1]['details'].ket_permo
 
     showForm.value = true
+}
+
+const exportData = ref([])
+
+const showProsesData = () => 
+{
+    setTimeout(() =>
+    { 
+        exportData.value = dt.value.processedData.map((p,i) => ({index:i+1, ...p}))
+        console.log(dt.value.processedData)
+        console.log(exportData.value)
+    }
+    ,500)
 }
 
 
@@ -188,7 +213,7 @@ const updatePermo = idx => {
 const hapusPermo = idx => {
     permoForm.id_permo = dataPermoFix.value[idx-1]['id_permo']
     permoForm.bukti_permo = dataPermoFix.value[idx-1]['bukti_permo']
-    permoForm.id_dp = dataPermoFix.value[idx-1]['details'][0].id_dp
+    permoForm.id_dp = dataPermoFix.value[idx-1]['details'].id_dp
 
     confirm.require({
         message: `Hapus Permohonan ?`,
@@ -279,30 +304,42 @@ const hapusPermo = idx => {
                 </Dialog>
                 <!-- Datatable Permohonan -->
                 <div class="rounded-lg size-full overflow-hidden">
-                    <DataTable  removable-sort striped-rows :value="dataPermoFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                    <DataTable @filter="showProsesData()"scrollable  removable-sort striped-rows :value="dataPermoFix" v-model:filters="filters" ref="dt" :rows="5" paginator>
+                        <template #header>
+                            <div class="flex justify-between items-center gap-x-2">
+                                <IconField class="w-full">
+                                    <InputIcon>
+                                        <i class="pi pi-search me-4" />
+                                    </InputIcon>
+                                    <InputText v-model="filters['global'].value" placeholder="Cari Data Permohonan" size="small" fluid/>
+                                </IconField>
+                                <Button icon="pi pi-print" severity="contrast" @click="exportCSV()" label="Export" size="small"/>
+                                <Button class="w-fit" icon="pi pi-print" severity="contrast" @click="exportPDF()" label="PDF" size="small"/>
+                            </div>
+                        </template>
                         <template #empty>
                             <span class="flex justify-center">Tidak Ada Permohonan</span>
                         </template>
                         <Column sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Tanggal Permohonan" field="tgl_permo" class="w-4"/>
-                        <Column sortable header="Nama Barang" class="w-4">
+                        <Column sortable header="Nama Barang" filterField="details.barang.nama_brg" class="w-4">
                              <template #body="{data}">
-                                {{ data.details[0].barang.nama_brg}}
+                                {{ data.details.barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Permohonan" class="w-4">
+                        <Column sortable header="Jumlah Permohonan" filterField="details.jumlah_per" class="w-4">
                             <template #body="{data}">
-                               {{ data.details[0].jumlah_per}}
+                               {{ data.details.jumlah_per}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui" class="w-4">
+                        <Column sortable header="Jumlah Disetujui" filterField="details.jumlah_setuju" class="w-4">
                             <template #body="{data}">
-                                {{ data.details[0].jumlah_setuju??'Menunggu Validasi Bendahara'}}
+                                {{ data.details.jumlah_setuju??'Menunggu Validasi Bendahara'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan" class="w-4">
+                        <Column sortable header="Satuan" filterField="details.barang.satuan" class="w-4">
                             <template #body="{data}">
-                                {{ data.details[0].barang.satuan}}
+                                {{ data.details.barang.satuan}}
                             </template>
                         </Column>
                         <Column sortable header="Bukti" class="w-4">
@@ -314,11 +351,12 @@ const hapusPermo = idx => {
                             </template>
                         </Column>
                         <Column sortable header="Status" field="status" class="w-4"/>
-                        <Column header="Action" frozen alignFrozen="right" class="w-4">
+                        <Column sortable header="Keterangan" field="details.ket_permo"/>
+                        <Column header="Action" frozen alignFrozen="right">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.details[0].jumlah_setuju" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
-                                    <Button :disabled="data.details[0].jumlah_setuju" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
+                                    <Button :disabled="data.status==='diterima'?true:false" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.status==='diterima'?true:false" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

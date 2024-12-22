@@ -79,9 +79,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/unit/hapus',[UnitController::class, 'hapusunit'])->name('admin.unit.hapus');
 
     Route::get('admin/permohonan',[PermohonanController::class, 'permohonanPage'])->name('admin.permohonan.page');
-    Route::post('admin/permohonan/tambah',[PermohonanController::class, 'tambahpermohonan'])->name('admin.permohonan.tambah');
-    Route::post('admin/permohonan/update',[PermohonanController::class, 'updatepermohonan'])->name('admin.permohonan.update');
-    Route::post('admin/permohonan/hapus',[PermohonanController::class, 'hapuspermohonan'])->name('admin.permohonan.hapus');
+    Route::post('admin/permohonan/tambah',[PermohonanController::class, 'tambahPermohonan'])->name('admin.permohonan.tambah');
+    Route::post('admin/permohonan/update',[PermohonanController::class, 'updatePermohonan'])->name('admin.permohonan.update');
+    Route::post('admin/permohonan/hapus',[PermohonanController::class, 'hapusPermohonan'])->name('admin.permohonan.hapus');
+
+    Route::post('admin/permohonan/pdf',[PermohonanController::class, 'permohonanPDF'])->name('admin.permohonan.pdf');
 
 });
 

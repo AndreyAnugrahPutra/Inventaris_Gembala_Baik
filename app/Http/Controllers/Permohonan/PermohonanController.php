@@ -8,6 +8,7 @@ use App\Models\DetailPermohonan;
 use App\Models\Permohonan;
 use App\Services\ImageValidation;
 use Carbon\Carbon;
+use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -185,5 +186,52 @@ class PermohonanController extends Controller
                 'notif_message' => 'Gagal validasi permohonan',
             ]);
         }
+    }
+
+    public function permohonanPDF(Request $req)
+    {
+        // dd($req);
+        $data = $req->data;
+        // Buat objek FPDF
+        $pdf = new FPDF();
+        $pdf->AddPage();
+        $pdf->SetFont('Arial', 'B', 8);
+
+        $pdf->Cell(40, 10, 'Laporan Permohonan Barang Masuk');
+        $pdf->Ln();
+
+        // Buat tabel
+        $pdf->Cell(7, 10, 'No', 1, 0, 'L');
+        $pdf->Cell(32, 10, 'Tanggal Permohonan', 1, 0, 'L');
+        $pdf->Cell(25, 10, 'Nama Barang', 1, 0, 'L');
+        $pdf->Cell(30, 10, 'Jumlah Permohonan', 1, 0, 'L');
+        $pdf->Cell(22, 10, 'Jumlah Setuju', 1, 0, 'L');
+        $pdf->Cell(15, 10, 'Satuan', 1, 0, 'L');
+        $pdf->Cell(16, 10, 'Status', 1, 0, 'L');
+        $pdf->Cell(25, 10, 'Keterangan', 1, 0, 'L');
+        $pdf->Ln();
+
+        foreach ($data as $row) {
+            $pdf->Cell(7, 10, $row['index'], 1);
+            $pdf->Cell(32, 10, $row['tgl_permo'], 1);
+            $pdf->Cell(25, 10, $row['details']['barang']['nama_brg'], 1);
+            $pdf->Cell(30, 10, $row['details']['jumlah_per'], 1);
+            $pdf->Cell(22, 10, $row['details']['jumlah_setuju'], 1);
+            $pdf->Cell(15, 10, $row['details']['barang']['satuan'], 1);
+            $pdf->Cell(16, 10, $row['status'], 1);
+            $pdf->Cell(25, 10, $row['details']['ket_permo'], 1);
+            $pdf->Ln();
+        }
+        // $pdf->Ln();
+        $pdf->Cell(40, 10, 'Laporan Dicetak Pada Tanggal '.Carbon::now('Asia/Jayapura')->format('d-m-Y'));
+
+        // sleep(1);
+        // Output PDF
+        // $pdf->Output('doc','F');
+        $pdf->Output('D','data-export.pdf');
+        exit;
+
+        // dd($output?true:false);
+        // if($output) return $output;
     }
 }
