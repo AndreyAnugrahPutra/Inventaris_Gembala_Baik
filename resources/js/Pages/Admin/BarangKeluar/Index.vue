@@ -241,6 +241,8 @@ const validasiPermo = () => {
                         </template>
                         <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
                         <Column sortable header="Tanggal Permohonan" field="tgl_bk" class="w-4"/>
+                        <Column sortable header="Nama Pemohon" field="user.username" class="w-4"/>
+                        <Column sortable header="Nama Unit" field="user.unit.nama_unit" class="w-4"/>
                         <Column sortable header="Nama Barang" field="details.barang.nama_brg" filterField="details.barang.nama_brg" class="w-4">
                              <template #body="{data}">
                                 {{ data.details.barang.nama_brg}}

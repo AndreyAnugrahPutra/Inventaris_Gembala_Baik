@@ -19,6 +19,7 @@ const pageTitle = 'Dashboard'
 
 const props = defineProps({
     flash : Object,
+    barangCount : Number,
     usersCount : Number,
 })
 
@@ -56,7 +57,7 @@ const checkNotif = () =>
                             <i class="pi pi-file" style="font-size: 2rem;"></i>
                             <div class="flex flex-col items-center">
                                 <h1>Barang</h1>
-                                <h1>0</h1>
+                                <h1>{{ props.barangCount??0 }}</h1>
                             </div>
                         </div>
                     </template>
@@ -70,7 +71,7 @@ const checkNotif = () =>
                                 <i class="pi pi-users" style="font-size: 2rem;"></i>
                                 <div class="flex flex-col items-center">
                                     <h1>Users</h1>
-                                    <h1>{{ props.usersCount }}</h1>
+                                    <h1>{{ props.usersCount??0 }}</h1>
                                 </div>
                             </div>
                         </template>

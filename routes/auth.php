@@ -38,9 +38,11 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('admin/dashboard', function () {
+        $barangCount = Barang::count();
         $usersCount = User::count();
         return Inertia::render('Admin/Dashboard', [
-            'usersCount' => $usersCount
+            'barangCount' => $barangCount,
+            'usersCount' => $usersCount,
         ]);
     })->name('admin.dashboard');
 
@@ -65,7 +67,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/barang/hapus',[BarangController::class, 'hapusbarang'])->name('admin.barang.hapus');
 
     Route::get('admin/barang-keluar', function(){
-        $dataBarangKeluar = BarangKeluar::with('details','details.barang')->get();
+        $dataBarangKeluar = BarangKeluar::with('details','details.barang','user:id_user,username,id_unit','user.unit:id_unit,nama_unit')->get();
         return Inertia::render('Admin/BarangKeluar/Index',[
             'dataBarangKeluar' => $dataBarangKeluar,
         ]);
