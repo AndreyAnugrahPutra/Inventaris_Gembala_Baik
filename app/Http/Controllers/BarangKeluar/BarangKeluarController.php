@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BarangKeluarController extends Controller
 {
@@ -19,13 +20,6 @@ class BarangKeluarController extends Controller
 
     public function tambahPermohonan(Request $req)
     {
-        // dd($req->forms);
-        // foreach ($req->forms as $form)
-        // {
-        //     $barang = Barang::find($form['id_brg']);
-        //     dd($form['index']);
-        // }
-
         $db = DB::transaction(function () use ($req)
         {
             foreach($req->forms as $form)
@@ -44,7 +38,7 @@ class BarangKeluarController extends Controller
                     'tgl_bk' => Carbon::now('Asia/Jayapura')->format('Y-m-d'),
                     'id_user' => auth()->guard()->user()->id_user,
                     'bukti_bk' => NULL,
-                    'status_bk' => 'diproses '.$form['nomor'],
+                    'status_bk' => 'diproses',
                     'created_at' => Carbon::now('Asia/Jayapura')
                 ]);
     
@@ -56,32 +50,125 @@ class BarangKeluarController extends Controller
                     'id_brg' => $form['id_brg'],
                     'jum_bk' => $form['jum_bk'],
                     'jum_setuju_bk' => NULL,
-                    'ket_bk' => 'data ke-' . $form['nomor'],
+                    'ket_bk' => NULL,
                     'created_at' => Carbon::now('Asia/Jayapura')
                 ]);
             }
 
-            return redirect()->back()->with([
-                'notif_status' => 'success',
-                'notif_message' => 'Berhasil tambah permohonan barang keluar',
-            ]);
+            if ($insert && $insertDetail) {
+                return redirect()->back()->with([
+                    'notif_status' => 'success',
+                    'notif_message' => 'Berhasil tambah permohonan barang keluar',
+                ]);
+            } else {
+                return redirect()->back()->with([
+                    'notif_status' => 'error',
+                    'notif_message' => 'Gagal tambah permohonan barang keluar',
+                ]);
+            }
         });
+    }
 
-        if ($db) {
+    public function updatePermohonan(Request $req)
+    {
+        $barang = Barang::find($req->id_brg);
+                
+        if($req->status_bk==='diproses')
+        {
+            $req->validate([
+                'id_brg' => 'required',
+                'jum_bk' => 'required|numeric|max:' . $barang->stok_brg,
+            ], [
+                '*.required' => 'Kolom wajib diisi',
+                'jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
+            ]);
+
+            $insert = BarangKeluar::find($req->id_bk)->update([
+                'id_user' => auth()->guard()->user()->id_user,
+                'updated_at' => Carbon::now('Asia/Jayapura')
+            ]);
+
+            $insertDetail = DetailBarangKeluar::find($req->id_dbk)->update([
+                'id_brg' => $req->id_brg,
+                'jum_bk' => $req->jum_bk,
+                'updated_at' => Carbon::now('Asia/Jayapura')
+            ]);
+
+            if ($insert && $insertDetail) {
+                return redirect()->back()->with([
+                    'notif_status' => 'success',
+                    'notif_message' => 'Berhasil update permohonan barang keluar',
+                ]);
+            } else {
+                return redirect()->back()->with([
+                    'notif_status' => 'error',
+                    'notif_message' => 'Gagal update permohonan barang keluar',
+                ]);
+            }
+        }
+        else 
+        {
+            $imageValidation = new ImageValidation();
+            $linkFile = NULL;
+    
+            $req->validate([
+                'bukti_bk' => 'required',
+            ],[
+                '*.required' => 'Kolom wajib diisi',
+            ]);
+
+            $linkFile = $imageValidation->validateImage($req, 'bukti_bk', $this->file_path);
+    
+            $insert = BarangKeluar::find($req->id_bk)->update([
+                'bukti_bk' => $linkFile,
+                'status_bk' => 'diterima',
+                'updated_at' => Carbon::now('Asia/Jayapura')
+            ]);
+
+            $updateStok = $barang->update([
+                'stok_brg' => $barang->stok_brg - $req->jum_setuju_bk,
+                'updated_at' => Carbon::now('Asia/Jayapura')
+            ]);
+
+            if ($insert && $updateStok) {
+                return redirect()->back()->with([
+                    'notif_status' => 'success',
+                    'notif_message' => 'Berhasil update permohonan barang keluar',
+                ]);
+            } else {
+                return redirect()->back()->with([
+                    'notif_status' => 'error',
+                    'notif_message' => 'Gagal update permohonan barang keluar',
+                ]);
+            }
+        }
+    }
+
+    public function hapusPermohonan(Request $req)
+    {
+        $barang = BarangKeluar::find($req->id_bk)->delete();
+        $detail = DetailBarangKeluar::find($req->id_dbk)->delete();
+        $storage = true;
+
+        if($req->bukti_bk)
+        {
+            $storage =  Storage::disk('public')->delete($this->file_path . basename($req->bukti_bk));
+        }
+
+
+        if($barang && $detail && $storage) {
             return redirect()->back()->with([
                 'notif_status' => 'success',
-                'notif_message' => 'Berhasil tambah permohonan barang keluar',
+                'notif_message' => 'Berhasil hapus permohonan barang keluar',
             ]);
         } else {
             return redirect()->back()->with([
                 'notif_status' => 'error',
-                'notif_message' => 'Gagal tambah permohonan barang keluar',
+                'notif_message' => 'Gagal hapus permohonan barang keluar',
             ]);
-        }
+        }  
     }
 
-    public function updatePermohonan(){}
-    public function hapusPermohonan(){}
     public function validasiPermohonan(Request $req)
     {
         $barang = Barang::find($req->id_brg);
@@ -101,6 +188,7 @@ class BarangKeluarController extends Controller
         if ($req->status_bk === 'diterima') {
             $barang->update([
                 'stok_brg' => $barang->stok_brg - $req->jum_setuju_bk,
+                'updated_at' => Carbon::now('Asia/Jayapura')
             ]);
         }
 

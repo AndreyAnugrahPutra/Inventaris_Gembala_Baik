@@ -61,7 +61,7 @@ const filters = ref({
 const statusPermo = [
     {status : 'diterima'},
     {status : 'ditolak'},
-    {status : 'diproses'},
+    {status : 'disetujui'},
 ]
 
 const confirm = useConfirm()

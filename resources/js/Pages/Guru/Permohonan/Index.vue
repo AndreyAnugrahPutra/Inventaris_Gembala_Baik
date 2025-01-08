@@ -72,14 +72,6 @@ const permoForm = useForm({
     forms : [
         { nomor : 0, id_brg : null, jum_bk : null,}
     ],
-    // id_bk : null,
-    // tgl_bk : null,
-    // bukti_bk : null,
-    // status_bk : null,
-    // id_dbk : null,
-    // id_brg : null,
-    // jum_bk : null,
-    // ket_bk : null,
 })
 
 const editForm = useForm({
@@ -90,6 +82,7 @@ const editForm = useForm({
     id_dbk : null,
     id_brg : null,
     jum_bk : null,
+    jum_setuju_bk : null,
     ket_bk : null,
 })
 
@@ -151,6 +144,7 @@ const editPermo = (idx) =>
     editForm.id_dbk = dataPermoFix.value[idx-1]['details'].id_dbk
     editForm.id_brg = dataPermoFix.value[idx-1]['details'].id_brg
     editForm.jum_bk = dataPermoFix.value[idx-1]['details'].jum_bk
+    editForm.jum_setuju_bk = dataPermoFix.value[idx-1]['details'].jum_setuju_bk
     editForm.ket_bk = dataPermoFix.value[idx-1]['details'].ket_bk
 
     showForm.value = true
@@ -196,7 +190,7 @@ const updatePermo = () => {
             severity: 'info'
         },
         accept: () => {
-            permoForm.post(route('guru.permohonan.update'), {
+            editForm.post(route('guru.permohonan.update'), {
                 onSuccess : () => refreshPage(),
             })
         },
@@ -222,7 +216,7 @@ const hapusPermo = idx => {
             severity: 'danger'
         },
         accept: () => {
-            permoForm.post(route('guru.permohonan.hapus'), {
+            editForm.post(route('guru.permohonan.hapus'), {
                 onSuccess : () => refreshPage(),
             })
         },
@@ -249,7 +243,7 @@ const hapusPermo = idx => {
                 <!-- Dialog Tambah Permohonan -->
                 <Dialog @hide="hideForm()" v-model:visible="showForm" :header="formType" class="w-[36rem]" modal>
                     <form @submit.prevent class="flex flex-wrap gap-y-8 gap-x-20 items-center my-1" autocomplete="off">
-                        <div class="flex gap-y-8 gap-x-8 items-center" v-for="(form, index) in permoForm.forms" :key="index">
+                        <div class="flex gap-y-8 gap-x-8 items-center" v-for="(form, index) in permoForm.forms" :key="index" v-if="formType==='Tambah Permohonan Barang Keluar'">
                             <!-- Barang -->
                             <div class="flex flex-col h-10">
                                 <FloatLabel variant="on">
@@ -272,11 +266,33 @@ const hapusPermo = idx => {
                             </div>
                             <Button icon="pi pi-minus" severity="danger" @click="removeField(index)" size="small"/>
                         </div>
+                        <div class="flex gap-y-8 gap-x-8 items-center" v-else>
+                            <!-- Barang -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <Select inputId="barang" :disabled="editForm.status_bk!=='diproses'" class="w-[13rem]" v-model="editForm.id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
+                                    <label for="barang">Nama Barang</label>
+                                </FloatLabel>
+                                 <span class="text-sm text-red-500" v-if="!!editForm.errors.id_brg">
+                                    {{ editForm.errors.id_brg }}
+                                </span>
+                            </div>
+                            <!-- Jumlah Permohonan -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <InputNumber inputId="jum_per" :disabled="editForm.status_bk!=='diproses'" v-model="editForm.jum_bk"/>
+                                    <label for="jum_per">Jumlah Permohonan</label>
+                                </FloatLabel>
+                                <span class="text-sm text-red-500" v-if="!!editForm.errors.jum_bk">
+                                    {{ editForm.errors.jum_bk }}
+                                </span>
+                            </div>
+                        </div>
                         <!-- Upload Bukti -->
-                        <div class="flex flex-col h-10" v-if="permoForm.status_bk==='diterima'">
+                        <div class="flex flex-col h-10" v-if="editForm.status_bk==='disetujui'">
                             <FileUpload mode="basic"  name="demo[]" accept=".jpg,.jpeg,.png"  invalidFileSizeMessage="Ukuran File Melebihi 1Mb" @uploader="onUpload($event)" auto customUpload chooseLabel="Upload Bukti" class="w-52" />
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.bukti_bk">
-                                {{ permoForm.errors.bukti_bk }}
+                            <span class="text-sm text-red-500" v-if="!!editForm.errors.bukti_bk">
+                                {{ editForm.errors.bukti_bk }}
                             </span>
                         </div>
                         <!-- button lihat bukti -->
@@ -285,7 +301,7 @@ const hapusPermo = idx => {
                             <Button @click="hideForm()" label="Batal" severity="danger"/>
                             <Button @click="submitPermo()" label="Submit" v-if="formType!=='Edit Permohonan'" :disabled="disableSubmit"/>
                             <Button @click="updatePermo()" label="Update" v-else :disabled="disableSubmit"/>
-                            <Button @click="tambahField()" label="Tambah Field" severity="success"/>
+                            <Button @click="tambahField()" label="Tambah Field" severity="success" v-if="formType==='Tambah Permohonan Barang Keluar'"/>
                         </div>
                     </form>
                 </Dialog>
@@ -320,7 +336,7 @@ const hapusPermo = idx => {
                         </Column>
                         <Column sortable header="Jumlah Disetujui" class="w-4">
                             <template #body="{data}">
-                                {{ data.details.jumlah_setuju??'Menunggu Validasi Tata Usaha'}}
+                                {{ data.details.jum_setuju_bk??'Menunggu Validasi Tata Usaha'}}
                             </template>
                         </Column>
                         <Column sortable header="Satuan" filterField="details.barang.satuan" class="w-4">
@@ -336,12 +352,16 @@ const hapusPermo = idx => {
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="status_bk" class="w-4"/>
+                        <Column sortable header="Status" field="status_bk" class="w-4">
+                            <template  #body="{data}">
+                                {{ data.status_bk==='diterima'&&data.bukti_bk===null?'Upload Bukti':data.status_bk }}
+                            </template>
+                        </Column>
                         <Column header="Action" frozen alignFrozen="right" class="w-4">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.status_bk!=='diproses'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
-                                    <Button :disabled="data.details.jumlah_setuju" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
+                                    <Button :disabled="data.status_bk!=='diproses'&&data.status_bk!=='disetujui'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.details.jum_setuju_bk" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

@@ -231,4 +231,6 @@ Route::middleware(['auth', 'guru'])->group(function () {
     })->name('guru.permohonan.page');
 
     Route::post('guru/permohonan/tambah',[BarangKeluarController::class, 'tambahPermohonan'])->name('guru.permohonan.tambah');
+    Route::post('guru/permohonan/update',[BarangKeluarController::class, 'updatePermohonan'])->name('guru.permohonan.update');
+    Route::post('guru/permohonan/hapus',[BarangKeluarController::class, 'hapusPermohonan'])->name('guru.permohonan.hapus');
 });

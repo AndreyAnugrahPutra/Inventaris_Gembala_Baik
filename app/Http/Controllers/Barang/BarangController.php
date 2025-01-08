@@ -41,7 +41,7 @@ class BarangController extends Controller
             'stok_brg' => $req->stok_brg,
             'satuan' => $req->satuan,
             'created_at' => Carbon::now('Asia/Jayapura')
-        ]);
+        ]); 
 
         if($insert)
         {
