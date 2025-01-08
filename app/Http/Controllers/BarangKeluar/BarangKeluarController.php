@@ -10,6 +10,7 @@ use App\Services\ImageValidation;
 use Carbon\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BarangKeluarController extends Controller
 {
@@ -18,42 +19,55 @@ class BarangKeluarController extends Controller
 
     public function tambahPermohonan(Request $req)
     {
-        $barang = Barang::where('id_brg', $req->id_brg)->get('stok_brg');
+        // dd($req->forms);
+        // foreach ($req->forms as $form)
+        // {
+        //     $barang = Barang::find($form['id_brg']);
+        //     dd($form['index']);
+        // }
 
-        $imageValidation = new ImageValidation();
+        $db = DB::transaction(function () use ($req)
+        {
+            foreach($req->forms as $form)
+            {
+                $barang = Barang::find($form['id_brg']);
+        
+                $req->validate([
+                    'forms.*.id_brg' => 'required',
+                    'forms.'.$form['nomor'].'.jum_bk' => 'required|numeric|max:' . $barang->stok_brg,
+                ], [
+                    'forms.*.required' => 'Kolom wajib diisi',
+                    'forms.'.$form['nomor'].'.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
+                ]);
+        
+                $insert = BarangKeluar::create([
+                    'tgl_bk' => Carbon::now('Asia/Jayapura')->format('Y-m-d'),
+                    'id_user' => auth()->guard()->user()->id_user,
+                    'bukti_bk' => NULL,
+                    'status_bk' => 'diproses '.$form['nomor'],
+                    'created_at' => Carbon::now('Asia/Jayapura')
+                ]);
+    
+        
+                sleep(1); // delay selama 1 detik lalu melanjutkan ke insertDetails
+        
+                $insertDetail = DetailBarangKeluar::create([
+                    'id_bk' => $insert->latest()->first()->id_bk,
+                    'id_brg' => $form['id_brg'],
+                    'jum_bk' => $form['jum_bk'],
+                    'jum_setuju_bk' => NULL,
+                    'ket_bk' => 'data ke-' . $form['nomor'],
+                    'created_at' => Carbon::now('Asia/Jayapura')
+                ]);
+            }
 
-        $req->validate([
-            'tgl_bk' => 'required',
-            'bukti_bk' => 'required',
-            'id_brg' => 'required',
-            'jum_bk' => 'required|numeric|max:' . $barang[0]['stok_brg'],
-        ], [
-            '*.required' => 'Kolom wajib diisi',
-            'jum_bk.max' => 'Melebihi Stok! Stok Tersisa : ' . $barang[0]['stok_brg']
-        ]);
+            return redirect()->back()->with([
+                'notif_status' => 'success',
+                'notif_message' => 'Berhasil tambah permohonan barang keluar',
+            ]);
+        });
 
-        $linkFile = $imageValidation->validateImage($req, 'bukti_bk', $this->file_path);
-
-        $insert = BarangKeluar::create([
-            'tgl_bk' => Carbon::parse($req->tgl_bk)->timezone('Asia/Jayapura')->format('Y-m-d'),
-            'id_user' => auth()->guard()->user()->id_user,
-            'bukti_bk' => $linkFile,
-            'status_bk' => 'diproses',
-            'created_at' => Carbon::now('Asia/Jayapura')
-        ]);
-
-        sleep(1); // delay selama 1 detik lalu melanjutkan ke insertDetails
-
-        $insertDetail = DetailBarangKeluar::create([
-            'id_bk' => $insert->latest()->first()->id_bk,
-            'id_brg' => $req->id_brg,
-            'jum_bk' => $req->jum_bk,
-            'jum_setuju_bk' => NULL,
-            'ket_bk' => NULL,
-            'created_at' => Carbon::now('Asia/Jayapura')
-        ]);
-
-        if ($insert && $insertDetail) {
+        if ($db) {
             return redirect()->back()->with([
                 'notif_status' => 'success',
                 'notif_message' => 'Berhasil tambah permohonan barang keluar',

@@ -222,7 +222,7 @@ Route::middleware(['auth', 'guru'])->group(function () {
     })->name('guru.profile');
 
     Route::get('/guru/permohonan', function(){
-        $dataPermo = BarangKeluar::with('details', 'details.barang')->get();
+        $dataPermo = BarangKeluar::with('details.barang')->get();
         $dataBarang = Barang::get(['id_brg', 'nama_brg']);
         return Inertia::render('Guru/Permohonan/Index', [
             'dataPermo' => $dataPermo,

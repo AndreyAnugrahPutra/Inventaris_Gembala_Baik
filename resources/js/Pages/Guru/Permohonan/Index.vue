@@ -69,6 +69,20 @@ const dataPermoFix = ref([])
 const pageTitle = 'Permohonan Barang Keluar'
 
 const permoForm = useForm({
+    forms : [
+        { nomor : 0, id_brg : null, jum_bk : null,}
+    ],
+    // id_bk : null,
+    // tgl_bk : null,
+    // bukti_bk : null,
+    // status_bk : null,
+    // id_dbk : null,
+    // id_brg : null,
+    // jum_bk : null,
+    // ket_bk : null,
+})
+
+const editForm = useForm({
     id_bk : null,
     tgl_bk : null,
     bukti_bk : null,
@@ -105,16 +119,16 @@ const refreshPage = () =>
 
 const onUpload = (e) => 
 {
-    permoForm.bukti_bk = e.files[0]
+    editForm.bukti_bk = e.files[0]
 
-    if(permoForm.bukti_bk?.size < 1000000)
+    if(editForm.bukti_bk?.size < 1000000)
     {
-        permoForm.clearErrors('bukti_bk')
+        editForm.clearErrors('bukti_bk')
         toast.add({ severity: 'info', summary: 'Notifikasi', detail: 'foto terupload!', life: 2000, group : 'tr' })   
     }
     else
     {
-        permoForm.errors.bukti_bk = 'Ukuran File melebihi 1Mb'
+        editForm.errors.bukti_bk = 'Ukuran File melebihi 1Mb'
         disableSubmit.value = true 
     }
     const reader = new FileReader();
@@ -123,25 +137,27 @@ const onUpload = (e) =>
         previewImg.value = e.target.result;
     };
 
-    reader.readAsDataURL(permoForm.bukti_bk);
+    reader.readAsDataURL(editForm.bukti_bk);
 }
 
 const editPermo = (idx) => 
 {
     formType.value = 'Edit Permohonan'
 
-    permoForm.id_bk = dataPermoFix.value[idx-1]['id_bk']
-    permoForm.tgl_bk = dataPermoFix.value[idx-1]['tgl_bk']
-    permoForm.bukti_bk = dataPermoFix.value[idx-1]['bukti_bk']
-    permoForm.status_bk = dataPermoFix.value[idx-1]['status_bk']
-    permoForm.id_dbk = dataPermoFix.value[idx-1]['details'].id_dbk
-    permoForm.id_brg = dataPermoFix.value[idx-1]['details'].id_brg
-    permoForm.jum_bk = dataPermoFix.value[idx-1]['details'].jum_bk
-    permoForm.ket_bk = dataPermoFix.value[idx-1]['details'].ket_bk
+    editForm.id_bk = dataPermoFix.value[idx-1]['id_bk']
+    editForm.tgl_bk = dataPermoFix.value[idx-1]['tgl_bk']
+    editForm.bukti_bk = dataPermoFix.value[idx-1]['bukti_bk']
+    editForm.status_bk = dataPermoFix.value[idx-1]['status_bk']
+    editForm.id_dbk = dataPermoFix.value[idx-1]['details'].id_dbk
+    editForm.id_brg = dataPermoFix.value[idx-1]['details'].id_brg
+    editForm.jum_bk = dataPermoFix.value[idx-1]['details'].jum_bk
+    editForm.ket_bk = dataPermoFix.value[idx-1]['details'].ket_bk
 
     showForm.value = true
 }
 
+const tambahField = () => permoForm.forms.push({ nomor : permoForm.forms.length,id_brg : null, jum_bk : null,})
+const removeField = idx => permoForm.forms.splice(idx,1)
 
 const submitPermo = () => {
     confirm.require({
@@ -188,9 +204,9 @@ const updatePermo = () => {
 }
 
 const hapusPermo = idx => {
-    permoForm.id_bk = dataPermoFix.value[idx-1]['id_bk']
-    permoForm.bukti_bk = dataPermoFix.value[idx-1]['bukti_bk']
-    permoForm.id_dbk = dataPermoFix.value[idx-1]['details'][0].id_dbk
+    editForm.id_bk = dataPermoFix.value[idx-1]['id_bk']
+    editForm.bukti_bk = dataPermoFix.value[idx-1]['bukti_bk']
+    editForm.id_dbk = dataPermoFix.value[idx-1]['details'].id_dbk
 
     confirm.require({
         message: `Hapus Permohonan Barang Keluar?`,
@@ -233,38 +249,31 @@ const hapusPermo = idx => {
                 <!-- Dialog Tambah Permohonan -->
                 <Dialog @hide="hideForm()" v-model:visible="showForm" :header="formType" class="w-[36rem]" modal>
                     <form @submit.prevent class="flex flex-wrap gap-y-8 gap-x-20 items-center my-1" autocomplete="off">
-                        <!-- Tanggal Permohonan -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <DatePicker  inputId="tgl" v-model="permoForm.tgl_bk" dateFormat="dd-mm-yy"/>
-                                <label for="tgl">Tanggal Permohonan</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.tgl_bk">
-                                {{ permoForm.errors.tgl_bk }}
-                            </span>
-                        </div>
-                        <!-- Barang -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <Select inputId="barang" class="w-[13rem]" v-model="permoForm.id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
-                                <label for="barang">Nama Barang</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.id_brg">
-                                {{ permoForm.errors.id_brg }}
-                            </span>
-                        </div>
-                        <!-- Jumlah Permohonan -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputNumber inputId="jum_per" v-model="permoForm.jum_bk"/>
-                                <label for="jum_per">Jumlah Permohonan</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.jum_bk">
-                                {{ permoForm.errors.jum_bk }}
-                            </span>
+                        <div class="flex gap-y-8 gap-x-8 items-center" v-for="(form, index) in permoForm.forms" :key="index">
+                            <!-- Barang -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <Select inputId="barang" class="w-[13rem]" v-model="permoForm.forms[index].id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
+                                    <label for="barang">Nama Barang</label>
+                                </FloatLabel>
+                                <!-- <span class="text-sm text-red-500" v-if="!!permoForm.errors.forms?.index.id_brg">
+                                    {{ permoForm.errors.forms?.index.id_brg }}
+                                </span> -->
+                            </div>
+                            <!-- Jumlah Permohonan -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <InputNumber inputId="jum_per" v-model="permoForm.forms[index].jum_bk"/>
+                                    <label for="jum_per">Jumlah Permohonan</label>
+                                </FloatLabel>
+                                <span class="text-sm text-red-500" v-if="!!permoForm.errors['forms.'+index+'.jum_bk']">
+                                    {{ permoForm.errors['forms.'+index+'.jum_bk'] }}
+                                </span>
+                            </div>
+                            <Button icon="pi pi-minus" severity="danger" @click="removeField(index)" size="small"/>
                         </div>
                         <!-- Upload Bukti -->
-                        <div class="flex flex-col h-10">
+                        <div class="flex flex-col h-10" v-if="permoForm.status_bk==='diterima'">
                             <FileUpload mode="basic"  name="demo[]" accept=".jpg,.jpeg,.png"  invalidFileSizeMessage="Ukuran File Melebihi 1Mb" @uploader="onUpload($event)" auto customUpload chooseLabel="Upload Bukti" class="w-52" />
                             <span class="text-sm text-red-500" v-if="!!permoForm.errors.bukti_bk">
                                 {{ permoForm.errors.bukti_bk }}
@@ -276,6 +285,7 @@ const hapusPermo = idx => {
                             <Button @click="hideForm()" label="Batal" severity="danger"/>
                             <Button @click="submitPermo()" label="Submit" v-if="formType!=='Edit Permohonan'" :disabled="disableSubmit"/>
                             <Button @click="updatePermo()" label="Update" v-else :disabled="disableSubmit"/>
+                            <Button @click="tambahField()" label="Tambah Field" severity="success"/>
                         </div>
                     </form>
                 </Dialog>
@@ -330,7 +340,7 @@ const hapusPermo = idx => {
                         <Column header="Action" frozen alignFrozen="right" class="w-4">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.details.jumlah_setuju" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.status_bk!=='diproses'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
                                     <Button :disabled="data.details.jumlah_setuju" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
                                 </div>
                             </template>

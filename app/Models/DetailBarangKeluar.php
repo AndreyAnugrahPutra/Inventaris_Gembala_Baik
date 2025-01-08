@@ -46,7 +46,8 @@ class DetailBarangKeluar extends Model
 
     public static function generateIdDbk()
     {
-        $lastDbk = self::orderBy('id_dbk', 'desc')->first();
+        // $lastDbk = self::orderBy('id_dbk', 'desc')->first();
+        $lastDbk = self::latest()->first();
 
         if (!$lastDbk) {
             return 'dbk-'.date('m-Y').'-001';
