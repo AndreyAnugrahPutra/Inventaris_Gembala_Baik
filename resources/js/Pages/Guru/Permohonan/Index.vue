@@ -7,7 +7,6 @@ import {
     Button,
     Column,
     DataTable,
-    DatePicker,
     Dialog,
     FileUpload,
     FloatLabel,
@@ -100,6 +99,8 @@ const hideForm = () =>
     showForm.value = false
     permoForm.reset()
     permoForm.clearErrors()
+    editForm.reset()
+    editForm.clearErrors()
 }
 
 const refreshPage = () =>
@@ -250,6 +251,9 @@ const hapusPermo = idx => {
                                     <Select inputId="barang" class="w-[13rem]" v-model="permoForm.forms[index].id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
                                     <label for="barang">Nama Barang</label>
                                 </FloatLabel>
+                                 <span class="text-sm text-red-500" v-if="!!permoForm.errors['forms.'+index+'.id_brg']">
+                                    {{ permoForm.errors['forms.'+index+'.id_brg'] }}
+                                </span>
                                 <!-- <span class="text-sm text-red-500" v-if="!!permoForm.errors.forms?.index.id_brg">
                                     {{ permoForm.errors.forms?.index.id_brg }}
                                 </span> -->
@@ -360,8 +364,8 @@ const hapusPermo = idx => {
                         <Column header="Action" frozen alignFrozen="right" class="w-4">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.status_bk!=='diproses'&&data.status_bk!=='disetujui'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
-                                    <Button :disabled="data.details.jum_setuju_bk" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
+                                    <Button :disabled="data.status_bk==='diterima'||data.status_bk==='ditolak'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.status_bk==='disetujui'||data.status_bk==='diterima'" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

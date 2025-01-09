@@ -9,7 +9,6 @@ import {
     DataTable,
     DatePicker,
     Dialog,
-    FileUpload,
     FloatLabel,
     IconField,
     Image,
@@ -61,7 +60,7 @@ const filters = ref({
 const statusPermo = [
     {status : 'diterima'},
     {status : 'ditolak'},
-    {status : 'diproses'},
+    {status : 'disetujui'},
 ]
 
 const confirm = useConfirm()
@@ -125,7 +124,7 @@ const editPermo = (idx) =>
 
 const terimaPermo = () => {
     confirm.require({
-        message: `Terima Permohonan ?`,
+        message: `Validasi Permohonan ?`,
         header: 'Peringatan',
         icon: 'pi pi-exclamation-triangle',
         rejectProps: {
@@ -136,28 +135,6 @@ const terimaPermo = () => {
         acceptProps: {
             label: 'Terima',
             severity: 'info'
-        },
-        accept: () => {
-            permoForm.post(route('bendahara.permohonan.terima'), {
-                onSuccess : () => refreshPage(),
-            })
-        },
-    })
-}
-
-const tolakPermo = () => {
-    confirm.require({
-        message: `Tolak Permohonan ?`,
-        header: 'Peringatan',
-        icon: 'pi pi-exclamation-triangle',
-        rejectProps: {
-            label: 'Batal',
-            severity: 'secondary',
-            outlined: true,
-        },
-        acceptProps: {
-            label: 'Tolak',
-            severity: 'danger'
         },
         accept: () => {
             permoForm.post(route('bendahara.permohonan.terima'), {
@@ -238,9 +215,9 @@ const tolakPermo = () => {
                             </span>
                         </div>
                         <div class="flex items-center gap-x-2 w-full">
-                            <Button @click="terimaPermo()" label="Terima" v-if="formType==='Validasi Permohonan'"/>
-                            <Button @click="tolakPermo()" label="Tolak" severity="danger" v-if="formType==='Validasi Permohonan'"/>
-                            <Button @click="hideForm()" label="Batal" severity="contrast" outlined/>
+                            <Button @click="terimaPermo()" label="Validasi" v-if="formType==='Validasi Permohonan'"/>
+                            <!-- <Button @click="tolakPermo()" label="Tolak" severity="danger" v-if="formType==='Validasi Permohonan'"/> -->
+                            <Button @click="hideForm()" label="Batal" severity="danger" outlined/>
                         </div>
                     </form>
                 </Dialog>

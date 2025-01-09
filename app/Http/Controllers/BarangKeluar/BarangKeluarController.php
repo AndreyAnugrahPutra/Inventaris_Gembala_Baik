@@ -20,18 +20,22 @@ class BarangKeluarController extends Controller
 
     public function tambahPermohonan(Request $req)
     {
+        // dd($req->forms[0]);
         $db = DB::transaction(function () use ($req)
         {
             foreach($req->forms as $form)
             {
                 $barang = Barang::find($form['id_brg']);
+                $stok_brg = $barang->stok_brg ?? 0;
         
                 $req->validate([
                     'forms.*.id_brg' => 'required',
-                    'forms.'.$form['nomor'].'.jum_bk' => 'required|numeric|max:' . $barang->stok_brg,
+                    // 'forms.'.$form['nomor'].'.jum_bk' => 'required|numeric|max:' . $barang->stok_brg,
+                    'forms.*.jum_bk' => 'required|numeric|max:' . $stok_brg,
                 ], [
-                    'forms.*.required' => 'Kolom wajib diisi',
-                    'forms.'.$form['nomor'].'.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
+                    'forms.*.*.required' => 'Kolom wajib diisi',
+                    // 'forms.'.$form['nomor'].'.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
+                    'forms.*.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
                 ]);
         
                 $insert = BarangKeluar::create([
@@ -126,7 +130,7 @@ class BarangKeluarController extends Controller
             ]);
 
             $updateStok = $barang->update([
-                'stok_brg' => $barang->stok_brg - $req->jum_setuju_bk,
+                'stok_brg' => $barang->stok_brg -= $req->jum_setuju_bk,
                 'updated_at' => Carbon::now('Asia/Jayapura')
             ]);
 

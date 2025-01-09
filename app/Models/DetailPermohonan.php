@@ -48,7 +48,7 @@ class DetailPermohonan extends Model
 
     public static function generateIdDp()
     {
-        $lastDp = self::orderBy('id_dp', 'desc')->first();
+        $lastDp = self::latest()->first();
 
         if (!$lastDp) {
             return 'dp-'.date('m-Y').'-001';

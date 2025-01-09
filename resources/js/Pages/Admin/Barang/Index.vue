@@ -4,7 +4,6 @@ import { Head, router, useForm } from '@inertiajs/vue3'
 import {FilterMatchMode} from '@primevue/core/api'
 
 import {
-    Badge,
     Button,
     Column,
     DataTable,
@@ -12,7 +11,6 @@ import {
     FloatLabel,
     IconField,
     InputIcon,
-    InputNumber,
     InputText,
     Select,
     useConfirm,
@@ -204,16 +202,6 @@ const hapusBarang = idx => {
                                 {{ barangForm.errors.id_ktg }}
                             </span>
                         </div>
-                        <!-- stok barang -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputNumber fluid inputId="stok" v-model="barangForm.stok_brg"/>
-                                <label for="stok">Stok Barang</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!barangForm.errors.stok_brg">
-                                {{ barangForm.errors.stok_brg }}
-                            </span>
-                        </div>
                         <!-- satuan barang -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
@@ -258,7 +246,7 @@ const hapusBarang = idx => {
                         <Column header="Action">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button  @click=editBarang(data.index) icon="pi pi-pen-to-square" outlined size="small" />
+                                    <Button :disabled="data.stok_brg>0"   @click=editBarang(data.index) icon="pi pi-pen-to-square" outlined size="small" />
                                     <Button severity="danger" @click=hapusBarang(data.index) icon="pi pi-trash" outlined size="small" />
                                 </div>
                             </template>
