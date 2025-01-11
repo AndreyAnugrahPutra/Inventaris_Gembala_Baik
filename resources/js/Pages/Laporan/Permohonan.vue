@@ -76,9 +76,7 @@ watch(() =>
 )
 
 const exportPDF = () => {
-     router.post(route('laporan.permohonan.pdf'),{data : dt.value.processedData},{
-        onFinish : () => setTimeout(() => console.clear(),500)
-    })
+     router.post(route('laporan.permohonan.pdf'),{data : dt.value.processedData})
 }
 </script>
 

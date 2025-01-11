@@ -113,33 +113,11 @@ class BarangController extends Controller
 
     public function barangPDF(Request $req)
     {
-        $data = $req->data;
-        // Buat objek FPDF
-        $pdf = new Fpdf();
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 8);
 
-        $pdf->Cell(40, 10, 'Laporan Stok Barang');
-        $pdf->Ln();
-
-        // Buat tabel
-        $pdf->Cell(7, 10, 'No', 1, 0, 'L');
-        $pdf->Cell(25, 10, 'Nama Barang', 1, 0, 'L');
-        $pdf->Cell(28, 10, 'Kategori Barang', 1, 0, 'L');
-        $pdf->Cell(25, 10, 'Jumlah Barang', 1, 0, 'L');
-        $pdf->Cell(15, 10, 'Satuan', 1, 0, 'L');
-        $pdf->Ln();
-
-        foreach ($data as $row) {
-            $pdf->Cell(7, 10, $row['index'], 1);
-            $pdf->Cell(25, 10, $row['nama_brg'], 1);
-            $pdf->Cell(28, 10, $row['kategori']['nama_kategori'], 1);
-            $pdf->Cell(25, 10, $row['stok_brg'], 1);
-            $pdf->Cell(15, 10, $row['satuan'], 1);
-            $pdf->Ln();
-        }
-        $pdf->Cell(40, 10, 'Laporan Dicetak Pada Tanggal ' . Carbon::now('Asia/Jayapura')->format('d-m-Y'));
-        $pdf->Output('D', 'laporan-barang-export.pdf');
-        exit;
+        return Inertia::render('Laporan/PdfBarang',
+        [
+            'data' => $req,
+            'tanggal' => Carbon::now('Asia/Jayapura')->format('d-m-Y')
+        ]);
     }
 }

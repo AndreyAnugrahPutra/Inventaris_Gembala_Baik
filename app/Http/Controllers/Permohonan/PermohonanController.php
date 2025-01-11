@@ -224,35 +224,12 @@ class PermohonanController extends Controller
 
     public function permohonanPDF(Request $req)
     {
-        $data = $req->data;
-        // Buat objek FPDF
-        $pdf = new FPDF();
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 8);
-
-        $pdf->Cell(40, 10, 'Laporan Permohonan Barang Masuk');
-        $pdf->Ln();
-
-        // Buat tabel
-        $pdf->Cell(7, 10, 'No', 1, 0, 'L');
-        $pdf->Cell(32, 10, 'Tanggal Permohonan', 1, 0, 'L');
-        $pdf->Cell(25, 10, 'Nama Barang', 1, 0, 'L');
-        $pdf->Cell(30, 10, 'Jumlah Permohonan', 1, 0, 'L');
-        $pdf->Cell(22, 10, 'Jumlah Setuju', 1, 0, 'L');
-        $pdf->Cell(15, 10, 'Satuan', 1, 0, 'L');
-        $pdf->Ln();
-
-        foreach ($data as $row) {
-            $pdf->Cell(7, 10, $row['index'], 1);
-            $pdf->Cell(32, 10, $row['tgl_permo'], 1);
-            $pdf->Cell(25, 10, $row['details']['barang']['nama_brg'], 1);
-            $pdf->Cell(30, 10, $row['details']['jumlah_per'], 1);
-            $pdf->Cell(22, 10, $row['details']['jumlah_setuju'], 1);
-            $pdf->Cell(15, 10, $row['details']['barang']['satuan'], 1);
-            $pdf->Ln();
-        }
-        $pdf->Cell(40, 10, 'Laporan Dicetak Pada Tanggal '.Carbon::now('Asia/Jayapura')->format('d-m-Y'));
-        $pdf->Output('D','laporan-permohonan-export.pdf');
-        exit;
+        return Inertia::render(
+            'Laporan/PdfPermohonan',
+            [
+                'data' => $req,
+                'tanggal' => Carbon::now('Asia/Jayapura')->format('d-m-Y')
+            ]
+        );
     }
 }
