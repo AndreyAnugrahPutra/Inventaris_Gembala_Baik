@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3000
--- Generation Time: Dec 22, 2024 at 12:25 PM
+-- Generation Time: Jan 12, 2025 at 11:08 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -42,8 +42,8 @@ CREATE TABLE `barang` (
 --
 
 INSERT INTO `barang` (`id_brg`, `id_ktg`, `nama_brg`, `stok_brg`, `satuan`, `created_at`, `updated_at`) VALUES
-('brg-001', 'ktg-001', 'Kertas A4', 6, 'rim', '2024-12-17 21:52:36', '2024-12-20 23:59:18'),
-('brg-002', 'ktg-002', 'Deterjen', 1, 'pcs', '2024-12-18 02:36:43', NULL);
+('brg-001', 'ktg-001', 'Kertas A4', 4, 'rim', '2025-01-09 22:40:07', '2025-01-10 00:19:22'),
+('brg-002', 'ktg-002', 'Deterjen', 0, 'pcs', '2025-01-10 20:36:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -55,7 +55,7 @@ CREATE TABLE `barang_keluar` (
   `id_bk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl_bk` date NOT NULL,
   `id_user` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bukti_bk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bukti_bk` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status_bk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL
@@ -66,7 +66,7 @@ CREATE TABLE `barang_keluar` (
 --
 
 INSERT INTO `barang_keluar` (`id_bk`, `tgl_bk`, `id_user`, `bukti_bk`, `status_bk`, `created_at`, `updated_at`) VALUES
-('bk-2024-001', '2024-12-24', 'id_002', '/storage/upload/barang_keluar/bukti/qyVA04Rq-2024-12-20.jpg', 'diterima', '2024-12-20 21:46:27', '2024-12-20 23:58:28');
+('bk-2025-001', '2025-01-10', 'id_002', '/storage/upload/barang_keluar/bukti/WeOurzef-2025-01-10.jpg', 'diterima', '2025-01-10 00:14:00', '2025-01-10 00:19:22');
 
 -- --------------------------------------------------------
 
@@ -114,7 +114,7 @@ CREATE TABLE `detail_barang_keluar` (
 --
 
 INSERT INTO `detail_barang_keluar` (`id_dbk`, `id_bk`, `id_brg`, `jum_bk`, `jum_setuju_bk`, `ket_bk`, `created_at`, `updated_at`) VALUES
-('dbk-12-2024-001', 'bk-2024-001', 'brg-001', 3, 3, 'okeee', '2024-12-20 21:46:28', '2024-12-20 23:58:28');
+('dbk-01-2025-001', 'bk-2025-001', 'brg-001', 1, 1, 'oke', '2025-01-10 00:14:01', '2025-01-10 00:16:10');
 
 -- --------------------------------------------------------
 
@@ -138,10 +138,8 @@ CREATE TABLE `detail_permohonan` (
 --
 
 INSERT INTO `detail_permohonan` (`id_dp`, `id_permo`, `id_brg`, `jumlah_per`, `jumlah_setuju`, `ket_permo`, `created_at`, `updated_at`) VALUES
-('dp-12-2024-001', 'per-2024-001', 'brg-001', 1, 1, 'ok', '2024-12-19 03:39:55', '2024-12-20 01:04:05'),
-('dp-12-2024-002', 'per-2024-002', 'brg-002', 1, 1, 'lanjut', '2024-12-20 01:05:50', '2024-12-20 01:06:19'),
-('dp-12-2024-003', 'per-2024-003', 'brg-001', 2, 2, 'lanjutkan', '2024-12-20 01:06:47', '2024-12-20 01:07:15'),
-('dp-12-2024-004', 'per-2024-004', 'brg-001', 5, 0, 'terlalu banyak', '2024-12-20 01:09:46', '2024-12-20 01:10:34');
+('dp-01-2025-002', 'per-2025-002', 'brg-001', 5, 5, 'oke', '2025-01-09 23:57:36', '2025-01-10 00:03:48'),
+('dp-01-2025-003', 'per-2025-003', 'brg-002', 4, NULL, NULL, '2025-01-10 20:37:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -257,7 +255,7 @@ CREATE TABLE `password_reset_tokens` (
 CREATE TABLE `permohonan` (
   `id_permo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl_permo` date NOT NULL,
-  `bukti_permo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bukti_permo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL
@@ -268,10 +266,8 @@ CREATE TABLE `permohonan` (
 --
 
 INSERT INTO `permohonan` (`id_permo`, `tgl_permo`, `bukti_permo`, `status`, `created_at`, `updated_at`) VALUES
-('per-2024-001', '2024-12-19', '/storage/upload/permohonan/bukti/qYzkDwHE-2024-12-19.jpg', 'diterima', '2024-12-19 03:39:54', '2024-12-20 01:04:05'),
-('per-2024-002', '2024-12-21', '/storage/upload/permohonan/bukti/jvX7w8fA-2024-12-20.jpg', 'diterima', '2024-12-20 01:05:49', '2024-12-20 01:06:19'),
-('per-2024-003', '2024-12-20', '/storage/upload/permohonan/bukti/sLlxuapf-2024-12-20.jpg', 'diterima', '2024-12-20 01:06:46', '2024-12-20 01:07:14'),
-('per-2024-004', '2024-12-21', '/storage/upload/permohonan/bukti/WozWcgc0-2024-12-20.jpg', 'ditolak', '2024-12-20 01:09:45', '2024-12-20 01:10:34');
+('per-2025-002', '2025-01-09', '/storage/upload/permohonan/bukti/FJkPEIDJ-2025-01-10.jpg', 'diterima', '2025-01-09 23:57:35', '2025-01-10 00:03:48'),
+('per-2025-003', '2025-01-10', NULL, 'diproses', '2025-01-10 20:37:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -316,8 +312,11 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('0wRt083XNQxkAzDxUeVfSiuGrbGANptKVQbUM3ue', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', 'YToyOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiV2s2WGxpZEtkU2pmU1ZaSjdFcHpaTHM0bjJOUmJKNDhpejNURHQ0aCI7fQ==', 1734868751),
-('wFRpZKEJpXp8A6bnohjBIa6YTYRuGTytVcCaY1tx', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36', 'YTozOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiVXZjaTZScGpDcXdra2ozaWRFSVZHS3V3R3NJdE9wMVBUUkV4VTZySSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fX0=', 1734870292);
+('DtAvsiTXASSwRMnJl1uanN803SSlRcEk6qj9yt05', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YToyOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiY1Fpa1VvZXV0Ynl1eDRqSlZSbkZEZVQySnhNdUZSekNjMUIxWmZHZyI7fQ==', 1736598104),
+('MIpTAVWBJpnbFl5NMK81TXafN8IXuiTMVgDVQjDO', 'id_004', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTozOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiOFNZSFpWbE8zUHA5RFg1Y2VaU2t5cmdBeUZWcDNmSk9pSGJ1ZzhXcyI7czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO3M6NjoiaWRfMDA0Ijt9', 1736509129),
+('TYIGx2BGZmZ3EpiUcqn41hhKWxUezeqnL8EaYxZy', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YToyOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiMjFlVWRXMmZFdkYxTFlNbmMxRWpJZVNVVnFkaDhISmQ3Y0p2ZkUxMiI7fQ==', 1736437439),
+('UVVW3kcEsETEpZyNku6u7n8GXgXiwBbiUE1SSyMr', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YToyOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiUU85TThxS2xtRU1LdzNIc1VHRGtONEZydmJyd3JpdXh3bTUyd3dOUiI7fQ==', 1736437285),
+('W07tB382cAk9KEJopJXZQl1DPjURB3NZUku4QujC', 'id_001', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieVhEMzd2ZjI4YTlONTJQaXBhdW50Z2dENVNHbnRPN0hBYmxqblU4TyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtzOjY6ImlkXzAwMSI7fQ==', 1736509022);
 
 -- --------------------------------------------------------
 
