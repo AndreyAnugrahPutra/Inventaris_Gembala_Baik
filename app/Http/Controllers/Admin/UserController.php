@@ -15,7 +15,7 @@ class UserController extends Controller
     {
         $req->validate([
             'username' => 'required|unique:users,username',
-            'email' => 'required|unique:users,email',
+            'email' => 'required|email:rfc|unique:users,email',
             'password' => 'required|min:6',
             'id_role' => 'required',
             'id_unit' => 'required',
@@ -24,6 +24,7 @@ class UserController extends Controller
             'password.min' => 'Password minimal 6 karakter',
             'username.unique' => $req->username.' telah terdaftar',
             'nama.unique' => $req->nama. ' telah terdaftar',
+            'email.email' => $req->email.' tidak valid',
             'email.unique' => $req->email.' telah terdaftar',
         ]);
 
@@ -68,13 +69,14 @@ class UserController extends Controller
 
         $data = $req->validate([
             'username' => 'required|unique:users,username,'.$req->id_user.',id_user',
-            'email' => 'required|unique:users,email,'.$req->id_user.',id_user',
+            'email' => 'required|email:rfc|unique:users,email,'.$req->id_user.',id_user',
             'id_role' => 'required',
             'id_unit' => 'required',
         ], [
             '*.required' => 'Kolom wajib diisi',
             'password.min' => 'Password minimal 6 karakter',
             'username.unique' => $req->username . ' telah terdaftar',
+            'email.email' => 'email tidak valid',
             'email.unique' => 'email telah terdaftar',
         ]);  
         
@@ -98,7 +100,7 @@ class UserController extends Controller
 
     public function hapusUser(Request $req)
     {
-        $user = User::find($req->id)->delete();
+        $user = User::find($req->id_user)->delete();
 
         if ($user) {
             return back()->with([

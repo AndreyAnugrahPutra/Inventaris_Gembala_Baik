@@ -27,19 +27,19 @@ class BarangController extends Controller
         $req->validate([
             'id_ktg' => 'required',
             'nama_brg' => 'required|unique:barang,nama_brg',
-            // 'stok_brg' => 'required|numeric',
+            'stok_brg' => 'required|numeric',
             'satuan' => 'required|alpha',
         ],[
             '*.required' => 'Kolom wajib diisi',
             'nama_brg.unique' => $req->nama_brg.' sudah terdaftar',
-            // '*.numeric' => 'Kolom wajib berupa angka',
+            '*.numeric' => 'Kolom wajib berupa angka',
             '*.alpha' => 'Kolom wajib berupa huruf',
         ]);
 
         $insert = Barang::create([
             'id_ktg' => $req->id_ktg,
             'nama_brg' => $req->nama_brg,
-            'stok_brg' => 0,
+            'stok_brg' => $req->stok_brg,
             'satuan' => $req->satuan,
             'created_at' => Carbon::now('Asia/Jayapura')
         ]); 
@@ -64,19 +64,16 @@ class BarangController extends Controller
         $req->validate([
             'id_ktg' => 'required',
             'nama_brg' => 'required|unique:barang,nama_brg,'.$req->id_brg.',id_brg',
-            // 'stok_brg' => 'required|numeric',
             'satuan' => 'required|alpha',
         ], [
             '*.required' => 'Kolom wajib diisi',
             'nama_brg.unique' => $req->nama_brg . ' sudah terdaftar',
-            // '*.numeric' => 'Kolom wajib berupa angka',
             '*.alpha' => 'Kolom wajib berupa huruf',
         ]);
 
         $insert = Barang::find($req->id_brg)->update([
             'id_ktg' => $req->id_ktg,
             'nama_brg' => $req->nama_brg,
-            // 'stok_brg' => $req->stok_brg,
             'satuan' => $req->satuan,
             'updated_at' => Carbon::now('Asia/Jayapura')
         ]);

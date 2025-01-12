@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3000
--- Generation Time: Jan 12, 2025 at 11:08 AM
+-- Generation Time: Jan 12, 2025 at 11:51 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -37,14 +37,6 @@ CREATE TABLE `barang` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `barang`
---
-
-INSERT INTO `barang` (`id_brg`, `id_ktg`, `nama_brg`, `stok_brg`, `satuan`, `created_at`, `updated_at`) VALUES
-('brg-001', 'ktg-001', 'Kertas A4', 4, 'rim', '2025-01-09 22:40:07', '2025-01-10 00:19:22'),
-('brg-002', 'ktg-002', 'Deterjen', 0, 'pcs', '2025-01-10 20:36:17', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -60,13 +52,6 @@ CREATE TABLE `barang_keluar` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `barang_keluar`
---
-
-INSERT INTO `barang_keluar` (`id_bk`, `tgl_bk`, `id_user`, `bukti_bk`, `status_bk`, `created_at`, `updated_at`) VALUES
-('bk-2025-001', '2025-01-10', 'id_002', '/storage/upload/barang_keluar/bukti/WeOurzef-2025-01-10.jpg', 'diterima', '2025-01-10 00:14:00', '2025-01-10 00:19:22');
 
 -- --------------------------------------------------------
 
@@ -109,13 +94,6 @@ CREATE TABLE `detail_barang_keluar` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `detail_barang_keluar`
---
-
-INSERT INTO `detail_barang_keluar` (`id_dbk`, `id_bk`, `id_brg`, `jum_bk`, `jum_setuju_bk`, `ket_bk`, `created_at`, `updated_at`) VALUES
-('dbk-01-2025-001', 'bk-2025-001', 'brg-001', 1, 1, 'oke', '2025-01-10 00:14:01', '2025-01-10 00:16:10');
-
 -- --------------------------------------------------------
 
 --
@@ -132,14 +110,6 @@ CREATE TABLE `detail_permohonan` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `detail_permohonan`
---
-
-INSERT INTO `detail_permohonan` (`id_dp`, `id_permo`, `id_brg`, `jumlah_per`, `jumlah_setuju`, `ket_permo`, `created_at`, `updated_at`) VALUES
-('dp-01-2025-002', 'per-2025-002', 'brg-001', 5, 5, 'oke', '2025-01-09 23:57:36', '2025-01-10 00:03:48'),
-('dp-01-2025-003', 'per-2025-003', 'brg-002', 4, NULL, NULL, '2025-01-10 20:37:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -205,14 +175,6 @@ CREATE TABLE `kategori` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `kategori`
---
-
-INSERT INTO `kategori` (`id_ktg`, `nama_kategori`, `created_at`, `updated_at`) VALUES
-('ktg-001', 'atk', '2024-12-16 20:06:45', NULL),
-('ktg-002', 'kebersihan', '2024-12-16 21:09:38', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -224,15 +186,6 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `migrations`
---
-
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1, '0001_01_01_000000_create_users_table', 1),
-(2, '0001_01_01_000001_create_cache_table', 1),
-(3, '0001_01_01_000002_create_jobs_table', 1);
 
 -- --------------------------------------------------------
 
@@ -260,14 +213,6 @@ CREATE TABLE `permohonan` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `permohonan`
---
-
-INSERT INTO `permohonan` (`id_permo`, `tgl_permo`, `bukti_permo`, `status`, `created_at`, `updated_at`) VALUES
-('per-2025-002', '2025-01-09', '/storage/upload/permohonan/bukti/FJkPEIDJ-2025-01-10.jpg', 'diterima', '2025-01-09 23:57:35', '2025-01-10 00:03:48'),
-('per-2025-003', '2025-01-10', NULL, 'diproses', '2025-01-10 20:37:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -306,17 +251,6 @@ CREATE TABLE `sessions` (
   `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_activity` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `sessions`
---
-
-INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('DtAvsiTXASSwRMnJl1uanN803SSlRcEk6qj9yt05', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YToyOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiY1Fpa1VvZXV0Ynl1eDRqSlZSbkZEZVQySnhNdUZSekNjMUIxWmZHZyI7fQ==', 1736598104),
-('MIpTAVWBJpnbFl5NMK81TXafN8IXuiTMVgDVQjDO', 'id_004', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTozOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiOFNZSFpWbE8zUHA5RFg1Y2VaU2t5cmdBeUZWcDNmSk9pSGJ1ZzhXcyI7czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO3M6NjoiaWRfMDA0Ijt9', 1736509129),
-('TYIGx2BGZmZ3EpiUcqn41hhKWxUezeqnL8EaYxZy', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YToyOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiMjFlVWRXMmZFdkYxTFlNbmMxRWpJZVNVVnFkaDhISmQ3Y0p2ZkUxMiI7fQ==', 1736437439),
-('UVVW3kcEsETEpZyNku6u7n8GXgXiwBbiUE1SSyMr', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YToyOntzOjY6Il9mbGFzaCI7YToyOntzOjM6Im5ldyI7YTowOnt9czozOiJvbGQiO2E6MDp7fX1zOjY6Il90b2tlbiI7czo0MDoiUU85TThxS2xtRU1LdzNIc1VHRGtONEZydmJyd3JpdXh3bTUyd3dOUiI7fQ==', 1736437285),
-('W07tB382cAk9KEJopJXZQl1DPjURB3NZUku4QujC', 'id_001', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieVhEMzd2ZjI4YTlONTJQaXBhdW50Z2dENVNHbnRPN0hBYmxqblU4TyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtzOjY6ImlkXzAwMSI7fQ==', 1736509022);
 
 -- --------------------------------------------------------
 
@@ -502,7 +436,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `role`

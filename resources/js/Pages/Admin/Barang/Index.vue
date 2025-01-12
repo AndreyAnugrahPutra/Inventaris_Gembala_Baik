@@ -11,6 +11,7 @@ import {
     FloatLabel,
     IconField,
     InputIcon,
+    InputNumber,
     InputText,
     Select,
     useConfirm,
@@ -202,6 +203,16 @@ const hapusBarang = idx => {
                                 {{ barangForm.errors.id_ktg }}
                             </span>
                         </div>
+                        <!-- stok barang -->
+                        <div class="flex flex-col h-10" v-if="formType==='Tambah Barang'">
+                            <FloatLabel variant="on">
+                                <InputNumber class="w-50" inputId="satuan" mode="decimal" showButtons :min="0" :max="100" v-model="barangForm.stok_brg"/>
+                                <label for="stok_brg">Stok Barang</label>
+                            </FloatLabel>
+                            <span class="text-sm text-red-500" v-if="!!barangForm.errors.stok_brg">
+                                {{ barangForm.errors.stok_brg }}
+                            </span>
+                        </div>
                         <!-- satuan barang -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
@@ -246,7 +257,7 @@ const hapusBarang = idx => {
                         <Column header="Action">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.stok_brg>0"   @click=editBarang(data.index) icon="pi pi-pen-to-square" outlined size="small" />
+                                    <Button @click=editBarang(data.index) icon="pi pi-pen-to-square" outlined size="small" />
                                     <Button severity="danger" @click=hapusBarang(data.index) icon="pi pi-trash" outlined size="small" />
                                 </div>
                             </template>

@@ -151,7 +151,7 @@ const editUser = idx =>
 
 const hapusUser = (idx,username) => 
 {
-    userForm.id = dataUsersFix.value[idx-1]['id_user']
+    userForm.id_user = dataUsersFix.value[idx-1]['id_user']
 
     confirm.require({
         message: `Hapus User ${username} ?`,
