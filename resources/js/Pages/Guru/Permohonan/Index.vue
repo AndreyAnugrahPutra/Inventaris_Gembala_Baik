@@ -333,6 +333,11 @@ const hapusPermo = idx => {
                                 {{ data.details.barang.nama_brg}}
                             </template>
                         </Column>
+                        <Column sortable header="Status" field="status_bk" class="w-4">
+                            <template  #body="{data}">
+                                {{ data.status_bk==='diterima'&&data.bukti_bk===null?'Upload Bukti':data.status_bk }}
+                            </template>
+                        </Column>
                         <Column sortable header="Jumlah Permohonan" filterField="details.jum_bk" class="w-4">
                             <template #body="{data}">
                                {{ data.details.jum_bk}}
@@ -356,11 +361,7 @@ const hapusPermo = idx => {
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="status_bk" class="w-4">
-                            <template  #body="{data}">
-                                {{ data.status_bk==='diterima'&&data.bukti_bk===null?'Upload Bukti':data.status_bk }}
-                            </template>
-                        </Column>
+                        <Column sortable header="Keterangan" field="details.ket_bk" class="w-4"/>
                         <Column header="Action" frozen alignFrozen="right" class="w-4">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">

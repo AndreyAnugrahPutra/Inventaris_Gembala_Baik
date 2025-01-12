@@ -188,7 +188,7 @@ const validasiPermo = () => {
                         <!-- Jumlah Setuju Permohonan -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
-                                <InputNumber inputId="jum_per" class="w-[12.5rem]" v-model="permoForm.jum_setuju_bk"/>
+                                <InputNumber :disabled="permoForm.status_bk==='ditolak'" inputId="jum_per" class="w-[12.5rem]" v-model="permoForm.jum_setuju_bk"/>
                                 <label for="jum_per">Jumlah Setuju</label>
                             </FloatLabel>
                             <span class="text-sm text-red-500" v-if="!!permoForm.errors.jum_setuju_bk">
@@ -248,6 +248,7 @@ const validasiPermo = () => {
                                 {{ data.details.barang.nama_brg}}
                             </template>
                         </Column>
+                        <Column sortable header="Status" field="status_bk" class="w-4"/>
                         <Column sortable header="Jumlah Permohonan" field="details.jum_bk" filterField="details.jum_bk" class="w-4">
                             <template #body="{data}">
                                {{ data.details.jum_bk}}
@@ -271,7 +272,6 @@ const validasiPermo = () => {
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="status_bk" class="w-4"/>
                         <Column sortable header="Keterangan" field="details.ket_bk">
                             <template #body="{data}">
                                 {{ data.details.ket_bk??'Tidak ada keterangan'}}
@@ -280,7 +280,7 @@ const validasiPermo = () => {
                         <Column header="Action" frozen alignFrozen="right" style="min-width: 1rem">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.details.jum_setuju_bk" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.status_bk!=='diproses'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

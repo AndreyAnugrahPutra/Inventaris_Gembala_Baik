@@ -176,24 +176,22 @@ class BarangKeluarController extends Controller
 
     public function validasiPermohonan(Request $req)
     {
-        $barang = Barang::find($req->id_brg);
+        $keterangan = $req->ket_bk;
 
-        $req->validate([
-            'status_bk' => 'required',
-            'ket_bk' => 'required',
-            'jum_bk' => 'required|numeric',
-            'jum_setuju_bk' => 'required|numeric|max:' . $req->jum_bk,
-        ], [
-            'status_bk.required' => 'Kolom wajib diisi',
-            'ket_bk.required' => 'Kolom wajib diisi',
-            'jum_setuju_bk.required' => 'Kolom wajib diisi',
-            'jum_setuju_bk.max' => 'Melebihi permohonan',
-        ]);
-
-        if ($req->status_bk === 'diterima') {
-            $barang->update([
-                'stok_brg' => $barang->stok_brg - $req->jum_setuju_bk,
-                'updated_at' => Carbon::now('Asia/Jayapura')
+        if($req->status_bk==='ditolak')
+        {
+            $keterangan = $req->ket_bk??'ditolak';
+        }
+        else
+        {
+            $req->validate([
+                'status_bk' => 'required',
+                'ket_bk' => 'required',
+                'jum_setuju_bk' => 'required|numeric|max:' . $req->jum_bk,
+            ], [
+                'status_bk.required' => 'Kolom wajib diisi',
+                'jum_setuju_bk.required' => 'Kolom wajib diisi',
+                'jum_setuju_bk.max' => 'Melebihi permohonan',
             ]);
         }
 
@@ -203,8 +201,8 @@ class BarangKeluarController extends Controller
         ]);
 
         $insertDetail = DetailBarangKeluar::find($req->id_dbk)->update([
-            'jum_setuju_bk' => $req->jum_setuju_bk,
-            'ket_bk' => $req->ket_bk,
+            'jum_setuju_bk' => $req->jum_setuju_bk??0,
+            'ket_bk' => $keterangan,
             'updated_at' => Carbon::now('Asia/Jayapura'),
         ]);
 
