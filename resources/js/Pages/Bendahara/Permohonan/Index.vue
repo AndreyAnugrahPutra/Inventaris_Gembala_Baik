@@ -187,7 +187,7 @@ const terimaPermo = () => {
                         <!-- Jumlah Setuju Permohonan -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
-                                <InputNumber inputId="jum_per" class="w-[12.5rem]" v-model="permoForm.jumlah_setuju"/>
+                                <InputNumber :disabled="permoForm.status==='ditolak'" inputId="jum_per" class="w-[12.5rem]" v-model="permoForm.jumlah_setuju"/>
                                 <label for="jum_per">Jumlah Setuju</label>
                             </FloatLabel>
                             <span class="text-sm text-red-500" v-if="!!permoForm.errors.jumlah_setuju">

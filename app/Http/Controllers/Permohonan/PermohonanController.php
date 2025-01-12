@@ -177,26 +177,31 @@ class PermohonanController extends Controller
 
     public function terimaPermohonan(Request $req) 
     {
-        // $barang = Barang::find($req->id_brg);
+        $keterangan = $req->ket_permo;
+        
+        if($req->status==='ditolak')
+        {
+            $req->validate([
+                'status' => 'required',
+            ], [
+                'status.required' => 'Kolom wajib diisi',
+            ]);
 
-        $req->validate([
-            'status' => 'required',
-            'ket_permo' => 'required',
-            'jumlah_per' => 'required|numeric',
-            'jumlah_setuju' => 'required|numeric|max:'.$req->jumlah_per,
-        ],[
-            'status.required' => 'Kolom wajib diisi',
-            'ket_permo.required' => 'Kolom wajib diisi',
-            'jumlah_setuju.required' => 'Kolom wajib diisi',
-            'jumlah_setuju.max' => 'Melebihi permohonan',
-        ]);
-
-        // if($req->status === 'disetujui')
-        // {
-        //     $barang->update([
-        //         'stok_brg' => $barang->stok_brg += $req->jumlah_setuju,
-        //     ]);
-        // } 
+            $keterangan = $req->ket_permo??'ditolak';
+        }
+        else
+        {
+            $req->validate([
+                'status' => 'required',
+                'ket_permo' => 'required',
+                'jumlah_setuju' => 'required|numeric|max:'.$req->jumlah_per,
+            ],[
+                'status.required' => 'Kolom wajib diisi',
+                'ket_permo.required' => 'Kolom wajib diisi',
+                'jumlah_setuju.required' => 'Kolom wajib diisi',
+                'jumlah_setuju.max' => 'Melebihi permohonan',
+            ]);
+        }
 
         $insert = Permohonan::find($req->id_permo)->update([
             'status' => $req->status,
@@ -204,8 +209,8 @@ class PermohonanController extends Controller
         ]);
 
         $insertDetail = DetailPermohonan::find($req->id_dp)->update([
-            'jumlah_setuju' => $req->jumlah_setuju,
-            'ket_permo' => $req->ket_permo,
+            'jumlah_setuju' => $req->jumlah_setuju??0,
+            'ket_permo' => $keterangan,
             'updated_at' => Carbon::now('Asia/Jayapura'),
         ]);
 
