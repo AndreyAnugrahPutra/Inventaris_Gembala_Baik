@@ -7,6 +7,7 @@ import {
     Button,
     Column,
     DataTable,
+    DatePicker,
     Dialog,
     FileUpload,
     FloatLabel,
@@ -71,17 +72,16 @@ const permoForm = useForm({
     forms : [
         { nomor : 0, id_brg : null, jum_bk : null,}
     ],
+    tgl_bk : null,
 })
 
 const editForm = useForm({
+    forms : [],
     id_bk : null,
     tgl_bk : null,
+    tgl_diterima : null,
     bukti_bk : null,
     status_bk : null,
-    id_dbk : null,
-    id_brg : null,
-    jum_bk : null,
-    jum_setuju_bk : null,
     ket_bk : null,
 })
 
@@ -134,19 +134,23 @@ const onUpload = (e) =>
     reader.readAsDataURL(editForm.bukti_bk);
 }
 
-const editPermo = (idx) => 
+const formatTanggal = tgl => {
+      const parts = tgl.split('-');
+      return parts.reverse().join('-');
+}
+
+const editPermo = (id_bk) => 
 {
     formType.value = 'Edit Permohonan'
 
-    editForm.id_bk = dataPermoFix.value[idx-1]['id_bk']
-    editForm.tgl_bk = dataPermoFix.value[idx-1]['tgl_bk']
-    editForm.bukti_bk = dataPermoFix.value[idx-1]['bukti_bk']
-    editForm.status_bk = dataPermoFix.value[idx-1]['status_bk']
-    editForm.id_dbk = dataPermoFix.value[idx-1]['details'].id_dbk
-    editForm.id_brg = dataPermoFix.value[idx-1]['details'].id_brg
-    editForm.jum_bk = dataPermoFix.value[idx-1]['details'].jum_bk
-    editForm.jum_setuju_bk = dataPermoFix.value[idx-1]['details'].jum_setuju_bk
-    editForm.ket_bk = dataPermoFix.value[idx-1]['details'].ket_bk
+    const filterData = props.dataPermo.filter((data) => data.id_bk === id_bk)
+
+    editForm.forms.push(filterData)
+
+    console.log(filterData)
+    
+    editForm.tgl_bk = filterData[0].barang_keluar.tgl_bk
+    editForm.status_bk = filterData[0].barang_keluar.status
 
     showForm.value = true
 }
@@ -244,6 +248,30 @@ const hapusPermo = idx => {
                 <!-- Dialog Tambah Permohonan -->
                 <Dialog @hide="hideForm()" v-model:visible="showForm" :header="formType" class="w-[36rem]" modal>
                     <form @submit.prevent class="flex flex-wrap gap-y-8 gap-x-20 items-center my-1" autocomplete="off">
+                        <div class="flex flex-col h-10" v-if="formType==='Tambah Permohonan Barang Keluar'">
+                            <FloatLabel variant="on">
+                                <DatePicker inputId="tgl_bk" v-model="permoForm.tgl_bk" dateFormat="dd/mm/yy"/>
+                                <label for="tgl_bk">Tanggal Permohonan</label>
+                            </FloatLabel>
+                                <span class="text-sm text-red-500" v-if="!!permoForm.errors.tgl_bk">
+                                    {{ permoForm.errors.tgl_bk }}
+                                </span>
+                        </div>
+                        <!-- <div class="flex flex-col h-10" v-else>
+                            <FloatLabel variant="on">
+                                <DatePicker inputId="tgl_bk" v-model="editForm.tgl_bk" disabled dateFormat="dd/mm/yy"/>
+                                <label for="tgl_bk">Tanggal Permohonan</label>
+                            </FloatLabel>
+                        </div>
+                        <div class="flex flex-col h-10" v-if="editForm.status==='disetujui'">
+                            <FloatLabel variant="on">
+                                <DatePicker inputId="tgl_diterima" v-model="editForm.tgl_diterima" dateFormat="dd/mm/yy"/>
+                                <label for="tgl_diterima">Tanggal Diterima</label>
+                            </FloatLabel>
+                            <span class="text-sm text-red-500" v-if="!!editForm.errors.tgl_diterima">
+                                {{ editForm.errors.tgl_diterima }}
+                            </span>
+                        </div> -->
                         <div class="flex gap-y-8 gap-x-8 items-center" v-for="(form, index) in permoForm.forms" :key="index" v-if="formType==='Tambah Permohonan Barang Keluar'">
                             <!-- Barang -->
                             <div class="flex flex-col h-10">
@@ -327,46 +355,59 @@ const hapusPermo = idx => {
                             <span class="flex justify-center">Tidak Ada Permohonan</span>
                         </template>
                         <Column sortable header="No" field="index" class="w-4"/>
-                        <Column sortable header="Tanggal Permohonan" field="tgl_bk" class="w-4"/>
-                        <Column sortable header="Nama Barang" filterField="details.barang.nama_brg" class="w-4">
+                        <Column sortable header="Tanggal Permohonan" field="barang_keluar.tgl_bk" class="w-4">
+                            <template #body="{data}">
+                                {{ formatTanggal(data.barang_keluar.tgl_bk) }}
+                            </template>
+                        </Column>
+                        <Column sortable header="Tanggal Diterima" field="barang_keluar.tgl_diterima" class="w-4">
+                            <template #body="{data}">
+                                {{ data.barang_keluar.tgl_diterima?formatTanggal(data.barang_keluar.tgl_diterima):'Belum diterima' }}
+                            </template>
+                        </Column>
+                        <Column sortable header="Nama Barang" field="barang.nama_brg" filterField="barang.nama_brg" class="w-4">
                              <template #body="{data}">
-                                {{ data.details.barang.nama_brg}}
+                                {{ data.barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="status_bk" class="w-4">
+                        <Column sortable header="Status" field="barang_keluar.status_bk" class="w-4">
                             <template  #body="{data}">
-                                {{ data.status_bk==='diterima'&&data.bukti_bk===null?'Upload Bukti':data.status_bk }}
+                                {{ data.barang_keluar.status_bk==='diterima'&&data.barang_keluar.bukti_bk===null?'Upload Bukti':data.barang_keluar.status_bk }}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Permohonan" filterField="details.jum_bk" class="w-4">
+                        <Column sortable header="Jumlah Permohonan" field="jum_bk" filterField="jum_bk" class="w-4">
                             <template #body="{data}">
-                               {{ data.details.jum_bk}}
+                               {{ data.jum_bk}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui" class="w-4">
+                        <Column sortable header="Jumlah Disetujui" class="w-4" field="jum_setuju_bk">
                             <template #body="{data}">
-                                {{ data.details.jum_setuju_bk??'Menunggu Validasi Tata Usaha'}}
+                                {{ data.jum_setuju_bk??'Menunggu Validasi Tata Usaha'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan" filterField="details.barang.satuan" class="w-4">
+                        <Column sortable header="Satuan" filterField="barang.satuan" class="w-4">
                             <template #body="{data}">
-                                {{ data.details.barang.satuan}}
+                                {{ data.barang.satuan}}
                             </template>
                         </Column>
                         <Column sortable header="Bukti" class="w-4">
                             <template #body="{data}">
-                                <div class="size-20 overflow-hidden border rounded" v-if="data?.bukti_bk">
-                                    <Image :src="data?.bukti_bk" class="size-full" preview />
+                                <div class="size-20 overflow-hidden border rounded" v-if="data?.barang_keluar.bukti_bk">
+                                    <Image :src="data?.barang_keluar.bukti_bk" class="size-full" preview />
                                 </div>
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Keterangan" field="details.ket_bk" class="w-4"/>
+                        <Column sortable header="Keterangan" field="barang_keluar.ket_bk" class="w-4">
+                            <template #body="{data}">
+                                {{ data.barang_keluar.ket_bk??'Tidak ada keterangan' }}
+                            </template>
+                        </Column>
                         <Column header="Action" frozen alignFrozen="right" class="w-4">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.status_bk==='diterima'||data.status_bk==='ditolak'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
-                                    <Button :disabled="data.status_bk==='disetujui'||data.status_bk==='diterima'" @click="hapusPermo(data.index)" severity="danger" icon="pi pi-trash" outlined size="small"/>
+                                    <Button :disabled="data.status_bk==='diterima'||data.status_bk==='ditolak'" @click="editPermo(data.id_bk)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.status_bk==='disetujui'||data.status_bk==='diterima'" @click="hapusPermo(data.id_bk)" severity="danger" icon="pi pi-trash" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

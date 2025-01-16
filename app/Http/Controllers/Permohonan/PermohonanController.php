@@ -21,7 +21,7 @@ class PermohonanController extends Controller
 
     public function permohonanPage()
     {
-        $dataPermo = Permohonan::with('details','details.barang')->get();
+        $dataPermo = DetailPermohonan::with('permohonan','barang')->get();
         $dataBarang = Barang::get(['id_brg', 'nama_brg']);
         return Inertia::render('Admin/Permohonan/Index', [
             'dataPermo' => $dataPermo,
@@ -33,6 +33,12 @@ class PermohonanController extends Controller
     {   
         DB::transaction(function () use($req)
         {
+            $req->validate([
+                'tgl_permo' => 'required',
+            ],
+            [
+                'tgl_permo.required' => 'Tanggal wajib diisi'
+            ]);
             foreach ($req->forms as $form) {
                 $req->validate([
                     'forms.*.id_brg' => 'required',
@@ -41,15 +47,14 @@ class PermohonanController extends Controller
                     'forms.*.*.required' => 'Kolom wajib diisi',
                     'forms.*.*.numeric' => 'Kolom wajib berupa angka',
                 ]);
+            }
         
-                $insert = Permohonan::create([
-                    'tgl_permo' => Carbon::now('Asia/Jayapura')->format('Y-m-d'),
-                    'status' => 'diproses',
-                    'created_at' => Carbon::now('Asia/Jayapura')
-                ]);
-        
-                sleep(1); // delay selama 1 detik lalu melanjutkan ke insertDetails
-        
+            $insert = Permohonan::create([
+                'tgl_permo' => Carbon::parse($req->tgl_permo)->timezone('Asia/Jayapura')->format('Y-m-d'),
+                'status' => 'diproses',
+                'created_at' => Carbon::now('Asia/Jayapura')
+            ]);
+            foreach ($req->forms as $form) {
                 $insertDetail = DetailPermohonan::create([
                     'id_permo' => $insert->latest()->first()->id_permo,
                     'id_brg' => $form['id_brg'], 
@@ -57,17 +62,17 @@ class PermohonanController extends Controller
                     'created_at' => Carbon::now('Asia/Jayapura')
                 ]);
         
-                if ($insert && $insertDetail) {
-                    return redirect()->back()->with([
-                        'notif_status' => 'success',
-                        'notif_message' => 'Berhasil tambah permohonan',
-                    ]);
-                } else {
-                    return redirect()->back()->with([
-                        'notif_status' => 'error',
-                        'notif_message' => 'Gagal tambah permohonan',
-                    ]);
-                }
+            }
+            if ($insert && $insertDetail) {
+                return redirect()->back()->with([
+                    'notif_status' => 'success',
+                    'notif_message' => 'Berhasil tambah permohonan',
+                ]);
+            } else {
+                return redirect()->back()->with([
+                    'notif_status' => 'error',
+                    'notif_message' => 'Gagal tambah permohonan',
+                ]);
             }
 
         });
@@ -76,70 +81,83 @@ class PermohonanController extends Controller
 
     public function updatePermohonan(Request $req)
     {
-        $permo = Permohonan::find($req->id_permo);
-        $details = DetailPermohonan::find($req->id_dp);
-
+        // dd($req->forms[0]);
         if($req->status === 'diproses')
         {
-            $req->validate([
-                'id_brg' => 'required',
-                'jumlah_per' => 'required|numeric',
-            ], [
-                '*.required' => 'Kolom wajib diisi',
-                '*.numeric' => 'Kolom wajib berupa angka',
-            ]);
+            foreach($req->forms[0] as $form)
+            {
+                $permo = Permohonan::find($form->id_permo);
+                $details = DetailPermohonan::find($form->id_dp);
 
-            $insert = $permo->update([
-                'status' => $req->status,
-                'updated_at' => Carbon::now('Asia/Jayapura')
-            ]);
-
-            $insertDetail = $details->update([
-                'id_brg' => $req->id_brg,
-                'jumlah_per' => $req->jumlah_per,
-                'updated_at' => Carbon::now('Asia/Jayapura')
-            ]);
-
-            if ($insert && $insertDetail) {
-                return redirect()->back()->with([
-                    'notif_status' => 'success',
-                    'notif_message' => 'Berhasil update permohonan',
+                $req->validate([
+                    'forms.*.id_brg' => 'required',
+                    'forms.*.jumlah_per' => 'required|numeric',
+                ], [
+                    'forms.*.*.required' => 'Kolom wajib diisi',
+                    'forms.*.*.numeric' => 'Kolom wajib berupa angka',
                 ]);
-            } else {
-                return redirect()->back()->with([
-                    'notif_status' => 'error',
-                    'notif_message' => 'Gagal update permohonan',
+    
+                $insert = $permo->update([
+                    'updated_at' => Carbon::now('Asia/Jayapura')
                 ]);
+    
+                $insertDetail = $details->update([
+                    'id_brg' => $form->id_brg,
+                    'jumlah_per' => $form->jumlah_per,
+                    'updated_at' => Carbon::now('Asia/Jayapura')
+                ]);
+    
+                if ($insert && $insertDetail) {
+                    return redirect()->back()->with([
+                        'notif_status' => 'success',
+                        'notif_message' => 'Berhasil update permohonan',
+                    ]);
+                } else {
+                    return redirect()->back()->with([
+                        'notif_status' => 'error',
+                        'notif_message' => 'Gagal update permohonan',
+                    ]);
+                }
             }
         }
         else
         {
-            $barang = Barang::find($req->id_brg);
             // validasi bukti 
             $imageValidation = new ImageValidation();
             
             $req->validate([
                 'bukti_permo' => 'required',
             ], [
-                '*.required' => 'Kolom wajib diisi',
+                'bukti_permo.required' => 'Kolom wajib diisi',
             ]);
             
             $linkFile = $imageValidation->validateImage($req, 'bukti_permo', $this->file_path);
 
+            $permo = Permohonan::find($req->id_permo);
+
             $insert = $permo->update([
                 'bukti_permo' => $linkFile,
                 'status' => 'diterima',
-                'updated_at' => Carbon::now('Asia/Jayapura')
-            ]);
-    
-            $insertDetail = $details->update([
+                'tgl_diterima' => Carbon::parse($req->tgl_diterima)->timezone('Asia/Jayapura')->format('Y-m-d'),
                 'updated_at' => Carbon::now('Asia/Jayapura')
             ]);
 
-            $updateStok = $barang->update([
-                    'stok_brg' => $barang->stok_brg += $req->jumlah_setuju,
-            ]); 
+            foreach ($req->forms[0] as $form)
+            {
+                $barang = Barang::find($form['id_brg']);
+
+                $details = DetailPermohonan::find($form['id_dp']);
+
+
+                $insertDetail = $details->update([
+                    'updated_at' => Carbon::now('Asia/Jayapura')
+                ]);
     
+                $updateStok = $barang->update([
+                    'stok_brg' => $barang->stok_brg += $form['jumlah_setuju'],
+                ]); 
+        
+            }
             if ($insert && $insertDetail && $updateStok) {
                 return redirect()->back()->with([
                     'notif_status' => 'success',
@@ -151,14 +169,16 @@ class PermohonanController extends Controller
                     'notif_message' => 'Gagal update permohonan',
                 ]);
             }
+
         }
 
     }
+    
     public function hapusPermohonan(Request $req)
     {
         
         $insert = Permohonan::find($req->id_permo)->delete();
-        $insertDetail = DetailPermohonan::find($req->id_dp)->delete();
+        $insertDetail = DetailPermohonan::where('id_permo',$req->id_permo)->delete();
 
         Storage::disk('public')->delete($this->file_path . basename($req->bukti_permo));
 
@@ -177,42 +197,46 @@ class PermohonanController extends Controller
 
     public function terimaPermohonan(Request $req) 
     {
+        // dd($req->forms[0]);
         $keterangan = $req->ket_permo;
-        
-        if($req->status==='ditolak')
-        {
-            $req->validate([
-                'status' => 'required',
-            ], [
-                'status.required' => 'Kolom wajib diisi',
-            ]);
 
-            $keterangan = $req->ket_permo??'ditolak';
-        }
-        else
-        {
-            $req->validate([
-                'status' => 'required',
-                'ket_permo' => 'required',
-                'jumlah_setuju' => 'required|numeric|max:'.$req->jumlah_per,
-            ],[
-                'status.required' => 'Kolom wajib diisi',
-                'ket_permo.required' => 'Kolom wajib diisi',
-                'jumlah_setuju.required' => 'Kolom wajib diisi',
-                'jumlah_setuju.max' => 'Melebihi permohonan',
-            ]);
-        }
-
-        $insert = Permohonan::find($req->id_permo)->update([
-            'status' => $req->status,
-            'updated_at' => Carbon::now('Asia/Jayapura'),
+        $req->validate([
+            'status' => 'required',
+        ], [
+            'status.required' => 'Kolom wajib diisi',
         ]);
 
-        $insertDetail = DetailPermohonan::find($req->id_dp)->update([
-            'jumlah_setuju' => $req->jumlah_setuju??0,
-            'ket_permo' => $keterangan,
-            'updated_at' => Carbon::now('Asia/Jayapura'),
-        ]);
+        foreach($req->forms[0] as $form)
+        {
+            if($req->status==='ditolak')
+            {
+                $keterangan = $req->ket_permo??'ditolak';
+            }
+            else
+            {
+                $req->validate([
+                    'status' => 'required',
+                    'ket_permo' => 'required',
+                    'forms.*.*.jumlah_setuju' => 'required|numeric|max:'.$form['jumlah_per'],
+                ],[
+                    'status.required' => 'Kolom wajib diisi',
+                    'ket_permo.required' => 'Kolom wajib diisi',
+                    'forms.*.*.jumlah_setuju.required' => 'Kolom wajib diisi',
+                    'forms.*.*.jumlah_setuju.max' => 'Melebihi permohonan',
+                ]);
+            }
+    
+            $insert = Permohonan::find($form['id_permo'])->update([
+                'status' => $req->status,
+                'updated_at' => Carbon::now('Asia/Jayapura'),
+            ]);
+    
+            $insertDetail = DetailPermohonan::find($form['id_dp'])->update([
+                'jumlah_setuju' => $form['jumlah_setuju']??0,
+                'ket_permo' => $keterangan,
+                'updated_at' => Carbon::now('Asia/Jayapura'),
+            ]);
+        }
 
         if ($insert && $insertDetail) {
             return redirect()->back()->with([

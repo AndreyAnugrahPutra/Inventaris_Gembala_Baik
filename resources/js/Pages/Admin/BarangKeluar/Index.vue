@@ -59,7 +59,6 @@ const filters = ref({
 })
 
 const statusPermo = [
-    {status : 'diterima'},
     {status : 'ditolak'},
     {status : 'disetujui'},
 ]

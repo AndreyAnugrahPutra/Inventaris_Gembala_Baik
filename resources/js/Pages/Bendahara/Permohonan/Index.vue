@@ -52,13 +52,13 @@ const toast = useToast()
 const dt = ref()
 
 const showForm = ref(false)
+const showEditForm = ref(false)
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })
 
 const statusPermo = [
-    {status : 'diterima'},
     {status : 'ditolak'},
     {status : 'disetujui'},
 ]
@@ -73,6 +73,12 @@ const permoFormDisabled = useForm({
     tgl_permo : null,
     jumlah_per : null,
     nama_brg : null,
+})
+
+const editForm = useForm({
+    forms : [],
+    status : null,
+    ket_permo : null,
 })
 
 const permoForm = useForm({
@@ -94,6 +100,13 @@ const hideForm = () =>
     permoForm.clearErrors()
 }
 
+const hideEditForm = () =>
+{
+    showEditForm.value = false
+    editForm.reset()
+    editForm.clearErrors()
+}
+
 const refreshPage = () =>
 {
     checkNotif()
@@ -102,23 +115,20 @@ const refreshPage = () =>
 
 }
 
-const editPermo = (idx) => 
+const formatTanggal = tgl => {
+      const parts = tgl.split('-');
+      return parts.reverse().join('-');
+}
+
+const editPermo = (id_permo) => 
 {
     formType.value = 'Validasi Permohonan'
 
-    permoForm.id_permo = dataPermoFix.value[idx-1]['id_permo']
-    permoForm.status = dataPermoFix.value[idx-1]['status']
-    permoForm.id_dp = dataPermoFix.value[idx-1]['details'].id_dp
-    permoForm.id_brg = dataPermoFix.value[idx-1]['details'].id_brg
-    permoForm.ket_permo = dataPermoFix.value[idx-1]['details'].ket_permo
-    permoForm.jumlah_per = dataPermoFix.value[idx-1]['details'].jumlah_per
-    permoForm.jumlah_setuju = dataPermoFix.value[idx-1]['details'].jumlah_setuju
+    const filterData = props.dataPermo.filter((data) => data.id_permo === id_permo)
 
-    permoFormDisabled.nama_brg = dataPermoFix.value[idx-1]['details'].barang.nama_brg
-    permoFormDisabled.tgl_permo = dataPermoFix.value[idx-1]['tgl_permo']
-    permoFormDisabled.jumlah_per = dataPermoFix.value[idx-1]['details'].jumlah_per
+    editForm.forms.push(filterData)
 
-    showForm.value = true
+    showEditForm.value = true
 }
 
 
@@ -137,7 +147,7 @@ const terimaPermo = () => {
             severity: 'info'
         },
         accept: () => {
-            permoForm.post(route('bendahara.permohonan.terima'), {
+            editForm.post(route('bendahara.permohonan.terima'), {
                 onSuccess : () => refreshPage(),
             })
         },
@@ -152,72 +162,66 @@ const terimaPermo = () => {
         <template #pageContent>
             <div class="flex flex-col gap-4">
                 <!-- Dialog bukti -->
-                <Dialog :header="formType" class="w-[36rem]" @hide="hideForm()" v-model:visible="showForm" modal>
-                    <form @submit.prevent class="flex flex-wrap gap-y-8 gap-x-20 items-center my-1" autocomplete="off">
-                         <!-- Tanggal Permohonan -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <DatePicker disabled class="w-[12.5rem]"  inputId="tgl" v-model="permoFormDisabled.tgl_permo" dateFormat="dd-mm-yy"/>
-                                <label for="tgl">Tanggal Permohonan</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoFormDisabled.errors.tgl_permo">
-                                {{ permoFormDisabled.errors.tgl_permo }}
-                            </span>
-                        </div>
-                        <!-- Barang -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputText disabled inputId="barang" class="w-[12.5rem]" v-model="permoFormDisabled.nama_brg"/>
-                                <label for="barang">Nama Barang</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoFormDisabled.errors.nama_brg">
-                                {{ permoFormDisabled.errors.nama_brg }}
-                            </span>
-                        </div>
-                        <!-- Jumlah Permohonan -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputNumber disabled inputId="jum_per" class="w-[12.5rem]" v-model="permoFormDisabled.jumlah_per"/>
-                                <label for="jum_per">Jumlah Permohonan</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoFormDisabled.errors.jumlah_per">
-                                {{ permoFormDisabled.errors.jumlah_per }}
-                            </span>
-                        </div>
-                        <!-- Jumlah Setuju Permohonan -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputNumber :disabled="permoForm.status==='ditolak'" inputId="jum_per" class="w-[12.5rem]" v-model="permoForm.jumlah_setuju"/>
-                                <label for="jum_per">Jumlah Setuju</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.jumlah_setuju">
-                                {{ permoForm.errors.jumlah_setuju }}
-                            </span>
+                <!-- edit dialog -->
+                <Dialog :header="formType" class="w-[36rem]" @hide="hideForm()" v-model:visible="showEditForm" modal>
+                    <form @submit.prevent class="flex flex-wrap gap-y-4 gap-x-20 items-center my-1" autocomplete="off">
+                        <div v-for="(form, index) in editForm.forms[0]" :key="index" class="flex gap-y-8 gap-x-20 items-center flex-wrap border-b pb-6">
+                            <!-- Tanggal Permohonan -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <DatePicker disabled class="w-[12.5rem]"  inputId="tgl" v-model="form.permohonan.tgl_permo" dateFormat="dd-mm-yy"/>
+                                    <label for="tgl">Tanggal Permohonan</label>
+                                </FloatLabel>
+                        
+                            </div>
+                            <!-- Barang -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <InputText disabled inputId="barang" class="w-[12.5rem]" v-model="form.barang.nama_brg"/>
+                                    <label for="barang">Nama Barang</label>
+                                </FloatLabel>
+                            </div>
+                            <!-- Jumlah Permohonan -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <InputNumber disabled inputId="jum_per" class="w-[12.5rem]" v-model="form.jumlah_per"/>
+                                    <label for="jum_per">Jumlah Permohonan</label>
+                                </FloatLabel>
+                            </div>
+                            <!-- Jumlah Setuju Permohonan -->
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <InputNumber :disabled="form.permohonan.status==='ditolak'" inputId="jum_per" class="w-[12.5rem]" v-model="form.jumlah_setuju"/>
+                                    <label for="jum_per">Jumlah Setuju</label>
+                                </FloatLabel>
+                                  <span class="text-sm text-red-500" v-if="!!editForm.errors['forms.0.'+index+'.jumlah_setuju']">
+                                    {{ editForm.errors['forms.0.'+index+'.jumlah_setuju']}}
+                                </span>
+                            </div>
                         </div>
                         <!-- status permohonan -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
-                                <Select inputId="status" class="w-[12.5rem]" v-model="permoForm.status" :options="statusPermo" optionLabel="status" optionValue="status"/>
+                                <Select inputId="status" class="w-[12.5rem]" v-model="editForm.status" :options="statusPermo" optionLabel="status" optionValue="status"/>
                                 <label for="status">Status Permohonan</label>
                             </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.status">
-                                {{ permoForm.errors.status }}
+                            <span class="text-sm text-red-500" v-if="!!editForm.errors.status">
+                                {{ editForm.errors.status }}
                             </span>
                         </div>
                         <!-- Keterangan -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
-                                <InputText inputId="barang" class="w-[12.5rem]" v-model="permoForm.ket_permo"/>
+                                <InputText inputId="barang" class="w-[12.5rem]" v-model="editForm.ket_permo"/>
                                 <label for="barang">Keterangan</label>
                             </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.ket_permo">
-                                {{ permoForm.errors.ket_permo }}
+                            <span class="text-sm text-red-500" v-if="!!editForm.errors.ket_permo">
+                                {{ editForm.errors.ket_permo }}
                             </span>
                         </div>
                         <div class="flex items-center gap-x-2 w-full">
-                            <Button @click="terimaPermo()" label="Validasi" v-if="formType==='Validasi Permohonan'"/>
-                            <!-- <Button @click="tolakPermo()" label="Tolak" severity="danger" v-if="formType==='Validasi Permohonan'"/> -->
-                            <Button @click="hideForm()" label="Batal" severity="danger" outlined/>
+                            <Button @click="terimaPermo()" label="Validasi"/>
+                            <Button @click="hideEditForm()" label="Batal" severity="danger" outlined/>
                         </div>
                     </form>
                 </Dialog>
@@ -240,45 +244,54 @@ const terimaPermo = () => {
                             <span class="flex justify-center">Tidak Ada Permohonan</span>
                         </template>
                         <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
-                        <Column sortable header="Tanggal Permohonan" field="tgl_permo" class="w-4"/>
-                        <Column sortable header="Nama Barang" field="details.barang.nama_brg" class="w-4">
+                        <Column sortable header="Tanggal Permohonan" field="permohonan.tgl_permo" class="w-4">
+                            <template #body="{data}">
+                                {{ formatTanggal(data.permohonan.tgl_permo)}}
+                            </template>
+                        </Column>
+                        <Column sortable header="Tanggal Diterima" field="permohonan.tgl_diterima" class="w-4">
+                            <template #body="{data}">
+                                {{ data.permohonan.tgl_diterima?formatTanggal(data.permohonan.tgl_diterima):'Belum diterima'}}
+                            </template>
+                        </Column>
+                        <Column sortable header="Nama Barang" field="barang.nama_brg" class="w-4">
                              <template #body="{data}">
-                                {{ data.details.barang.nama_brg}}
+                                {{ data.barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Permohonan" field="details.jumlah_per" class="w-4">
+                        <Column sortable header="Jumlah Permohonan" field="jumlah_per" class="w-4">
                             <template #body="{data}">
-                               {{ data.details.jumlah_per}}
+                               {{ data.jumlah_per}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui" field="details.jumlah_setuju" class="w-4">
+                        <Column sortable header="Jumlah Disetujui" field="jumlah_setuju" class="w-4">
                             <template #body="{data}">
-                                {{ data.details.jumlah_setuju??'Menunggu Validasi Bendahara'}}
+                                {{ data.jumlah_setuju??'Menunggu Validasi Bendahara'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan" field="details.barang.satuan" class="w-4">
+                        <Column sortable header="Satuan" field="barang.satuan" class="w-4">
                             <template #body="{data}">
-                                {{ data.details.barang.satuan}}
+                                {{ data.barang.satuan}}
                             </template>
                         </Column>
                         <Column sortable header="Bukti" class="w-4">
                             <template #body="{data}">
-                                <div class="size-20 overflow-hidden border rounded" v-if="data?.bukti_permo">
-                                    <Image :src="data?.bukti_permo" class="size-full" preview />
+                                <div class="size-20 overflow-hidden border rounded" v-if="data?.permohonan.bukti_permo">
+                                    <Image :src="data?.permohonan.bukti_permo" class="size-full" preview />
                                 </div>
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="status" class="w-4"/>
-                        <Column sortable header="Keterangan" field="details.ket_permo" style="min-width: 200px">
+                        <Column sortable header="Status" field="permohonan.status" class="w-4"/>
+                        <Column sortable header="Keterangan" field="ket_permo" style="min-width: 200px">
                             <template #body="{data}">
-                                {{ data.details.ket_permo??'Tidak ada keterangan'}}
+                                {{ data.ket_permo??'Tidak ada keterangan'}}
                             </template>
                         </Column>
                         <Column header="Action" frozen alignFrozen="right" style="min-width: 1rem">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.details.jumlah_setuju" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.permohonan.status!=='diproses'" @click="editPermo(data.id_permo)" icon="pi pi-pen-to-square" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

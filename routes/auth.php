@@ -12,6 +12,8 @@ use App\Http\Controllers\Permohonan\PermohonanController;
 use App\Http\Controllers\Unit\UnitController;
 use App\Models\Barang;
 use App\Models\BarangKeluar;
+use App\Models\DetailBarangKeluar;
+use App\Models\DetailPermohonan;
 use App\Models\Kategori;
 use App\Models\Permohonan;
 use App\Models\Role;
@@ -168,7 +170,7 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
     })->name('bendahara.dashboard');
 
     Route::get('bendahara/validasi-permohonan',function(){
-        $dataPermohonan = Permohonan::with('details','details.barang')->get();
+        $dataPermohonan = DetailPermohonan::with('permohonan','barang')->get();
         return Inertia::render('Bendahara/Permohonan/Index',[
             'dataPermo' => $dataPermohonan
         ]);
@@ -222,7 +224,7 @@ Route::middleware(['auth', 'guru'])->group(function () {
     })->name('guru.profile');
 
     Route::get('/guru/permohonan', function(){
-        $dataPermo = BarangKeluar::with('details.barang')->get();
+        $dataPermo = DetailBarangKeluar::with('barangKeluar','barang')->get();
         $dataBarang = Barang::get(['id_brg', 'nama_brg']);
         return Inertia::render('Guru/Permohonan/Index', [
             'dataPermo' => $dataPermo,
