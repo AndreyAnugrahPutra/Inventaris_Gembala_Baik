@@ -41,6 +41,11 @@ const filterData = useForm({
     satuan : null,
 })
 
+const formatTanggal = tgl => {
+      const parts = tgl.split('-');
+      return parts.reverse().join('-');
+}
+
 const dataPermoFix = ref([])
 
 const pageTitle = 'Laporan Permohonan Barang'
@@ -49,7 +54,7 @@ const filterKategori = () =>
 {
     if(filterData.kategori!==null)
     {
-       dataPermoFix.value = props.dataPermo.filter((permo) => permo.details.barang.kategori.nama_kategori === filterData.kategori).map((p,i) => ({index:i+1,...p}))
+       dataPermoFix.value = props.dataPermo.filter((permo) => permo.barang.kategori.nama_kategori === filterData.kategori).map((p,i) => ({index:i+1,...p}))
     }
     else dataPermoFix.value = props.dataPermo?.map((p,i) => ({index:i+1,...p}))
 }
@@ -58,7 +63,7 @@ const filterSatuan = () =>
 {
     if(filterData.satuan!==null)
     {
-       dataPermoFix.value = props.dataPermo.filter((permo) => permo.details.barang.satuan === filterData.satuan).map((p,i) => ({index:i+1,...p}))
+       dataPermoFix.value = props.dataPermo.filter((permo) => permo.barang.satuan === filterData.satuan).map((p,i) => ({index:i+1,...p}))
     }
     else dataPermoFix.value = props.dataPermo?.map((p,i) => ({index:i+1,...p}))
 }
@@ -69,7 +74,7 @@ watch(() =>
     (namaBarang) => {
         if(namaBarang)
         {
-            dataPermoFix.value = props.dataPermo.filter((permo) => permo.details.barang.nama_brg.toLowerCase().includes(namaBarang.toLowerCase())).map((p,i) => ({index:i+1,...p}))
+            dataPermoFix.value = props.dataPermo.filter((permo) => permo.barang.nama_brg.toLowerCase().includes(namaBarang.toLowerCase())).map((p,i) => ({index:i+1,...p}))
         }
         else dataPermoFix.value = props.dataPermo?.map((p,i) => ({index:i+1,...p}))
     }
@@ -115,11 +120,20 @@ const exportPDF = () => {
                             <span class="flex justify-center">Sedang Memuat Data...</span>
                         </template>
                         <Column sortable header="No" field="index" class="w-4"/>
-                        <Column sortable header="Hari/Tanggal" field="tgl_permo"/>
-                        <Column sortable header="Nama Barang" field="details.barang.nama_brg"/>
-                        <Column sortable header="Jumlah Permohonan" field="details.jumlah_per"/>
-                        <Column sortable header="Jumlah Disetujui" field="details.jumlah_setuju"/>
-                        <Column sortable header="Satuan" field="details.barang.satuan"/>
+                        <Column sortable header="Hari/Tanggal Permohonan" field="permohonan.tgl_permo"/>
+                        <Column sortable header="Hari/Tanggal Terima" field="permohonan.tgl_diterima">
+                            <template #body="{data}">
+                                {{ data.permohonan.tgl_diterima?formatTanggal(data.permohonan.tgl_diterima):'Belum diterima' }}
+                            </template>
+                        </Column>
+                        <Column sortable header="Nama Barang" field="barang.nama_brg"/>
+                        <Column sortable header="Jumlah Permohonan" field="jumlah_per"/>
+                        <Column sortable header="Jumlah Disetujui" field="jumlah_setuju">
+                            <template #body="{data}">
+                                {{ data.jumlah_setuju??'Menunggu validasi bendahara' }}
+                            </template>
+                        </Column>
+                        <Column sortable header="Satuan" field="barang.satuan"/>
                     </DataTable>
                 </div>
             </div>

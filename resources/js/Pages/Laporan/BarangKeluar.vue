@@ -44,11 +44,16 @@ const dataBarangKeluarFix = ref([])
 
 const pageTitle = 'Laporan Barang Keluar'
 
+const formatTanggal = tgl => {
+      const parts = tgl.split('-');
+      return parts.reverse().join('-');
+}
+
 const filterUnit = () => 
 {
     if(filterData.unit!==null)
     {
-       dataBarangKeluarFix.value = props.dataBarangKeluar.filter((bk) => bk.user.unit.nama_unit === filterData.unit).map((p,i) => ({index:i+1,...p}))
+       dataBarangKeluarFix.value = props.dataBarangKeluar.filter((bk) => bk.barang_keluar.user.unit.nama_unit === filterData.unit).map((p,i) => ({index:i+1,...p}))
     }
     else dataBarangKeluarFix.value = props.dataBarangKeluar?.map((p,i) => ({index:i+1,...p}))
 }
@@ -57,7 +62,7 @@ const filterSatuan = () =>
 {
     if(filterData.satuan!==null)
     {
-       dataBarangKeluarFix.value = props.dataBarangKeluar.filter((permo) => permo.details.barang.satuan === filterData.satuan).map((p,i) => ({index:i+1,...p}))
+       dataBarangKeluarFix.value = props.dataBarangKeluar.filter((permo) => permo.barang.satuan === filterData.satuan).map((p,i) => ({index:i+1,...p}))
     }
     else dataBarangKeluarFix.value = props.dataBarangKeluar?.map((p,i) => ({index:i+1,...p}))
 }
@@ -68,7 +73,7 @@ watch(() =>
     (namaBarang) => {
         if(namaBarang)
         {
-            dataBarangKeluarFix.value = props.dataBarangKeluar.filter((bk) => bk.details.barang.nama_brg.toLowerCase().includes(namaBarang.toLowerCase())).map((p,i) => ({index:i+1,...p}))
+            dataBarangKeluarFix.value = props.dataBarangKeluar.filter((bk) => bk.barang.nama_brg.toLowerCase().includes(namaBarang.toLowerCase())).map((p,i) => ({index:i+1,...p}))
         }
         else dataBarangKeluarFix.value = props.dataBarangKeluar?.map((p,i) => ({index:i+1,...p}))
     }
@@ -90,17 +95,17 @@ const exportPDF = () => {
                         <template #header>
                             <div class="flex justify-center items-center gap-x-2">
                                 <InputText placeholder="Nama Barang" v-model="filterData.nama_barang" />
-                                <Select showClear @change="filterUnit()" v-model="filterData.unit" :options="props.dataBarangKeluar" optionLabel="user.unit.nama_unit" optionValue="user.unit.nama_unit" placeholder="Unit" style="min-width: 14rem">
+                                <Select showClear @change="filterUnit()" v-model="filterData.unit" :options="props.dataBarangKeluar" optionLabel="barang_keluar.user.unit.nama_unit" optionValue="barang_keluar.user.unit.nama_unit" placeholder="Unit" style="min-width: 14rem">
                                      <template #option="slotProps">
                                         <div class="flex items-center gap-2">
-                                            <span>{{ slotProps.option.user.unit.nama_unit }}</span>
+                                            <span>{{ slotProps.option.barang_keluar.user.unit.nama_unit }}</span>
                                         </div>
                                     </template>
                                 </Select>
-                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataBarangKeluar" optionLabel="details.barang.satuan" optionValue="details.barang.satuan" placeholder="Satuan" style="min-width: 14rem">
+                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataBarangKeluar" optionLabel="barang.satuan" optionValue="barang.satuan" placeholder="Satuan" style="min-width: 14rem">
                                      <template #option="slotProps">
                                         <div class="flex items-center gap-2">
-                                            <span>{{ slotProps.option.details.barang.satuan }}</span>
+                                            <span>{{ slotProps.option.barang.satuan }}</span>
                                         </div>
                                     </template>
                                 </Select>
@@ -114,13 +119,22 @@ const exportPDF = () => {
                             <span class="flex justify-center">Sedang Memuat Data...</span>
                         </template>
                         <Column sortable header="No" field="index" class="w-4"/>
-                        <Column sortable header="Hari/Tanggal" field="tgl_bk"/>
-                        <Column sortable header="Nama User" field="user.username"/>
-                        <Column sortable header="Nama Unit" field="user.unit.nama_unit"/>
-                        <Column sortable header="Nama Barang" field="details.barang.nama_brg"/>
-                        <Column sortable header="Jumlah Barang Keluar" field="details.jum_bk"/>
-                        <Column sortable header="Jumlah Disetujui" field="details.jum_setuju_bk"/>
-                        <Column sortable header="Satuan" field="details.barang.satuan"/>
+                        <Column sortable header="Hari/Tanggal Permohonan" field="barang_keluar.tgl_bk">
+                            <template #body="{data}">
+                                {{ formatTanggal(data.barang_keluar.tgl_bk) }}
+                            </template>
+                        </Column>
+                        <Column sortable header="Hari/Tanggal Terima" field="barang_keluar.tgl_diterima">
+                            <template #body="{data}">
+                                {{ data.barang_keluar.tgl_diterima?formatTanggal(data.barang_keluar.tgl_diterima):'Belum diterima' }}
+                            </template>
+                        </Column>
+                        <Column sortable header="Nama User" field="barang_keluar.user.username"/>
+                        <Column sortable header="Nama Unit" field="barang_keluar.user.unit.nama_unit"/>
+                        <Column sortable header="Nama Barang" field="barang.nama_brg"/>
+                        <Column sortable header="Jumlah Barang Keluar" field="jum_bk"/>
+                        <Column sortable header="Jumlah Disetujui" field="jum_setuju_bk"/>
+                        <Column sortable header="Satuan" field="barang.satuan"/>
                     </DataTable>
                 </div>
             </div>

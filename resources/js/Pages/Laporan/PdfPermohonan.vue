@@ -13,6 +13,8 @@ const props = defineProps({
     tanggal : String,
 })
 
+console.log(props.data)
+
 </script>
 
 <template>
@@ -33,15 +35,15 @@ const props = defineProps({
                 </tr>
             </thead>
             <tbody class="border border-black p-4">
-                <tr v-for="(item, index) in props.data?.data" :key="index">
+                <tr v-for="(item, index) in props?.data" :key="index">
                     <td class="p-2 border border-black text-center">{{ item.index}}</td>
-                    <td class="p-2 border border-black">{{ item.tgl_permo }}</td>
-                    <td class="p-2 border border-black">{{ item.details.barang.nama_brg }}</td>
-                    <td class="p-2 border border-black">{{ item.details.jumlah_per }}</td>
-                    <td class="p-2 border border-black">{{ item.details.jumlah_setuju??'-' }}</td>
-                    <td class="p-2 border border-black">{{ item.details.barang.satuan }}</td>
-                    <td class="p-2 border border-black">{{ item.status }}</td>
-                    <td class="p-2 border border-black">{{ item.details.ket_permo??'-' }}</td>
+                    <td class="p-2 border border-black">{{ item.permohonan.tgl_permo }}</td>
+                    <td class="p-2 border border-black">{{ item.barang.nama_brg }}</td>
+                    <td class="p-2 border border-black">{{ item.jumlah_per }}</td>
+                    <td class="p-2 border border-black">{{ item.jumlah_setuju??'-' }}</td>
+                    <td class="p-2 border border-black">{{ item.barang.satuan }}</td>
+                    <td class="p-2 border border-black">{{ item.permohonan.status }}</td>
+                    <td class="p-2 border border-black">{{ item.ket_permo??'-' }}</td>
                 </tr>
             </tbody>
         </table>

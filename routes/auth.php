@@ -104,7 +104,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     })->name('admin.laporan.barang');
     
     Route::get('admin/laporan/barang_keluar',function (){
-        $dataBarangKeluar = BarangKeluar::with('details', 'details.barang','user','user.unit')->get();
+        $dataBarangKeluar = DetailBarangKeluar::with('barangKeluar', 'barang', 'barangKeluar.user', 'barangKeluar.user.unit')->get();
         
         return Inertia::render('Laporan/BarangKeluar',[
             'dataBarangKeluar' => $dataBarangKeluar,
@@ -112,7 +112,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     })->name('admin.laporan.barang_keluar');
 
     Route::get('admin/laporan/permohonan',function (){
-        $dataPermo = Permohonan::with('details', 'details.barang','details.barang.kategori')->get();
+        $dataPermo = DetailPermohonan::with('permohonan','barang','barang.kategori')->get();
         $dataBarang = Barang::with('kategori')->get();
         return Inertia::render('Laporan/Permohonan', [
             'dataPermo' => $dataPermo,
@@ -142,7 +142,7 @@ Route::middleware(['auth', 'kepsek'])->group(function () {
     })->name('kepsek.laporan.barang');
 
     Route::get('kepsek/laporan/barang_keluar', function () {
-        $dataBarangKeluar = BarangKeluar::with('details', 'details.barang', 'user', 'user.unit')->get();
+        $dataBarangKeluar = DetailBarangKeluar::with('barangKeluar', 'barang', 'barangKeluar.user', 'barangKeluar.user.unit')->get();
 
         return Inertia::render('Laporan/BarangKeluar', [
             'dataBarangKeluar' => $dataBarangKeluar,
@@ -150,7 +150,7 @@ Route::middleware(['auth', 'kepsek'])->group(function () {
     })->name('kepsek.laporan.barang_keluar');
 
     Route::get('kepsek/laporan/permohonan', function () {
-        $dataPermo = Permohonan::with('details', 'details.barang', 'details.barang.kategori')->get();
+        $dataPermo = DetailPermohonan::with('permohonan', 'barang', 'barang.kategori')->get();
         $dataBarang = Barang::with('kategori')->get();
         return Inertia::render('Laporan/Permohonan', [
             'dataPermo' => $dataPermo,
@@ -197,7 +197,7 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
     })->name('bendahara.laporan.barang_keluar');
 
     Route::get('bendahara/laporan/permohonan', function () {
-        $dataPermo = Permohonan::with('details', 'details.barang', 'details.barang.kategori')->get();
+        $dataPermo = DetailPermohonan::with('permohonan', 'barang', 'barang.kategori')->get();
         $dataBarang = Barang::with('kategori')->get();
         return Inertia::render('Laporan/Permohonan', [
             'dataPermo' => $dataPermo,

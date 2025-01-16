@@ -37,15 +37,15 @@ const props = defineProps({
             <tbody class="border border-black p-4">
                 <tr v-for="(item, index) in props.data?.data" :key="index">
                     <td class="p-2 border border-black text-center">{{ item.index}}</td>
-                    <td class="p-2 border border-black">{{ item.tgl_bk }}</td>
-                    <td class="p-2 border border-black">{{ item.user.username }}</td>
-                    <td class="p-2 border border-black">{{ item.user.unit.nama_unit }}</td>
-                    <td class="p-2 border border-black">{{ item.details.barang.nama_brg}}</td>
-                    <td class="p-2 border border-black">{{ item.details.jum_bk }}</td>
-                    <td class="p-2 border border-black">{{ item.details.jum_setuju_bk }}</td>
-                    <td class="p-2 border border-black">{{ item.details.barang.satuan }}</td>
-                    <td class="p-2 border border-black">{{ item.status_bk }}</td>
-                    <td class="p-2 border border-black">{{ item.details.ket_bk }}</td>
+                    <td class="p-2 border border-black">{{ item.barang_keluar.tgl_bk }}</td>
+                    <td class="p-2 border border-black">{{ item.barang_keluar.user.username }}</td>
+                    <td class="p-2 border border-black">{{ item.barang_keluar.user.unit.nama_unit }}</td>
+                    <td class="p-2 border border-black">{{ item.barang.nama_brg}}</td>
+                    <td class="p-2 border border-black">{{ item.jum_bk }}</td>
+                    <td class="p-2 border border-black">{{ item.jum_setuju_bk }}</td>
+                    <td class="p-2 border border-black">{{ item.barang.satuan }}</td>
+                    <td class="p-2 border border-black">{{ item.barang_keluar.status_bk }}</td>
+                    <td class="p-2 border border-black">{{ item.ket_bk }}</td>
                 </tr>
             </tbody>
         </table>

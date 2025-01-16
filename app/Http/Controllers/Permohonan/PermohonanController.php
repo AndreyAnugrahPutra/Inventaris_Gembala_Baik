@@ -82,20 +82,19 @@ class PermohonanController extends Controller
 
     public function updatePermohonan(Request $req)
     {
-        // dd($req->forms[0]);
         if($req->status === 'diproses')
         {
             foreach($req->forms[0] as $form)
             {
-                $permo = Permohonan::find($form->id_permo);
-                $details = DetailPermohonan::find($form->id_dp);
+                $permo = Permohonan::find($form['id_permo']);
+                $details = DetailPermohonan::find($form['id_dp']);
 
                 $req->validate([
-                    'forms.*.id_brg' => 'required',
-                    'forms.*.jumlah_per' => 'required|numeric',
+                    'forms.*.*.id_brg' => 'required',
+                    'forms.*.*.jumlah_per' => 'required|numeric',
                 ], [
-                    'forms.*.*.required' => 'Kolom wajib diisi',
-                    'forms.*.*.numeric' => 'Kolom wajib berupa angka',
+                    'forms.*.*.*.required' => 'Kolom wajib diisi',
+                    'forms.*.*.*.numeric' => 'Kolom wajib berupa angka',
                 ]);
     
                 $insert = $permo->update([
@@ -103,22 +102,21 @@ class PermohonanController extends Controller
                 ]);
     
                 $insertDetail = $details->update([
-                    'id_brg' => $form->id_brg,
-                    'jumlah_per' => $form->jumlah_per,
+                    'id_brg' => $form['id_brg'],
+                    'jumlah_per' => $form['jumlah_per'],
                     'updated_at' => Carbon::now('Asia/Jayapura')
                 ]);
-    
-                if ($insert && $insertDetail) {
-                    return redirect()->back()->with([
-                        'notif_status' => 'success',
-                        'notif_message' => 'Berhasil update permohonan',
-                    ]);
-                } else {
-                    return redirect()->back()->with([
-                        'notif_status' => 'error',
-                        'notif_message' => 'Gagal update permohonan',
-                    ]);
-                }
+            }
+            if ($insert && $insertDetail) {
+                return redirect()->back()->with([
+                    'notif_status' => 'success',
+                    'notif_message' => 'Berhasil update permohonan',
+                ]);
+            } else {
+                return redirect()->back()->with([
+                    'notif_status' => 'error',
+                    'notif_message' => 'Gagal update permohonan',
+                ]);
             }
         }
         else
@@ -197,7 +195,6 @@ class PermohonanController extends Controller
 
     public function terimaPermohonan(Request $req) 
     {
-        // dd($req->forms[0]);
         $keterangan = $req->ket_permo;
 
         $req->validate([
@@ -256,7 +253,7 @@ class PermohonanController extends Controller
         return Inertia::render(
             'Laporan/PdfPermohonan',
             [
-                'data' => $req,
+                'data' => $req->data,
                 'tanggal' => Carbon::now('Asia/Jayapura')->format('d-m-Y')
             ]
         );
