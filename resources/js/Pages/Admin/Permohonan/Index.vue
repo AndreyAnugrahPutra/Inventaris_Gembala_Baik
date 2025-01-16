@@ -82,12 +82,6 @@ const editForm = useForm({
     tgl_diterima : null,
     bukti_permo : null,
     status : null,
-    // status : null,
-    // id_dp : null,
-    // id_brg : null,
-    // jumlah_per : null,
-    // jumlah_setuju : null,
-    // ket_permo : null,
 })
 
 const exportCSV = () => dt.value.exportCSV()

@@ -146,11 +146,10 @@ const editPermo = (id_bk) =>
     const filterData = props.dataPermo.filter((data) => data.id_bk === id_bk)
 
     editForm.forms.push(filterData)
-
-    console.log(filterData)
     
     editForm.tgl_bk = filterData[0].barang_keluar.tgl_bk
-    editForm.status_bk = filterData[0].barang_keluar.status
+    editForm.id_bk = filterData[0].id_bk
+    editForm.status_bk = filterData[0].barang_keluar.status_bk
 
     showForm.value = true
 }
@@ -202,10 +201,12 @@ const updatePermo = () => {
     })
 }
 
-const hapusPermo = idx => {
-    editForm.id_bk = dataPermoFix.value[idx-1]['id_bk']
-    editForm.bukti_bk = dataPermoFix.value[idx-1]['bukti_bk']
-    editForm.id_dbk = dataPermoFix.value[idx-1]['details'].id_dbk
+const hapusPermo = id_bk => {
+
+    const filterData = props.dataPermo.filter((data) => data.id_bk === id_bk)
+
+    editForm.id_bk = id_bk
+    editForm.bukti_bk = filterData[0].barang_keluar.bukti_bk
 
     confirm.require({
         message: `Hapus Permohonan Barang Keluar?`,
@@ -247,7 +248,7 @@ const hapusPermo = idx => {
                 </Dialog>
                 <!-- Dialog Tambah Permohonan -->
                 <Dialog @hide="hideForm()" v-model:visible="showForm" :header="formType" class="w-[36rem]" modal>
-                    <form @submit.prevent class="flex flex-wrap gap-y-8 gap-x-20 items-center my-1" autocomplete="off">
+                    <form @submit.prevent class="flex flex-wrap gap-y-8 gap-x-10 items-center my-1" autocomplete="off">
                         <div class="flex flex-col h-10" v-if="formType==='Tambah Permohonan Barang Keluar'">
                             <FloatLabel variant="on">
                                 <DatePicker inputId="tgl_bk" v-model="permoForm.tgl_bk" dateFormat="dd/mm/yy"/>
@@ -257,13 +258,13 @@ const hapusPermo = idx => {
                                     {{ permoForm.errors.tgl_bk }}
                                 </span>
                         </div>
-                        <!-- <div class="flex flex-col h-10" v-else>
+                        <div class="flex flex-col h-10" v-else>
                             <FloatLabel variant="on">
                                 <DatePicker inputId="tgl_bk" v-model="editForm.tgl_bk" disabled dateFormat="dd/mm/yy"/>
                                 <label for="tgl_bk">Tanggal Permohonan</label>
                             </FloatLabel>
                         </div>
-                        <div class="flex flex-col h-10" v-if="editForm.status==='disetujui'">
+                        <div class="flex flex-col h-10" v-if="editForm.status_bk==='disetujui'">
                             <FloatLabel variant="on">
                                 <DatePicker inputId="tgl_diterima" v-model="editForm.tgl_diterima" dateFormat="dd/mm/yy"/>
                                 <label for="tgl_diterima">Tanggal Diterima</label>
@@ -271,7 +272,7 @@ const hapusPermo = idx => {
                             <span class="text-sm text-red-500" v-if="!!editForm.errors.tgl_diterima">
                                 {{ editForm.errors.tgl_diterima }}
                             </span>
-                        </div> -->
+                        </div>
                         <div class="flex gap-y-8 gap-x-8 items-center" v-for="(form, index) in permoForm.forms" :key="index" v-if="formType==='Tambah Permohonan Barang Keluar'">
                             <!-- Barang -->
                             <div class="flex flex-col h-10">
@@ -282,9 +283,6 @@ const hapusPermo = idx => {
                                  <span class="text-sm text-red-500" v-if="!!permoForm.errors['forms.'+index+'.id_brg']">
                                     {{ permoForm.errors['forms.'+index+'.id_brg'] }}
                                 </span>
-                                <!-- <span class="text-sm text-red-500" v-if="!!permoForm.errors.forms?.index.id_brg">
-                                    {{ permoForm.errors.forms?.index.id_brg }}
-                                </span> -->
                             </div>
                             <!-- Jumlah Permohonan -->
                             <div class="flex flex-col h-10">
@@ -298,25 +296,31 @@ const hapusPermo = idx => {
                             </div>
                             <Button icon="pi pi-minus" severity="danger" @click="removeField(index)" size="small"/>
                         </div>
-                        <div class="flex gap-y-8 gap-x-8 items-center" v-else>
+                        <div class="flex flex-wrap gap-y-8 gap-x-8 items-center border-b-2 pb-4" v-else v-for="(form , index) in editForm.forms[0]">
                             <!-- Barang -->
                             <div class="flex flex-col h-10">
                                 <FloatLabel variant="on">
-                                    <Select inputId="barang" :disabled="editForm.status_bk!=='diproses'" class="w-[13rem]" v-model="editForm.id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
+                                    <Select inputId="barang" :disabled="form.barang_keluar.status_bk!=='diproses'" class="w-[13rem]" v-model="form.id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
                                     <label for="barang">Nama Barang</label>
                                 </FloatLabel>
-                                 <span class="text-sm text-red-500" v-if="!!editForm.errors.id_brg">
-                                    {{ editForm.errors.id_brg }}
-                                </span>
                             </div>
                             <!-- Jumlah Permohonan -->
                             <div class="flex flex-col h-10">
                                 <FloatLabel variant="on">
-                                    <InputNumber inputId="jum_per" :disabled="editForm.status_bk!=='diproses'" v-model="editForm.jum_bk"/>
+                                    <InputNumber inputId="jum_per" :disabled="form.barang_keluar.status_bk!=='diproses'" v-model="form.jum_bk"/>
                                     <label for="jum_per">Jumlah Permohonan</label>
                                 </FloatLabel>
-                                <span class="text-sm text-red-500" v-if="!!editForm.errors.jum_bk">
-                                    {{ editForm.errors.jum_bk }}
+                                <span class="text-sm text-red-500" v-if="!!editForm.errors['forms.0.'+index+'.jum_bk']">
+                                    {{ editForm.errors['forms.0.'+index+'.jum_bk'] }}
+                                </span>
+                            </div>
+                            <div class="flex flex-col h-10">
+                                <FloatLabel variant="on">
+                                    <InputNumber inputId="jum_per" disabled v-model="form.jum_setuju_bk"/>
+                                    <label for="jum_per">Jumlah Setuju</label>
+                                </FloatLabel>
+                                <span class="text-sm text-red-500" v-if="!!editForm.errors['forms.0.'+index+'.jum_bk']">
+                                    {{ editForm.errors['forms.0.'+index+'.jum_bk'] }}
                                 </span>
                             </div>
                         </div>
@@ -398,16 +402,16 @@ const hapusPermo = idx => {
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Keterangan" field="barang_keluar.ket_bk" class="w-4">
+                        <Column sortable header="Keterangan" field="ket_bk" class="w-4">
                             <template #body="{data}">
-                                {{ data.barang_keluar.ket_bk??'Tidak ada keterangan' }}
+                                {{ data.ket_bk??'Tidak ada keterangan' }}
                             </template>
                         </Column>
                         <Column header="Action" frozen alignFrozen="right" class="w-4">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.status_bk==='diterima'||data.status_bk==='ditolak'" @click="editPermo(data.id_bk)" icon="pi pi-pen-to-square" outlined size="small"/>
-                                    <Button :disabled="data.status_bk==='disetujui'||data.status_bk==='diterima'" @click="hapusPermo(data.id_bk)" severity="danger" icon="pi pi-trash" outlined size="small"/>
+                                    <Button :disabled="data.barang_keluar.status_bk==='diterima'||data.barang_keluar.status_bk==='ditolak'" @click="editPermo(data.id_bk)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.barang_keluar.status_bk==='disetujui'||data.barang_keluar.status_bk==='diterima'" @click="hapusPermo(data.id_bk)" severity="danger" icon="pi pi-trash" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

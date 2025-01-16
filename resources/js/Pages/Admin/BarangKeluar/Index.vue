@@ -69,19 +69,11 @@ const dataBarangKeluarFix = ref([])
 
 const pageTitle = 'Barang Keluar'
 
-const permoFormDisabled = useForm({
-    tgl_bk : null,
-    jum_bk : null,
-    nama_brg : null,
-})
-
 const permoForm = useForm({
+    forms : [],
+    tgl_bk : null,
     id_bk : null,
     status_bk : null,
-    id_dbk : null,
-    id_brg : null,
-    jum_bk : null,
-    jum_setuju_bk : null,
     ket_bk : null,
 })
 
@@ -94,6 +86,11 @@ const hideForm = () =>
     permoForm.clearErrors()
 }
 
+const formatTanggal = tgl => {
+      const parts = tgl.split('-');
+      return parts.reverse().join('-');
+}
+
 const refreshPage = () =>
 {
     checkNotif()
@@ -102,22 +99,19 @@ const refreshPage = () =>
 
 }
 
-const editPermo = (idx) => 
+const editPermo = (id_bk) => 
 {
     formType.value = 'Validasi Permohonan'
 
-    permoForm.id_bk = dataBarangKeluarFix.value[idx-1]['id_bk']
-    permoForm.status = dataBarangKeluarFix.value[idx-1]['status']
-    permoForm.id_dbk = dataBarangKeluarFix.value[idx-1]['details'].id_dbk
-    permoForm.id_brg = dataBarangKeluarFix.value[idx-1]['details'].id_brg
-    permoForm.ket_bk = dataBarangKeluarFix.value[idx-1]['details'].ket_bk
-    permoForm.jum_bk = dataBarangKeluarFix.value[idx-1]['details'].jum_bk
-    permoForm.jum_setuju_bk = dataBarangKeluarFix.value[idx-1]['details'].jum_setuju_bk
+    const filterData = props.dataBarangKeluar.filter((data) => data.id_bk === id_bk)
 
-    permoFormDisabled.nama_brg = dataBarangKeluarFix.value[idx-1]['details'].barang.nama_brg
-    permoFormDisabled.tgl_bk = dataBarangKeluarFix.value[idx-1]['tgl_bk']
-    permoFormDisabled.jum_bk = dataBarangKeluarFix.value[idx-1]['details'].jum_bk
+    permoForm.forms.push(filterData)
 
+    permoForm.id_bk = id_bk
+    permoForm.tgl_bk = filterData[0].barang_keluar.tgl_bk
+    // permoForm.status_bk = filterData[0].barang_keluar.status_bk
+    permoForm.ket_bk = filterData[0].barang_keluar.ket_bk
+    console.log(filterData)
     showForm.value = true
 }
 
@@ -157,43 +151,37 @@ const validasiPermo = () => {
                          <!-- Tanggal Permohonan -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
-                                <DatePicker disabled class="w-[12.5rem]"  inputId="tgl" v-model="permoFormDisabled.tgl_bk" dateFormat="dd-mm-yy"/>
+                                <DatePicker disabled class="w-[12.5rem]"  inputId="tgl" v-model="permoForm.tgl_bk" dateFormat="dd-mm-yy"/>
                                 <label for="tgl">Tanggal Permohonan</label>
                             </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoFormDisabled.errors.tgl_bk">
-                                {{ permoFormDisabled.errors.tgl_bk }}
-                            </span>
                         </div>
-                        <!-- Barang -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputText disabled inputId="barang" class="w-[12.5rem]" v-model="permoFormDisabled.nama_brg"/>
-                                <label for="barang">Nama Barang</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoFormDisabled.errors.nama_brg">
-                                {{ permoFormDisabled.errors.nama_brg }}
-                            </span>
-                        </div>
-                        <!-- Jumlah Permohonan -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputNumber disabled inputId="jum_per" class="w-[12.5rem]" v-model="permoFormDisabled.jum_bk"/>
-                                <label for="jum_per">Jumlah Permohonan</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoFormDisabled.errors.jum_bk">
-                                {{ permoFormDisabled.errors.jum_bk }}
-                            </span>
-                        </div>
-                        <!-- Jumlah Setuju Permohonan -->
-                        <div class="flex flex-col h-10">
-                            <FloatLabel variant="on">
-                                <InputNumber :disabled="permoForm.status_bk==='ditolak'" inputId="jum_per" class="w-[12.5rem]" v-model="permoForm.jum_setuju_bk"/>
-                                <label for="jum_per">Jumlah Setuju</label>
-                            </FloatLabel>
-                            <span class="text-sm text-red-500" v-if="!!permoForm.errors.jum_setuju_bk">
-                                {{ permoForm.errors.jum_setuju_bk }}
-                            </span>
-                        </div>
+                         <div v-for="(form, index) in permoForm.forms[0]" :key="index" class="flex gap-y-8 gap-x-20 items-center flex-wrap border-b pb-6">
+                             <!-- Barang -->
+                             <div class="flex flex-col h-10">
+                                 <FloatLabel variant="on">
+                                     <InputText disabled inputId="barang" class="w-[12.5rem]" v-model="form.barang.nama_brg"/>
+                                     <label for="barang">Nama Barang</label>
+                                 </FloatLabel>
+                             </div>
+                             <!-- Jumlah Permohonan -->
+                             <div class="flex flex-col h-10">
+                                 <FloatLabel variant="on">
+                                     <InputNumber disabled inputId="jum_per" class="w-[12.5rem]" v-model="form.jum_bk"/>
+                                     <label for="jum_per">Jumlah Permohonan</label>
+                                 </FloatLabel>
+                             </div>
+                             <!-- Jumlah Setuju Permohonan -->
+                             <div class="flex flex-col h-10">
+                                 <FloatLabel variant="on">
+                                     <InputNumber :disabled="permoForm.status_bk==='ditolak'" inputId="jum_per" class="w-[12.5rem]" v-model="form.jum_setuju_bk"/>
+                                     <label for="jum_per">Jumlah Setuju</label>
+                                 </FloatLabel>
+                                 <span class="text-sm text-red-500" v-if="!!permoForm.errors['forms.0.'+index+'.jum_setuju_bk']">
+                                     {{ permoForm.errors['forms.0.'+index+'.jum_setuju_bk']}}
+                                 </span>
+
+                             </div>
+                         </div>
                         <!-- status permohonan -->
                         <div class="flex flex-col h-10">
                             <FloatLabel variant="on">
@@ -239,47 +227,56 @@ const validasiPermo = () => {
                             <span class="flex justify-center">Tidak Ada Permohonan</span>
                         </template>
                         <Column :exportable="false" sortable header="No" field="index" class="w-4"/>
-                        <Column sortable header="Tanggal Permohonan" field="tgl_bk" class="w-4"/>
-                        <Column sortable header="Nama Pemohon" field="user.username" class="w-4"/>
-                        <Column sortable header="Nama Unit" field="user.unit.nama_unit" class="w-4"/>
-                        <Column sortable header="Nama Barang" field="details.barang.nama_brg" filterField="details.barang.nama_brg" class="w-4">
+                        <Column sortable header="Tanggal Permohonan" field="barang_keluar.tgl_bk" class="w-4">
+                            <template #body="{data}">
+                                {{ formatTanggal(data.barang_keluar.tgl_bk) }}
+                            </template>
+                        </Column>
+                        <Column sortable header="Tanggal Diterima" field="barang_keluar.tgl_diterima" class="w-4">
+                            <template #body="{data}">
+                                {{ data.barang_keluar.tgl_diterima?formatTanggal(data.barang_keluar.tgl_diterima):'Belum diterima'}}
+                            </template>
+                        </Column>
+                        <Column sortable header="Nama Pemohon" field="barang_keluar.user.username" class="w-4"/>
+                        <Column sortable header="Nama Unit" field="barang_keluar.user.unit.nama_unit" class="w-4"/>
+                        <Column sortable header="Nama Barang" field="barang.nama_brg" filterField="barang.nama_brg" class="w-4">
                              <template #body="{data}">
-                                {{ data.details.barang.nama_brg}}
+                                {{ data.barang.nama_brg}}
                             </template>
                         </Column>
                         <Column sortable header="Status" field="status_bk" class="w-4"/>
-                        <Column sortable header="Jumlah Permohonan" field="details.jum_bk" filterField="details.jum_bk" class="w-4">
+                        <Column sortable header="Jumlah Permohonan" field="jum_bk" filterField="jum_bk" class="w-4">
                             <template #body="{data}">
-                               {{ data.details.jum_bk}}
+                               {{ data.jum_bk}}
                             </template>
                         </Column>
-                        <Column sortable header="Jumlah Disetujui" field="details.jum_setuju_bk" filterField="details.jum_setuju_bk" class="w-4">
+                        <Column sortable header="Jumlah Disetujui" field="jum_setuju_bk" filterField="jum_setuju_bk" class="w-4">
                             <template #body="{data}">
-                                {{ data.details.jum_setuju_bk??'Menunggu Validasi'}}
+                                {{ data.jum_setuju_bk??'Menunggu Validasi'}}
                             </template>
                         </Column>
-                        <Column sortable header="Satuan" field="details.barang.satuan" filterField="details.barang.satuan" class="w-4">
+                        <Column sortable header="Satuan" field="barang.satuan" filterField="barang.satuan" class="w-4">
                             <template #body="{data}">
-                                {{ data.details.barang.satuan}}
+                                {{ data.barang.satuan}}
                             </template>
                         </Column>
                         <Column sortable header="Bukti" class="w-4">
                             <template #body="{data}">
-                                <div class="size-20 overflow-hidden border rounded" v-if="data?.bukti_bk">
-                                    <Image :src="data?.bukti_bk" class="size-full" preview />
+                                <div class="size-20 overflow-hidden border rounded" v-if="data?.barang_keluar.bukti_bk">
+                                    <Image :src="data?.barang_keluar.bukti_bk" class="size-full" preview />
                                 </div>
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Keterangan" field="details.ket_bk">
+                        <Column sortable header="Keterangan" field="ket_bk">
                             <template #body="{data}">
-                                {{ data.details.ket_bk??'Tidak ada keterangan'}}
+                                {{ data.ket_bk??'Tidak ada keterangan'}}
                             </template>
                         </Column>
                         <Column header="Action" frozen alignFrozen="right" style="min-width: 1rem">
                             <template #body="{data}">
                                 <div class="flex items-center gap-x-2">
-                                    <Button :disabled="data.status_bk!=='diproses'" @click="editPermo(data.index)" icon="pi pi-pen-to-square" outlined size="small"/>
+                                    <Button :disabled="data.barang_keluar.status_bk!=='diproses'" @click="editPermo(data.id_bk)" icon="pi pi-pen-to-square" outlined size="small"/>
                                 </div>
                             </template>
                         </Column>

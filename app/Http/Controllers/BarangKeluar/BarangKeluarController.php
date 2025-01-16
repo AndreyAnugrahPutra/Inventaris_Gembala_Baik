@@ -25,6 +25,13 @@ class BarangKeluarController extends Controller
     {
         $db = DB::transaction(function () use ($req)
         {
+            $req->validate([
+                'tgl_bk' => 'required',
+            ],
+            [
+                'tgl_bk.required' => 'Tanggal wajib diisi',
+            ]);
+            
             $insert = BarangKeluar::create([
                 'tgl_bk' => Carbon::parse($req->tgl_bk)->timezone('Asia/Jayapura')->format('Y-m-d'),
                 'id_user' => auth()->guard()->user()->id_user,
@@ -38,9 +45,6 @@ class BarangKeluarController extends Controller
                 $barang = Barang::find($form['id_brg']);
                 $stok_brg = $barang->stok_brg ?? 0;
 
-                $detailPermo = DetailPermohonan::where('id_brg', $form['id_brg'])->first();
-                $cekBarang = Permohonan::where('id_permo', $detailPermo->id_permo)->where('status','diterima')->first();
-
                 $req->validate([
                     'forms.*.id_brg' => 'required',
                     'forms.*.jum_bk' => 'required|numeric|max:' . $stok_brg,
@@ -49,11 +53,15 @@ class BarangKeluarController extends Controller
                     'forms.*.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
                 ]);
 
+                $detailPermo = DetailPermohonan::where('id_brg', $form['id_brg'])->first();
+                $cekBarang = Permohonan::where('id_permo', $detailPermo->id_permo)->where('status','diterima')->first();
+
+
                 if(!$cekBarang)
                 {
                     $insert->latest()->first()->delete();
 
-                    return redirect()->route('guru.permohonan.page')->with([
+                    return redirect()->back()->with([
                         'notif_status' => 'error',
                         'notif_message' => 'Barang belum masuk inventaris!',
                     ]);
@@ -68,6 +76,7 @@ class BarangKeluarController extends Controller
                         'ket_bk' => NULL,
                         'created_at' => Carbon::now('Asia/Jayapura')
                     ]);
+                    sleep(1);
                 }
             }
 
@@ -87,28 +96,30 @@ class BarangKeluarController extends Controller
 
     public function updatePermohonan(Request $req)
     {
-        $barang = Barang::find($req->id_brg);
-                
         if($req->status_bk==='diproses')
         {
-            $req->validate([
-                'id_brg' => 'required',
-                'jum_bk' => 'required|numeric|max:' . $barang->stok_brg,
-            ], [
-                '*.required' => 'Kolom wajib diisi',
-                'jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
-            ]);
+            foreach($req->forms[0] as $form)
+            {
+                $barang = Barang::find($form['id_brg']);
+    
+                $req->validate([
+                    'forms.*.*.id_brg' => 'required',
+                    'forms.*.*.jum_bk' => 'required|numeric|max:' . $barang->stok_brg,
+                ], [
+                    'forms.*.*.*.required' => 'Kolom wajib diisi',
+                    'forms.*.*.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
+                ]);
+    
+                $insert = BarangKeluar::find($req->id_bk)->update([
+                    'updated_at' => Carbon::now('Asia/Jayapura')
+                ]);
 
-            $insert = BarangKeluar::find($req->id_bk)->update([
-                'id_user' => auth()->guard()->user()->id_user,
-                'updated_at' => Carbon::now('Asia/Jayapura')
-            ]);
-
-            $insertDetail = DetailBarangKeluar::find($req->id_dbk)->update([
-                'id_brg' => $req->id_brg,
-                'jum_bk' => $req->jum_bk,
-                'updated_at' => Carbon::now('Asia/Jayapura')
-            ]);
+                $insertDetail = DetailBarangKeluar::find($form['id_dbk'])->update([
+                    'id_brg' => $form['id_brg'],
+                    'jum_bk' => $form['jum_bk'],
+                    'updated_at' => Carbon::now('Asia/Jayapura')
+                ]);
+            }
 
             if ($insert && $insertDetail) {
                 return redirect()->back()->with([
@@ -129,6 +140,7 @@ class BarangKeluarController extends Controller
     
             $req->validate([
                 'bukti_bk' => 'required',
+                'tgl_diterima' => 'required',
             ],[
                 '*.required' => 'Kolom wajib diisi',
             ]);
@@ -136,15 +148,27 @@ class BarangKeluarController extends Controller
             $linkFile = $imageValidation->validateImage($req, 'bukti_bk', $this->file_path);
     
             $insert = BarangKeluar::find($req->id_bk)->update([
+                'tgl_diterima' => Carbon::parse($req->tgl_diterima)->timezone('Asia/Jayapura')->format('Y-m-d'),
                 'bukti_bk' => $linkFile,
                 'status_bk' => 'diterima',
                 'updated_at' => Carbon::now('Asia/Jayapura')
             ]);
 
-            $updateStok = $barang->update([
-                'stok_brg' => $barang->stok_brg -= $req->jum_setuju_bk,
-                'updated_at' => Carbon::now('Asia/Jayapura')
-            ]);
+            foreach($req->forms[0] as $form)
+            {
+                $barang = Barang::find($form['id_brg']);
+
+                $detailBK = DetailBarangKeluar::find($form['id_dbk']);
+
+                $detailBK->update([
+                    'updated_at' => Carbon::now('Asia/Jayapura'),
+                ]);
+    
+                $updateStok = $barang->update([
+                    'stok_brg' => $barang->stok_brg -= $req->jum_setuju_bk,
+                    'updated_at' => Carbon::now('Asia/Jayapura')
+                ]);
+            }
 
             if ($insert && $updateStok) {
                 return redirect()->back()->with([
@@ -163,7 +187,7 @@ class BarangKeluarController extends Controller
     public function hapusPermohonan(Request $req)
     {
         $barang = BarangKeluar::find($req->id_bk)->delete();
-        $detail = DetailBarangKeluar::find($req->id_dbk)->delete();
+        $detail = DetailBarangKeluar::where('id_bk',$req->id_bk)->delete();
         $storage = true;
 
         if($req->bukti_bk)
@@ -189,33 +213,38 @@ class BarangKeluarController extends Controller
     {
         $keterangan = $req->ket_bk;
 
+        $req->validate([
+            'status_bk' => 'required',
+        ], [
+            'status_bk.required' => 'Kolom wajib diisi',
+        ]);
+
         if($req->status_bk==='ditolak')
         {
             $keterangan = $req->ket_bk??'ditolak';
         }
-        else
+
+        foreach($req->forms[0] as $form)
         {
             $req->validate([
-                'status_bk' => 'required',
                 'ket_bk' => 'required',
-                'jum_setuju_bk' => 'required|numeric|max:' . $req->jum_bk,
+                'forms[0].*.jum_setuju_bk' => 'required|numeric|max:'.$form['jum_bk'],
             ], [
-                'status_bk.required' => 'Kolom wajib diisi',
-                'jum_setuju_bk.required' => 'Kolom wajib diisi',
-                'jum_setuju_bk.max' => 'Melebihi permohonan',
+                'forms.*.*.jum_setuju_bk.required' => 'Kolom wajib diisi',
+                'forms.*.*.jum_setuju_bk.max' => 'Melebihi permohonan',
+            ]);
+    
+            $insert = BarangKeluar::find($req->id_bk)->update([
+                'status_bk' => $req->status_bk,
+                'updated_at' => Carbon::now('Asia/Jayapura'),
+            ]);
+    
+            $insertDetail = DetailBarangKeluar::find($form['id_dbk'])->update([
+                'jum_setuju_bk' => $form['jum_setuju_bk']??0,
+                'ket_bk' => $keterangan,
+                'updated_at' => Carbon::now('Asia/Jayapura'),
             ]);
         }
-
-        $insert = BarangKeluar::find($req->id_bk)->update([
-            'status_bk' => $req->status_bk,
-            'updated_at' => Carbon::now('Asia/Jayapura'),
-        ]);
-
-        $insertDetail = DetailBarangKeluar::find($req->id_dbk)->update([
-            'jum_setuju_bk' => $req->jum_setuju_bk??0,
-            'ket_bk' => $keterangan,
-            'updated_at' => Carbon::now('Asia/Jayapura'),
-        ]);
 
         if ($insert && $insertDetail) {
             return redirect()->back()->with([

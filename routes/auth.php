@@ -69,7 +69,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('admin/barang/hapus',[BarangController::class, 'hapusbarang'])->name('admin.barang.hapus');
 
     Route::get('admin/barang-keluar', function(){
-        $dataBarangKeluar = BarangKeluar::with('details','details.barang','user:id_user,username,id_unit','user.unit:id_unit,nama_unit')->get();
+        $dataBarangKeluar = DetailBarangKeluar::with('barang','barangKeluar','barangKeluar.user:id_user,username,id_unit','barangKeluar.user.unit:id_unit,nama_unit')->get();
         return Inertia::render('Admin/BarangKeluar/Index',[
             'dataBarangKeluar' => $dataBarangKeluar,
         ]);

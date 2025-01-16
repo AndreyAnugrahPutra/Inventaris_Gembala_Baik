@@ -54,6 +54,7 @@ class PermohonanController extends Controller
                 'status' => 'diproses',
                 'created_at' => Carbon::now('Asia/Jayapura')
             ]);
+            
             foreach ($req->forms as $form) {
                 $insertDetail = DetailPermohonan::create([
                     'id_permo' => $insert->latest()->first()->id_permo,
@@ -61,7 +62,7 @@ class PermohonanController extends Controller
                     'jumlah_per' => $form['jumlah_per'],
                     'created_at' => Carbon::now('Asia/Jayapura')
                 ]);
-        
+                sleep(1);
             }
             if ($insert && $insertDetail) {
                 return redirect()->back()->with([
@@ -148,7 +149,6 @@ class PermohonanController extends Controller
 
                 $details = DetailPermohonan::find($form['id_dp']);
 
-
                 $insertDetail = $details->update([
                     'updated_at' => Carbon::now('Asia/Jayapura')
                 ]);
@@ -217,7 +217,7 @@ class PermohonanController extends Controller
                 $req->validate([
                     'status' => 'required',
                     'ket_permo' => 'required',
-                    'forms.*.*.jumlah_setuju' => 'required|numeric|max:'.$form['jumlah_per'],
+                    'forms[0].*.jumlah_setuju' => 'required|numeric|max:'.$form['jumlah_per'],
                 ],[
                     'status.required' => 'Kolom wajib diisi',
                     'ket_permo.required' => 'Kolom wajib diisi',
