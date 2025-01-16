@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3000
--- Generation Time: Jan 12, 2025 at 11:51 AM
+-- Generation Time: Jan 16, 2025 at 04:43 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -46,6 +46,7 @@ CREATE TABLE `barang` (
 CREATE TABLE `barang_keluar` (
   `id_bk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl_bk` date NOT NULL,
+  `tgl_diterima` date DEFAULT NULL,
   `id_user` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `bukti_bk` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status_bk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -208,6 +209,7 @@ CREATE TABLE `password_reset_tokens` (
 CREATE TABLE `permohonan` (
   `id_permo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl_permo` date NOT NULL,
+  `tgl_diterima` date DEFAULT NULL,
   `bukti_permo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL,
