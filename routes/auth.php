@@ -189,7 +189,7 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
     })->name('bendahara.laporan.barang');
 
     Route::get('bendahara/laporan/barang_keluar', function () {
-        $dataBarangKeluar = BarangKeluar::with('details', 'details.barang', 'user', 'user.unit')->get();
+        $dataBarangKeluar = DetailBarangKeluar::with('barangKeluar', 'barang', 'barangKeluar.user', 'barangKeluar.user.unit')->get();
 
         return Inertia::render('Laporan/BarangKeluar', [
             'dataBarangKeluar' => $dataBarangKeluar,
