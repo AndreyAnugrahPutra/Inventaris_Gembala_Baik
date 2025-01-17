@@ -53,31 +53,15 @@ class BarangKeluarController extends Controller
                     'forms.*.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
                 ]);
 
-                $detailPermo = DetailPermohonan::where('id_brg', $form['id_brg'])->first();
-                $cekBarang = Permohonan::where('id_permo', $detailPermo->id_permo)->where('status','diterima')->first();
-
-
-                if(!$cekBarang)
-                {
-                    $insert->latest()->first()->delete();
-
-                    return redirect()->back()->with([
-                        'notif_status' => 'error',
-                        'notif_message' => 'Barang belum masuk inventaris!',
-                    ]);
-                }
-                else
-                {
-                    $insertDetail = DetailBarangKeluar::create([
-                        'id_bk' => $insert->latest()->first()->id_bk,
-                        'id_brg' => $form['id_brg'],
-                        'jum_bk' => $form['jum_bk'],
-                        'jum_setuju_bk' => NULL,
-                        'ket_bk' => NULL,
-                        'created_at' => Carbon::now('Asia/Jayapura')
-                    ]);
-                    sleep(1);
-                }
+                $insertDetail = DetailBarangKeluar::create([
+                    'id_bk' => $insert->latest()->first()->id_bk,
+                    'id_brg' => $form['id_brg'],
+                    'jum_bk' => $form['jum_bk'],
+                    'jum_setuju_bk' => NULL,
+                    'ket_bk' => NULL,
+                    'created_at' => Carbon::now('Asia/Jayapura')
+                ]);
+                sleep(1);
             }
 
             if ($insert && $insertDetail) {
