@@ -181,7 +181,7 @@ const hapusBarang = idx => {
         <template #pageContent>
             <div class="flex flex-col gap-4">
                 <!-- dialog tambah barang -->
-                <Dialog @hide="hideForm()" :header="formType" v-model:visible="showForm" class="w-[32rem]"  modal>
+                <Dialog @hide="hideForm()" :header="formType" v-model:visible="showForm" class="w-[40rem]"  modal>
                     <form @submit.prevent class="flex flex-wrap gap-[2rem] w-full items-center my-1" autocomplete="off">
                         <!-- nama barang -->
                         <div class="flex flex-col h-10">
