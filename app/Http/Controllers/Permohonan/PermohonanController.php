@@ -39,14 +39,20 @@ class PermohonanController extends Controller
             [
                 'tgl_permo.required' => 'Tanggal wajib diisi'
             ]);
+
             foreach ($req->forms as $form) {
+                $barang = Barang::find($form['id_brg']);
+                $stok_brg = $barang->stok_brg ?? 0;
+
                 $req->validate([
                     'forms.*.id_brg' => 'required',
-                    'forms.*.jumlah_per' => 'required|numeric',
-                ],[
+                    'forms.'.$form['nomor'].'.jumlah_per' => 'required|numeric|max: ' . $stok_brg,
+                ], [
                     'forms.*.*.required' => 'Kolom wajib diisi',
-                    'forms.*.*.numeric' => 'Kolom wajib berupa angka',
+                    'forms.*.numeric' => 'Kolom wajib berupa angka',
+                    'forms.'.$form['nomor'].'.jumlah_per.max' => 'Melebihi Stok! Stok Tersisa :max '
                 ]);
+               
             }
         
             $insert = Permohonan::create([

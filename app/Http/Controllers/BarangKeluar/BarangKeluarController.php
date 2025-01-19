@@ -47,10 +47,10 @@ class BarangKeluarController extends Controller
 
                 $req->validate([
                     'forms.*.id_brg' => 'required',
-                    'forms.*.jum_bk' => 'required|numeric|max:' . $stok_brg,
+                    'forms.'.$form['nomor'].'.jum_bk' => 'required|numeric|max:' . $stok_brg,
                 ], [
                     'forms.*.*.required' => 'Kolom wajib diisi',
-                    'forms.*.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
+                    'forms.'.$form['nomor'].'.jum_bk.max' => 'Melebihi Stok! Stok Tersisa :max '
                 ]);
 
                 $insertDetail = DetailBarangKeluar::create([
@@ -149,7 +149,7 @@ class BarangKeluarController extends Controller
                 ]);
     
                 $updateStok = $barang->update([
-                    'stok_brg' => $barang->stok_brg -= $req->jum_setuju_bk,
+                    'stok_brg' => $barang->stok_brg -= $form['jum_setuju_bk'],
                     'updated_at' => Carbon::now('Asia/Jayapura')
                 ]);
             }
