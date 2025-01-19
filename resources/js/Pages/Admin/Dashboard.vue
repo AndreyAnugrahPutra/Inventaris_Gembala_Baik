@@ -10,9 +10,13 @@ import {
 // import custom komponen
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 
+import { setAdminBadge } from '@/Components/Composables/sidebarLists'
+
 onMounted(() =>
 {
     checkNotif()
+    // console.log()
+    setAdminBadge(String(props.validasiCount))
 })
 
 const pageTitle = 'Dashboard'
@@ -21,6 +25,7 @@ const props = defineProps({
     flash : Object,
     barangCount : Number,
     usersCount : Number,
+    validasiCount : Number,
 })
 
 const toast = useToast()

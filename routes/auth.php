@@ -45,6 +45,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         return Inertia::render('Admin/Dashboard', [
             'barangCount' => $barangCount,
             'usersCount' => $usersCount,
+            'validasiCount' => BarangKeluar::where('status_bk', 'diproses')->count(),
         ]);
     })->name('admin.dashboard');
 
@@ -166,6 +167,7 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
         $permohonanCount = Permohonan::count();
         return Inertia::render('Bendahara/Dashboard', [
             'permohonanCount' => $permohonanCount,
+            'validasiCount' => Permohonan::where('status','diproses')->count(),
         ]);
     })->name('bendahara.dashboard');
 

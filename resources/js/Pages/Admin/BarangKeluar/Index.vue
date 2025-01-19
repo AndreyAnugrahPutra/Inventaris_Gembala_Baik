@@ -17,6 +17,7 @@ import {
     InputNumber,
     InputText,
     Select,
+    Tag,
     useConfirm,
     useToast,
 } from 'primevue'
@@ -244,7 +245,14 @@ const validasiPermo = () => {
                                 {{ data.barang.nama_brg}}
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="status_bk" class="w-4"/>
+                        <Column sortable header="Status" field="barang_keluar.status_bk" class="w-4">
+                             <template #body="{data}">
+                                <Tag value="Diproses"  v-if="data.barang_keluar.status_bk==='diproses'" severity="warn"/>
+                                <Tag value="Diterima"  v-if="data.barang_keluar.status_bk==='diterima'" severity="success"/>
+                                <Tag value="Ditolak"  v-if="data.barang_keluar.status_bk==='ditolak'" severity="danger"/>
+                                <Tag value="disetujui" severity="info"  v-if="data.barang_keluar.status_bk==='disetujui'"/>
+                            </template>
+                        </Column>
                         <Column sortable header="Jumlah Permohonan" field="jum_bk" filterField="jum_bk" class="w-4">
                             <template #body="{data}">
                                {{ data.jum_bk}}

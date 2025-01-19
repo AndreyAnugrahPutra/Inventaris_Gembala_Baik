@@ -55,16 +55,6 @@ const submitForm = () => {
             checkNotif()
             isLoading.value = false
         },
-        // onError: () => {
-        //     toast.add({
-        //         severity : 'error',
-        //         summary : 'notifikasi',
-        //         detail : 'Gagal Melakukan Login :(',
-        //         life : 2000,
-        //         group : 'tc'
-        //     })
-        //     isLoading.value = false
-        // },
     });
 };
 </script>

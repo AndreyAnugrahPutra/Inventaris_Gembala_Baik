@@ -1,12 +1,15 @@
-export const adminMenu = [
+import { computed, reactive } from "vue";
+
+export const adminMenu = reactive([
     { label: "Dashboard", icon: "pi pi-home", route: "admin.dashboard" },
     { label: "Permohonan", icon: "pi pi-file", route: "admin.permohonan.page" },
     { label: "Kategori", icon: "pi pi-tags", route: "admin.kategori.page" },
     { label: "Barang", icon: "pi pi-box", route: "admin.barang.page" },
-    { label: "Barang Keluar", icon: "pi pi-box", route: "admin.barang_keluar.page" },
+    { label: "Barang Keluar", icon: "pi pi-box", route: "admin.barang_keluar.page", badge:null },
     { label: "Users", icon: "pi pi-users", route: "admin.users.page" },
     { label: "Unit", icon: "pi pi-id-card", route: "admin.unit.page" },
-]
+])
+
 export const adminPanel = [
     {
         label: "Laporan",
@@ -30,10 +33,23 @@ export const adminPanel = [
     },
 ];
 
-export const bendaharaMenu = [
+export const adminBadge = computed(() => adminMenu[4].badge);
+
+export const setAdminBadge = (data) => (adminMenu[4].badge = `(${data})` ?? null)
+
+
+export const bendaharaMenu = reactive([
     { label: "Dashboard", icon: "pi pi-home", route: "bendahara.dashboard" },
-    { label: "Validasi", icon: "pi pi-file-check", route: "bendahara.permohonan.page" },
-];
+    { label: "Validasi", icon: "pi pi-file-check", route: "bendahara.permohonan.page", badge : null },
+]);
+
+export const bendaharaBadge = computed(() => bendaharaMenu[1].badge)
+
+export const setBendaharaBadge = (data) => {
+
+    bendaharaMenu[1].badge = `(${data})`?? null;
+}
+
 export const bendaharaPanel = [
     {
         label: "Laporan",

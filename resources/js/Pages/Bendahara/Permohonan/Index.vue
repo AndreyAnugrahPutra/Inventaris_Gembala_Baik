@@ -16,6 +16,7 @@ import {
     InputNumber,
     InputText,
     Select,
+    Tag,
     useConfirm,
     useToast,
 } from 'primevue'
@@ -282,7 +283,14 @@ const terimaPermo = () => {
                                 <span class="text-sm" v-else>Tidak ada foto</span>
                             </template>
                         </Column>
-                        <Column sortable header="Status" field="permohonan.status" class="w-4"/>
+                        <Column sortable header="Status" field="permohonan.status" class="w-4">
+                            <template #body="{data}">
+                                <Tag value="Diproses"  v-if="data.permohonan.status==='diproses'" severity="warn"/>
+                                <Tag value="Diterima"  v-if="data.permohonan.status==='diterima'" severity="success"/>
+                                <Tag value="Ditolak"  v-if="data.permohonan.status==='ditolak'" severity="danger"/>
+                                <Tag value="disetujui" severity="info"  v-if="data.permohonan.status==='disetujui'"/>
+                            </template>
+                        </Column>
                         <Column sortable header="Keterangan" field="ket_permo" style="min-width: 200px">
                             <template #body="{data}">
                                 {{ data.ket_permo??'Tidak ada keterangan'}}

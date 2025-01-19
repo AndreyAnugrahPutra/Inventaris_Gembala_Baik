@@ -8,11 +8,14 @@ import {
     Toast
 } from 'primevue'
 // import custom komponen
-import AuthLayout from '@/Layouts/AuthLayout.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue'
+
+import { setBendaharaBadge } from '@/Components/Composables/sidebarLists'
 
 onMounted(() =>
 {
     checkNotif()
+    setBendaharaBadge(String(props.validasiCount))
 })
 
 const pageTitle = 'Dashboard'
@@ -20,6 +23,7 @@ const pageTitle = 'Dashboard'
 const props = defineProps({
     flash : Object,
     permohonanCount : Number,
+    validasiCount : Number,
 })
 
 const toast = useToast()

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { Head, router, useForm } from '@inertiajs/vue3'
 import {FilterMatchMode} from '@primevue/core/api'
 
@@ -17,6 +17,7 @@ import {
     InputNumber,
     InputText,
     Select,
+    Tag,
     useConfirm,
     useToast,
 } from 'primevue'
@@ -27,6 +28,10 @@ onMounted(() =>
 {
     checkNotif()
     dataPermoFix.value = props.dataPermo?.map((p,i) => ({index:i+1,...p}))
+    for(let i=0;i<props.dataBarang.length;i++)
+    {
+            dataSelect.push(props.dataBarang)
+    }
 })
 
 const props = defineProps({
@@ -66,11 +71,13 @@ const confirm = useConfirm()
 
 const dataPermoFix = ref([])
 
+const dataSelect = reactive([])
+
 const pageTitle = 'Permohonan Barang Keluar'
 
 const permoForm = useForm({
     forms : [
-        { nomor : 0, id_brg : null, jum_bk : null,}
+        { nomor : 0, id_brg : null, jum_bk : null, nama_brg : null}
     ],
     tgl_bk : null,
 })
@@ -95,6 +102,7 @@ const openForm = (type) =>
 
 const hideForm = () =>
 {
+    reloadData()
     previewImg.value = null
     showForm.value = false
     permoForm.reset()
@@ -108,7 +116,6 @@ const refreshPage = () =>
     checkNotif()
     showForm.value = false
     router.visit(route('guru.permohonan.page'))
-
 }
 
 const onUpload = (e) => 
@@ -154,8 +161,30 @@ const editPermo = (id_bk) =>
     showForm.value = true
 }
 
-const tambahField = () => permoForm.forms.push({ nomor : permoForm.forms.length,id_brg : null, jum_bk : null,})
-const removeField = idx => permoForm.forms.splice(idx,1)
+const reloadData = () =>
+{
+    dataSelect.splice(0, dataSelect.length)
+
+    for(let i=0;i<props.dataBarang.length;i++)
+    {
+        dataSelect.push(props.dataBarang)
+    }
+}
+
+const tambahField = () => {
+    const currentIndex = permoForm.forms.length
+    permoForm.forms.push({ nomor : permoForm.forms.length,id_brg : null, jum_bk : null, nama_brg : null})
+
+    const filterDataCurrent = dataSelect[currentIndex-1].filter(data => data.id_brg === permoForm.forms[currentIndex-1].id_brg)
+    const filterDataNext = dataSelect[currentIndex].filter(data => {
+        return !permoForm.forms.some(selected => selected.id_brg === data.id_brg)
+    })
+    dataSelect[currentIndex-1] = filterDataCurrent
+    dataSelect[currentIndex] = filterDataNext
+}
+const removeField = idx => {
+    permoForm.forms.splice(idx,1)
+}
 
 const submitPermo = () => {
     confirm.require({
@@ -277,7 +306,9 @@ const hapusPermo = id_bk => {
                             <!-- Barang -->
                             <div class="flex flex-col h-10">
                                 <FloatLabel variant="on">
-                                    <Select inputId="barang" class="w-[13rem]" v-model="permoForm.forms[index].id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
+                                    <Select inputId="barang" class="w-[13rem]" v-model="form.id_brg" :options="dataSelect[index]" 
+                                    optionLabel="nama_brg" optionValue="id_brg">
+                                    </Select>
                                     <label for="barang">Nama Barang</label>
                                 </FloatLabel>
                                  <span class="text-sm text-red-500" v-if="!!permoForm.errors['forms.'+index+'.id_brg']">
@@ -337,7 +368,7 @@ const hapusPermo = id_bk => {
                             <Button @click="hideForm()" label="Batal" severity="danger"/>
                             <Button @click="submitPermo()" label="Submit" v-if="formType!=='Edit Permohonan'" :disabled="disableSubmit"/>
                             <Button @click="updatePermo()" label="Update" v-else :disabled="disableSubmit"/>
-                            <Button @click="tambahField()" label="Tambah Field" severity="success" v-if="formType==='Tambah Permohonan Barang Keluar'"/>
+                            <Button @click="tambahField()" label="Tambah Field" :disabled="permoForm.forms.length === props.dataBarang.length || permoForm.forms[0].id_brg === null" severity="success" v-if="formType==='Tambah Permohonan Barang Keluar'"/>
                         </div>
                     </form>
                 </Dialog>
@@ -376,7 +407,10 @@ const hapusPermo = id_bk => {
                         </Column>
                         <Column sortable header="Status" field="barang_keluar.status_bk" class="w-4">
                             <template  #body="{data}">
-                                {{ data.barang_keluar.status_bk==='diterima'&&data.barang_keluar.bukti_bk===null?'Upload Bukti':data.barang_keluar.status_bk }}
+                                <Tag value="Diproses"  v-if="data.barang_keluar.status_bk==='diproses'" severity="warn"/>
+                                <Tag value="Diterima"  v-if="data.barang_keluar.status_bk==='diterima'" severity="success"/>
+                                <Tag value="Ditolak"  v-if="data.barang_keluar.status_bk==='ditolak'" severity="danger"/>
+                                <Tag value="Silahkan Upload Bukti" severity="info"  v-if="data.barang_keluar.status_bk==='disetujui'"/>
                             </template>
                         </Column>
                         <Column sortable header="Jumlah Permohonan" field="jum_bk" filterField="jum_bk" class="w-4">

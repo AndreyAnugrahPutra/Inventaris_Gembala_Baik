@@ -9,7 +9,7 @@ import {
 
 import {
     adminMenu, adminPanel,
-    bendaharaMenu, bendaharaPanel,
+    bendaharaMenu, bendaharaPanel, bendaharaBadge,
     guruMenu,
     kepsekMenu,kepsekPanel
 } from './Composables/sidebarLists'
@@ -43,7 +43,7 @@ const closePanel = () =>
     <div class="transition-all ease-in-out duration-[450ms] rounded-lg h-[99vh] p-2 flex flex-col bg-gradient-to-b from-sky-500 to-sky-400 gap-[2rem] justify-between fixed" :class="{'w-[80px]':props.isSidebarCollapsed,'w-[200px]':!props.isSidebarCollapsed}">
        
         <div class="flex flex-col gap-4 text-lg items-center">
-            <Button v-if="$page.props.auth.user.id_role === 1" v-for="menu in adminMenus" :key="menu.route" :label="props.isSidebarCollapsed?null:menu.label" :icon="menu.icon" class="w-full p-1 flex items-center justify-center" :class="{'bg-slate-100 text-sky-500 rounded' : route().current(menu.route),'text-slate-50' : !route().current(menu.route),'gap-0 rounded-lg':props.isSidebarCollapsed,'gap-2':!props.isSidebarCollapsed}" @click="router.visit(route(menu.route))" unstyled/>
+            <Button v-if="$page.props.auth.user.id_role === 1" v-for="menu in adminMenus" :key="menu.route" :label="props.isSidebarCollapsed?null:menu.label" :icon="menu.icon" class="w-full p-1 flex items-center justify-center" :class="{'bg-slate-100 text-sky-500 rounded' : route().current(menu.route),'text-slate-50' : !route().current(menu.route),'gap-0 rounded-lg':props.isSidebarCollapsed,'gap-2':!props.isSidebarCollapsed}" @click="router.visit(route(menu.route))" :badge="menu.badge" unstyled/>
 
             <PanelMenu @panel-open="openPanel=true" @panel-close="closePanel()" class="w-full transition-all"  :model="adminPanels" v-if="$page.props.auth.user.id_role === 1" :class="{'rounded bg-slate-100 text-sky-500':openPanel}" unstyled>
                 <template #item="{item}">
@@ -67,7 +67,7 @@ const closePanel = () =>
                 </template>
             </PanelMenu>
 
-            <Button v-if="$page.props.auth.user.id_role === 4" v-for="menu in bendaharaMenus" :key="menu.route" :label="props.isSidebarCollapsed?null:menu.label" :icon="menu.icon" class="w-full p-1 flex items-center justify-center" :class="{'bg-slate-100 text-sky-500 rounded' : route().current(menu.route),'text-slate-50' : !route().current(menu.route),'gap-0 rounded-lg':props.isSidebarCollapsed,'gap-2':!props.isSidebarCollapsed}" @click="router.visit(route(menu.route))" unstyled/>
+            <Button v-if="$page.props.auth.user.id_role === 4" v-for="menu in bendaharaMenus" :key="menu.route" :label="props.isSidebarCollapsed?null:menu.label" :icon="menu.icon" class="w-full p-1 flex items-center justify-center" :class="{'bg-slate-100 text-sky-500 rounded' : route().current(menu.route),'text-slate-50' : !route().current(menu.route),'gap-0 rounded-lg':props.isSidebarCollapsed,'gap-2':!props.isSidebarCollapsed}" @click="router.visit(route(menu.route))" :badge="menu.badge" unstyled/>
 
             <PanelMenu @panel-open="openPanel=true" @panel-close="closePanel()" class="w-full transition-all"  :model="bendaharaPanels" v-if="$page.props.auth.user.id_role === 4" :class="{'rounded bg-slate-100 text-sky-500':openPanel}" unstyled>
                 <template #item="{item}">

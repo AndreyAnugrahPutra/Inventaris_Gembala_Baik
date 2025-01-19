@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { Head, router, useForm } from '@inertiajs/vue3'
 import {FilterMatchMode} from '@primevue/core/api'
 
 import {
+    Tag,
     Button,
     Column,
     DataTable,
@@ -27,6 +28,11 @@ onMounted(() =>
 {
     checkNotif()
     dataPermoFix.value = props.dataPermo?.map((p,i) => ({index:i+1,...p}))
+    // for(let i=0;i<props.dataBarang.length;i++)
+    // {
+    //     dataSelect.push(props.dataBarang)
+    // }
+    reloadData()
 })
 
 const props = defineProps({
@@ -66,6 +72,8 @@ const confirm = useConfirm()
 
 const dataPermoFix = ref([])
 
+const dataSelect = reactive([])
+
 const pageTitle = 'Permohonan'
 
 const permoForm = useForm({
@@ -99,6 +107,7 @@ const formatTanggal = tgl => {
 
 const hideForm = () =>
 {
+    reloadData()
     previewImg.value = null
     showForm.value = false
     permoForm.reset()
@@ -115,7 +124,28 @@ const refreshPage = () =>
 
 }
 
-const tambahField = () => {permoForm.forms.push({ nomor : permoForm.forms.length, id_brg : null, jumlah_per : null,})}
+const reloadData = () =>
+{
+    dataSelect.splice(0, dataSelect.length)
+
+    for(let i=0;i<props.dataBarang.length;i++)
+    {
+        dataSelect.push(props.dataBarang)
+    }
+}
+
+const tambahField = () => {
+    const currentIndex = permoForm.forms.length
+    permoForm.forms.push({ nomor : permoForm.forms.length, id_brg : null, jumlah_per : null,})
+
+    const filterDataCurrent = dataSelect[currentIndex-1].filter(data => data.id_brg === permoForm.forms[currentIndex-1].id_brg)
+    const filterDataNext = dataSelect[currentIndex].filter(data => {
+        return !permoForm.forms.some(selected => selected.id_brg === data.id_brg)
+    })
+    dataSelect[currentIndex-1] = filterDataCurrent
+    dataSelect[currentIndex] = filterDataNext
+}
+
 const removeField = idx => permoForm.forms.splice(idx,1)
 
 const onUpload = (e) => 
@@ -212,8 +242,6 @@ const updatePermo = () => {
 const hapusPermo = id_permo => {
     editForm.id_permo = id_permo
 
-    console.log(id_permo)
-
     confirm.require({
         message: `Hapus Permohonan ?`,
         header: 'Peringatan',
@@ -283,7 +311,7 @@ const hapusPermo = id_permo => {
                             <!-- Barang -->
                             <div class="flex flex-col h-10">
                                 <FloatLabel variant="on">
-                                    <Select inputId="barang" class="w-[13rem]" v-model="permoForm.forms[index].id_brg" :options="props.dataBarang" optionLabel="nama_brg" optionValue="id_brg"/>
+                                    <Select inputId="barang" class="w-[13rem]" v-model="form.id_brg" :options="dataSelect[index]" optionLabel="nama_brg" optionValue="id_brg"/>
                                     <label for="barang">Nama Barang</label>
                                 </FloatLabel>
                                 <span class="text-sm text-red-500" v-if="!!permoForm.errors['forms.'+index+'.id_brg']">
@@ -293,7 +321,7 @@ const hapusPermo = id_permo => {
                             <!-- Jumlah Permohonan -->
                             <div class="flex flex-col h-10">
                                 <FloatLabel variant="on">
-                                    <InputNumber inputId="jum_per" v-model="permoForm.forms[index].jumlah_per"/>
+                                    <InputNumber inputId="jum_per" v-model="form.jumlah_per"/>
                                     <label for="jum_per">Jumlah Permohonan</label>
                                 </FloatLabel>
                                 <span class="text-sm text-red-500" v-if="!!permoForm.errors['forms.'+index+'.jumlah_per']">
@@ -344,7 +372,7 @@ const hapusPermo = id_permo => {
                             <Button @click="hideForm()" label="Batal" severity="danger"/>
                             <Button @click="submitPermo()" label="Submit" v-if="formType!=='Edit Permohonan'" :disabled="disableSubmit"/>
                             <Button @click="updatePermo()" label="Update" v-else :disabled="disableSubmit"/>
-                            <Button @click="tambahField()" label="Tambah Field" severity="success" :disabled="props.dataBarang.length<2" v-if="formType==='Tambah Permohonan'"/>
+                            <Button @click="tambahField()" label="Tambah Field" severity="success" :disabled="permoForm.forms.length === props.dataBarang.length || !permoForm.forms[0].id_brg" v-if="formType==='Tambah Permohonan'"/>
                         </div>
                     </form>
                 </Dialog>
@@ -388,7 +416,7 @@ const hapusPermo = id_permo => {
                         </Column>
                         <Column sortable header="Jumlah Disetujui" field="permohonan.jumlah_setuju" filterField="permohonan.jumlah_setuju" class="w-4">
                             <template #body="{data}">
-                                {{ data.permohonan.jumlah_setuju??'Menunggu Validasi Bendahara'}}
+                                {{ data.jumlah_setuju??'Menunggu Validasi Bendahara'}}
                             </template>
                         </Column>
                         <Column sortable header="Satuan" field="barang.satuan" filterField="barang.satuan" class="w-4">
@@ -406,7 +434,10 @@ const hapusPermo = id_permo => {
                         </Column>
                         <Column sortable header="Status" field="permohonan.status" class="w-4">
                             <template #body="{data}">
-                                {{ data.permohonan.status==='disetujui'?'Upload Bukti':data.permohonan.status }}
+                                <Tag value="Diproses"  v-if="data.permohonan.status==='diproses'" severity="warn"/>
+                                <Tag value="Diterima"  v-if="data.permohonan.status==='diterima'" severity="success"/>
+                                <Tag value="Ditolak"  v-if="data.permohonan.status==='ditolak'" severity="danger"/>
+                                <Tag value="Silahkan Upload Bukti" severity="info"  v-if="data.permohonan.status==='disetujui'"/>
                             </template>
                         </Column>
                         <Column sortable header="Keterangan" field="ket_permo">
