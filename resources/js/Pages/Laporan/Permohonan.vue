@@ -23,7 +23,9 @@ onMounted(() =>
 const props = defineProps({
     flash : Object,
     dataBarang : Object,
+    dataKategori : Object,
     dataPermo : Object,
+    dataSatuan : Object,
 })
 
 const dt = ref()
@@ -96,20 +98,8 @@ const exportPDF = () => {
                         <template #header>
                             <div class="flex justify-center items-center gap-x-2">
                                 <InputText placeholder="Nama Barang" v-model="filterData.nama_barang" />
-                                <Select showClear @change="filterKategori()" v-model="filterData.kategori" :options="props.dataBarang" optionLabel="kategori.nama_kategori" optionValue="kategori.nama_kategori" placeholder="Kategori" style="min-width: 14rem">
-                                     <template #option="slotProps">
-                                        <div class="flex items-center gap-2">
-                                            <span>{{ slotProps.option.kategori.nama_kategori }}</span>
-                                        </div>
-                                    </template>
-                                </Select>
-                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataBarang" optionLabel="satuan" optionValue="satuan" placeholder="Satuan" style="min-width: 14rem">
-                                     <template #option="slotProps">
-                                        <div class="flex items-center gap-2">
-                                            <span>{{ slotProps.option.satuan }}</span>
-                                        </div>
-                                    </template>
-                                </Select>
+                                <Select showClear @change="filterKategori()" v-model="filterData.kategori" :options="props.dataKategori" optionLabel="nama_kategori" optionValue="nama_kategori" placeholder="Kategori" style="min-width: 14rem"/>
+                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataSatuan" optionLabel="satuan" optionValue="satuan" placeholder="Satuan" style="min-width: 14rem"/>
                                 <Button icon="pi pi-print" severity="contrast" @click="exportPDF()" label="PDF" size="small"/>
                             </div>
                         </template>
@@ -120,7 +110,11 @@ const exportPDF = () => {
                             <span class="flex justify-center">Sedang Memuat Data...</span>
                         </template>
                         <Column sortable header="No" field="index" class="w-4"/>
-                        <Column sortable header="Hari/Tanggal Permohonan" field="permohonan.tgl_permo"/>
+                        <Column sortable header="Hari/Tanggal Permohonan" field="permohonan.tgl_permo">
+                            <template #body="{data}">
+                                {{ formatTanggal(data.permohonan.tgl_permo) }}
+                            </template>
+                        </Column>
                         <Column sortable header="Hari/Tanggal Terima" field="permohonan.tgl_diterima">
                             <template #body="{data}">
                                 {{ data.permohonan.tgl_diterima?formatTanggal(data.permohonan.tgl_diterima):'Belum diterima' }}

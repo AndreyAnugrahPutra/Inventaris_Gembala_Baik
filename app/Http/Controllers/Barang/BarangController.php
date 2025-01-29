@@ -114,7 +114,7 @@ class BarangController extends Controller
         return Inertia::render('Laporan/PdfBarang',
         [
             'data' => $req,
-            'tanggal' => Carbon::now('Asia/Jayapura')->format('d-m-Y')
+            'tanggal' => Carbon::now('Asia/Jayapura')->format('d/m/Y')
         ]);
     }
 }

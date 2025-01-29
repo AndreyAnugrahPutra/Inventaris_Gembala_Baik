@@ -24,6 +24,7 @@ const props = defineProps({
     flash : Object,
     dataBarang : Object,
     dataKategori : Object,
+    dataSatuan : Object,
 })
 
 const dt = ref()
@@ -98,13 +99,7 @@ const exportPDF = () => {
                                         </div>
                                     </template>
                                 </Select>
-                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataBarang" optionLabel="satuan" optionValue="satuan" placeholder="Satuan" style="min-width: 14rem">
-                                     <template #option="slotProps">
-                                        <div class="flex items-center gap-2">
-                                            <span>{{ slotProps.option.satuan }}</span>
-                                        </div>
-                                    </template>
-                                </Select>
+                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataSatuan" optionLabel="satuan" optionValue="satuan" placeholder="Satuan" style="min-width: 14rem"/>
                                 <Button icon="pi pi-print" severity="contrast" @click="exportPDF()" label="PDF" size="small"/>
                             </div>
                         </template>

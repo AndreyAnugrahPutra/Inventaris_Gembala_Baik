@@ -101,6 +101,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         return Inertia::render('Laporan/Barang',[
             'dataBarang' => $dataBarang,
             'dataKategori' => $dataKategori,
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
         ]);
     })->name('admin.laporan.barang');
     
@@ -109,6 +110,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
         
         return Inertia::render('Laporan/BarangKeluar',[
             'dataBarangKeluar' => $dataBarangKeluar,
+            'dataUnit' => Unit::select('nama_unit')->get(),
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
         ]);
     })->name('admin.laporan.barang_keluar');
 
@@ -118,6 +121,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
         return Inertia::render('Laporan/Permohonan', [
             'dataPermo' => $dataPermo,
             'dataBarang' => $dataBarang,
+            'dataKategori' => Kategori::select('nama_kategori')->groupBy('nama_kategori')->get(),
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
         ]);
     })->name('admin.laporan.permohonan');
 
@@ -139,6 +144,7 @@ Route::middleware(['auth', 'kepsek'])->group(function () {
         return Inertia::render('Laporan/Barang', [
             'dataBarang' => $dataBarang,
             'dataKategori' => $dataKategori,
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
         ]);
     })->name('kepsek.laporan.barang');
 
@@ -147,6 +153,8 @@ Route::middleware(['auth', 'kepsek'])->group(function () {
 
         return Inertia::render('Laporan/BarangKeluar', [
             'dataBarangKeluar' => $dataBarangKeluar,
+            'dataUnit' => Unit::select('nama_unit')->get(),
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
         ]);
     })->name('kepsek.laporan.barang_keluar');
 
@@ -156,6 +164,8 @@ Route::middleware(['auth', 'kepsek'])->group(function () {
         return Inertia::render('Laporan/Permohonan', [
             'dataPermo' => $dataPermo,
             'dataBarang' => $dataBarang,
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
+            'dataKategori' => Kategori::select('nama_kategori')->groupBy('nama_kategori')->get(),
         ]);
     })->name('kepsek.laporan.permohonan');
 
@@ -187,14 +197,16 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
         return Inertia::render('Laporan/Barang', [
             'dataBarang' => $dataBarang,
             'dataKategori' => $dataKategori,
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
         ]);
     })->name('bendahara.laporan.barang');
 
     Route::get('bendahara/laporan/barang_keluar', function () {
         $dataBarangKeluar = DetailBarangKeluar::with('barangKeluar', 'barang', 'barangKeluar.user', 'barangKeluar.user.unit')->get();
-
         return Inertia::render('Laporan/BarangKeluar', [
             'dataBarangKeluar' => $dataBarangKeluar,
+            'dataUnit' => Unit::select('nama_unit')->get(),
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
         ]);
     })->name('bendahara.laporan.barang_keluar');
 
@@ -204,6 +216,8 @@ Route::middleware(['auth', 'bendahara'])->group(function () {
         return Inertia::render('Laporan/Permohonan', [
             'dataPermo' => $dataPermo,
             'dataBarang' => $dataBarang,
+            'dataSatuan' => Barang::select('satuan')->groupBy('satuan')->get(),
+            'dataKategori' => Kategori::select('nama_kategori')->groupBy('nama_kategori')->get(),
         ]);
     })->name('bendahara.laporan.permohonan');
 

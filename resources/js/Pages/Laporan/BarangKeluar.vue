@@ -23,6 +23,8 @@ onMounted(() =>
 const props = defineProps({
     flash : Object,
     dataBarangKeluar : Object,
+    dataUnit : Object,
+    dataSatuan : Object,
 })
 
 const dt = ref()
@@ -95,20 +97,8 @@ const exportPDF = () => {
                         <template #header>
                             <div class="flex justify-center items-center gap-x-2">
                                 <InputText placeholder="Nama Barang" v-model="filterData.nama_barang" />
-                                <Select showClear @change="filterUnit()" v-model="filterData.unit" :options="props.dataBarangKeluar" optionLabel="barang_keluar.user.unit.nama_unit" optionValue="barang_keluar.user.unit.nama_unit" placeholder="Unit" style="min-width: 14rem">
-                                     <template #option="slotProps">
-                                        <div class="flex items-center gap-2">
-                                            <span>{{ slotProps.option.barang_keluar.user.unit.nama_unit }}</span>
-                                        </div>
-                                    </template>
-                                </Select>
-                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataBarangKeluar" optionLabel="barang.satuan" optionValue="barang.satuan" placeholder="Satuan" style="min-width: 14rem">
-                                     <template #option="slotProps">
-                                        <div class="flex items-center gap-2">
-                                            <span>{{ slotProps.option.barang.satuan }}</span>
-                                        </div>
-                                    </template>
-                                </Select>
+                                <Select showClear @change="filterUnit()" v-model="filterData.unit" :options="props.dataUnit" optionLabel="nama_unit" optionValue="nama_unit" placeholder="Unit" style="min-width: 14rem"/>
+                                <Select showClear @change="filterSatuan()" v-model="filterData.satuan" :options="props.dataSatuan" optionLabel="satuan" optionValue="satuan" placeholder="Satuan" style="min-width: 14rem"/>
                                 <Button icon="pi pi-print" severity="contrast" @click="exportPDF()" label="PDF" size="small"/>
                             </div>
                         </template>
@@ -133,7 +123,11 @@ const exportPDF = () => {
                         <Column sortable header="Nama Unit" field="barang_keluar.user.unit.nama_unit"/>
                         <Column sortable header="Nama Barang" field="barang.nama_brg"/>
                         <Column sortable header="Jumlah Barang Keluar" field="jum_bk"/>
-                        <Column sortable header="Jumlah Disetujui" field="jum_setuju_bk"/>
+                        <Column sortable header="Jumlah Disetujui" field="jum_setuju_bk">
+                             <template #body="{data}">
+                                {{ data.jum_setuju_bk??'-' }}
+                            </template>
+                        </Column>
                         <Column sortable header="Satuan" field="barang.satuan"/>
                     </DataTable>
                 </div>
